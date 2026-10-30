@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Homebase · 本地个人门户</title>
+  <style>
+    :root{--ink:#20232b;--muted:#7c818d;--line:#e7e9ef;--accent:#5865d8;--soft:#eef0ff;--canvas:#f7f8fb}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font-family:Arial,"Microsoft YaHei",sans-serif}button,input{font:inherit}.top{height:78px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand i{width:35px;height:35px;display:grid;place-items:center;color:#fff;background:var(--accent);border-radius:10px;font:normal 21px Georgia}.clock{display:flex;align-items:center;gap:14px}.clock strong{font-size:22px}.clock span{padding-left:14px;border-left:1px solid var(--line);color:var(--muted);font-size:13px}.hero{padding:34px 20px;text-align:center;background:#fff}.searches{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}.search{height:60px;padding:8px 9px 8px 16px;display:flex;align-items:center;border:1px solid #dfe2ea;border-radius:16px;background:#fff;box-shadow:0 8px 24px #1c1f2b0f}.search b{width:32px;height:32px;display:grid;place-items:center;color:#315efb;background:#edf0ff;border-radius:8px}.search input{width:100%;padding:0 12px;border:0;outline:0;background:transparent}.search button{width:43px;height:43px;border:0;border-radius:11px;color:#fff;background:var(--accent);cursor:pointer;font-size:22px}.workspace{max-width:1200px;margin:38px auto 0;padding:0 22px;display:grid;grid-template-columns:205px 1fr;gap:28px}aside{min-height:500px;padding:22px 16px;border:1px solid var(--line);border-radius:18px;background:#fff}.label{padding:0 10px 14px;color:#9aa0aa;font-size:12px;font-weight:700}.cat{margin-bottom:5px;display:flex;align-items:center;border-radius:11px}.cat.active{background:var(--soft)}.cat>button:first-child{width:100%;height:47px;padding:0 11px;display:flex;align-items:center;gap:10px;border:0;color:#626875;background:transparent;cursor:pointer;text-align:left}.cat.active>button:first-child{color:var(--accent);font-weight:700}.badge{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;background:#f0f1f5;font-size:12px}.cat.active .badge{color:#fff;background:var(--accent)}.edit{width:32px;height:32px;margin-right:5px;border:0;border-radius:8px;color:var(--accent);background:transparent;cursor:pointer}.edit:hover{background:#fff}.add-cat{width:100%;height:48px;margin-top:14px;padding:0 10px;border:0;border-top:1px solid var(--line);color:#858b97;background:transparent;cursor:pointer;text-align:left}.heading{min-height:64px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start}.heading h2{margin:0 0 6px;font-size:23px}.heading p{margin:0;color:var(--muted);font-size:13px}.actions{display:flex;align-items:center;gap:10px}.actions span{padding:7px 11px;color:var(--accent);background:var(--soft);border-radius:20px;font-size:12px;font-weight:700}.actions button,.primary{height:38px;padding:0 14px;border:0;border-radius:10px;color:#fff;background:var(--accent);cursor:pointer;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.wrap{position:relative}.card{min-height:90px;padding:18px;display:flex;align-items:center;gap:14px;color:inherit;border:1px solid var(--line);border-radius:15px;background:#fff;text-decoration:none;transition:.2s}.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px #1c1f2b12}.mark{width:44px;height:44px;display:grid;place-items:center;flex:0 0 auto;color:#fff;border-radius:12px;font-weight:800}.copy{min-width:0;display:flex;flex:1;flex-direction:column;gap:6px}.copy small{overflow:hidden;color:var(--muted);text-overflow:ellipsis;white-space:nowrap}.del{position:absolute;top:7px;right:8px;width:24px;height:24px;border:0;border-radius:50%;color:#999faa;background:#f1f2f5;cursor:pointer;opacity:0}.wrap:hover .del{opacity:1}.empty{width:100%;min-height:220px;display:grid;place-items:center;border:1px dashed #cfd3df;border-radius:16px;color:var(--muted);background:#ffffff99;cursor:pointer}.modal-bg{position:fixed;inset:0;padding:20px;display:none;place-items:center;background:#191c2666;backdrop-filter:blur(3px)}.modal-bg.show{display:grid}.modal{position:relative;width:min(420px,100%);padding:27px;border-radius:20px;background:#fff;box-shadow:0 24px 70px #1c1f2b38}.close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:0;border-radius:9px;color:#858a96;background:#f2f3f6;cursor:pointer;font-size:21px}.modal h3{margin:0 0 7px;font-size:21px}.modal>p{margin:0 0 22px;color:var(--muted);font-size:13px}.modal label{margin-bottom:15px;display:flex;flex-direction:column;gap:7px;color:#555b67;font-size:13px;font-weight:700}.modal input{height:46px;padding:0 13px;border:1px solid #dfe2ea;border-radius:10px;outline:0}.modal input:focus{border-color:#a7aeec;box-shadow:0 0 0 3px var(--soft)}.primary{width:100%;height:47px}footer{padding:36px;text-align:center;color:#a0a5af;font-size:12px}@media(max-width:760px){.clock span{display:none}.hero{padding:24px 16px}.searches{grid-template-columns:1fr}.workspace{grid-template-columns:1fr;padding:0 15px}aside{min-height:auto;padding:12px;overflow:auto}aside .label,.add-cat{display:none}#categories{display:flex;gap:5px}.cat{min-width:max-content}.edit{display:none}.grid{grid-template-columns:1fr}.actions span{display:none}.del{opacity:1}}
+    .heading[hidden]{display:none!important}
+    #links{padding-top:24px}
+    .grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+    .card{min-height:104px;padding:14px 11px;gap:9px}
+    .mark{position:relative;width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:10px;overflow:visible}
+    .mark img{position:absolute;left:50%;top:50%;width:32px;height:32px;padding:0;display:block;object-fit:contain;object-position:center;border:0;border-radius:0;background:transparent;transform:translate(-50%,-50%)}
+    .mark:has(img){background:transparent!important}
+    .copy strong,.copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .copy small{display:none}
+    .card{justify-content:center}
+    .card .copy{flex:0 1 auto;text-align:center}
+    .edit-link{position:absolute;top:7px;right:37px;width:24px;height:24px;padding:0;border:0;border-radius:50%;color:#6f76a8;background:#eef0ff;cursor:pointer;opacity:0;line-height:24px}
+    .wrap:hover .edit-link,.edit-link:focus{opacity:1}
+    .edit-link:hover{color:#fff;background:var(--accent)}
+    .wrap{cursor:grab;transition:opacity .15s,transform .15s}
+    .wrap:active{cursor:grabbing}
+    .wrap.dragging{opacity:.35;transform:scale(.96)}
+    .wrap.drag-over .card{border-color:var(--accent);box-shadow:0 0 0 2px var(--soft)}
+    .cat{cursor:grab;transition:opacity .16s,transform .16s,box-shadow .16s,background .16s}
+    .cat:active{cursor:grabbing}
+    .cat.category-dragging{opacity:.35;transform:scale(.94)}
+    .cat.category-drag-over{background:var(--soft);box-shadow:inset 3px 0 0 var(--accent),0 4px 12px #5865d81a;transform:translateX(4px)}
+    .cat>button:first-child{flex:1;width:auto;min-width:0;text-align:left}
+    .cat .badge{flex:0 0 auto}
+    .cat .badge{display:none}
+    .delete-category{width:30px;height:32px;margin-right:4px;padding:0;flex:0 0 auto;border:0;border-radius:8px;color:#a1a5af;background:transparent;cursor:pointer;font-size:17px}
+    .delete-category:hover{color:#fff;background:#dc5a5a}
+    .workspace{grid-template-columns:230px 1fr}
+    .cat{position:relative}
+    .cat>button:first-child>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cat.active>button:first-child{padding-right:70px}
+    .cat .edit{position:absolute;right:35px;margin:0;z-index:2}
+    .cat .delete-category{position:absolute;right:4px;margin:0;z-index:2}
+    .cat>button:first-child{justify-content:center;text-align:center;padding-left:12px;padding-right:12px}
+    .cat.active>button:first-child{padding-left:12px;padding-right:12px}
+    .cat>button:first-child>span:last-child{width:88px;flex:0 0 88px;overflow:visible;text-align:justify;text-align-last:justify;white-space:nowrap}
+    .cat .edit{left:auto;right:4px}
+    .cat .delete-category{left:4px;right:auto}
+    .cat .edit,.cat .delete-category{opacity:0;pointer-events:none;transition:opacity .15s,background .15s,color .15s}
+    .cat:hover .edit,.cat:hover .delete-category,.cat .edit:focus,.cat .delete-category:focus{opacity:1;pointer-events:auto}
+    @media(max-width:760px){.workspace{grid-template-columns:1fr}.cat.active>button:first-child{padding-right:42px}.cat .delete-category{right:4px}}
+    .add-site-card{min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px dashed #bcc2d2;border-radius:15px;color:#747b89;background:#ffffff80;cursor:pointer;transition:.2s}
+    .add-site-card:hover{border-color:var(--accent);color:var(--accent);background:var(--soft);transform:translateY(-2px)}
+    .add-site-card b{font-size:23px;line-height:1}.add-site-card span{font-size:13px;font-weight:700}
+    .searches{max-width:960px;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .search b{cursor:pointer;transition:transform .15s,box-shadow .15s}
+    .search b:hover{transform:translateY(-1px);box-shadow:0 3px 9px #1c1f2b18}
+    @media(max-width:600px){.searches{grid-template-columns:1fr}}
+    @media(max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:880px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.edit-link{opacity:1}}
+    .top{height:80px}
+    .clock{min-width:180px;padding:0;display:flex;flex-direction:column;align-items:flex-end;gap:2px;border:0;border-radius:0;color:var(--ink);background:transparent;box-shadow:none}
+    .clock span{order:1;padding:0;border:0;color:#3f4550;font-size:12px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+    .clock strong{order:2;font-family:"Courier New",Consolas,monospace;font-size:22px;font-weight:700;line-height:1;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+    .edit-settings{position:fixed;top:230px;right:18px;z-index:20;width:42px;height:42px;padding:0;display:grid;place-items:center;border:0;border-radius:9px;color:#7d8490;background:transparent;box-shadow:none;cursor:pointer;line-height:1;transition:color .15s,background .15s}
+    .edit-settings svg{width:23px;height:23px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .edit-settings .home-icon{display:none}
+    .edit-settings:hover{color:#4e5664;background:#f0f1f5}
+    body.edit-mode .edit-settings{color:#687180;background:transparent}
+    body.edit-mode .edit-settings .gear-icon{display:none}
+    body.edit-mode .edit-settings .home-icon{display:block}
+    body:not(.edit-mode) .add-cat,body:not(.edit-mode) .add-site-card,body:not(.edit-mode) .edit-link,body:not(.edit-mode) .del,body:not(.edit-mode) .cat .edit,body:not(.edit-mode) .cat .delete-category{display:none!important}
+    body:not(.edit-mode) .wrap,body:not(.edit-mode) .cat{cursor:default}
+    @media(max-width:600px){.top{height:76px;padding:0 14px}.clock{min-width:170px;padding:0}.clock span{font-size:10px;letter-spacing:0}.clock strong{font-size:24px}.brand strong{display:none}.cat.active .delete-category{opacity:1;pointer-events:auto}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="brand"><i>H</i><strong>Homebase</strong></div><div class="clock"><span id="date"></span><strong id="time">--:--</strong></div></header>
+  <section class="hero"><div class="searches"><form class="search" data-engine="baidu"><b onclick="openEngineHome('baidu')" title="打开百度首页">百</b><input placeholder="百度一下"><button>⌕</button></form><form class="search" data-engine="google"><b onclick="openEngineHome('google')" title="打开 Google 首页">G</b><input placeholder="在 Google 中搜索"><button>⌕</button></form></div></section>
+  <button class="edit-settings" id="editModeToggle" onclick="toggleEditMode()" title="进入修改模式" aria-label="进入修改模式"><svg class="gear-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path></svg></button>
+  <section class="workspace"><aside><div class="label">分类</div><nav id="categories"></nav><button class="add-cat" onclick="openCategory(false)">＋ 添加分类</button></aside><div><div class="heading" hidden><div><h2 id="title"></h2></div></div><div id="links"></div></div></section>
+  <footer>Homebase · 本地个人工作门户</footer>
+  <div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><button class="close" onclick="hideModal()">×</button><h3 id="modalTitle"></h3><p id="modalDesc"></p><form id="modalForm"></form></div></div>
+  <script>
+    const defaults=[
+      {id:'ai-agents',name:'智能体',links:[
+        {id:'agent-chatgpt',name:'ChatGPT',description:'OpenAI 通用智能体',url:'https://chatgpt.com/',mark:'C',color:'#10a37f'},
+        {id:'agent-claude',name:'Claude',description:'Anthropic AI 助手',url:'https://claude.ai/',mark:'C',color:'#d97757'},
+        {id:'agent-gemini',name:'Gemini',description:'Google AI 助手',url:'https://gemini.google.com/',mark:'G',color:'#4285f4'},
+        {id:'agent-copilot',name:'Copilot',description:'Microsoft AI 助手',url:'https://copilot.microsoft.com/',mark:'C',color:'#7b61ff'},
+        {id:'agent-grok',name:'Grok',description:'xAI 智能助手',url:'https://grok.com/',mark:'G',color:'#1f1f1f'},
+        {id:'agent-deepseek',name:'DeepSeek',description:'DeepSeek AI 助手',url:'https://chat.deepseek.com/',mark:'D',color:'#4d6bfe'},
+        {id:'agent-kimi',name:'Kimi',description:'月之暗面 AI 助手',url:'https://www.kimi.com/',mark:'K',color:'#111111'},
+        {id:'agent-qwen',name:'通义千问',description:'阿里巴巴 AI 助手',url:'https://tongyi.aliyun.com/',mark:'千',color:'#615ced'},
+        {id:'agent-doubao',name:'豆包',description:'字节跳动 AI 助手',url:'https://www.doubao.com/',mark:'豆',color:'#3f6df6'},
+        {id:'agent-yuanbao',name:'腾讯元宝',description:'腾讯 AI 助手',url:'https://yuanbao.tencent.com/',mark:'元',color:'#20a06b'}
+      ]},
+      {id:'work',name:'工作',links:[
+        {id:'work-wikipedia',name:'维基百科',description:'自由的在线百科全书',url:'https://zh.wikipedia.org/',mark:'维',color:'#202122'},
+        {id:'work-163-mail',name:'163邮箱',description:'网易电子邮箱',url:'https://mail.163.com/',mark:'邮',color:'#d71920'},
+        {id:'work-gmail',name:'Gmail',description:'Google 电子邮箱',url:'https://mail.google.com/',mark:'G',color:'#ea4335'},
+        {id:'work-baidu-translate',name:'百度翻译',description:'文本与网页翻译',url:'https://fanyi.baidu.com/',mark:'译',color:'#3975f6'},
+        {id:'work-baidu-pan',name:'百度网盘',description:'云端文件与分享',url:'https://pan.baidu.com/',mark:'盘',color:'#2563eb'},
+        {id:'work-github',name:'GitHub',description:'代码托管与协作',url:'https://github.com/',mark:'G',color:'#24292f'}
+      ]},
+      {id:'chip-vendors',name:'芯片厂商',links:[
+        {id:'chip-ti',name:'TI',description:'Texas Instruments',url:'https://www.ti.com/',mark:'TI',color:'#cc0000'},
+        {id:'chip-amd',name:'AMD',description:'AMD',url:'https://www.amd.com/',mark:'A',color:'#222222'},
+        {id:'chip-adi',name:'ADI',description:'Analog Devices',url:'https://www.analog.com/',mark:'AD',color:'#111111'},
+        {id:'chip-microchip',name:'MICROCHIP',description:'Microchip Technology',url:'https://www.microchip.com/',mark:'M',color:'#e31837'},
+        {id:'chip-skyworks',name:'SKYWORK',description:'Skyworks Solutions',url:'https://www.skyworksinc.com/',mark:'S',color:'#1675bc'},
+        {id:'chip-micron',name:'镁光',description:'Micron Technology',url:'https://www.micron.com/',mark:'镁',color:'#0057a8'},
+        {id:'chip-nvidia',name:'英伟达',description:'NVIDIA',url:'https://www.nvidia.com/',mark:'N',color:'#76b900'},
+        {id:'chip-arm',name:'ARM',description:'Arm',url:'https://www.arm.com/',mark:'A',color:'#0091bd'},
+        {id:'chip-panasonic',name:'松下',description:'Panasonic Industry',url:'https://www.panasonic.com/global/industry.html',mark:'松',color:'#00529b'}
+      ]},
+      {id:'chip-purchase',name:'芯片采购',links:[
+        {id:'buy-lcsc',name:'立创商城',description:'立创商城',url:'https://www.szlcsc.com/',mark:'立',color:'#2468c9'},
+        {id:'buy-ickey',name:'云汉芯城',description:'ICkey',url:'https://www.ickey.cn/',mark:'云',color:'#ed6c00'},
+        {id:'buy-digikey',name:'得捷电子',description:'DigiKey',url:'https://www.digikey.cn/',mark:'得',color:'#cc0000'},
+        {id:'buy-mouser',name:'贸泽',description:'Mouser Electronics',url:'https://www.mouser.cn/',mark:'贸',color:'#004a8f'},
+        {id:'buy-element14',name:'e络盟',description:'element14',url:'https://www.element14.cn/',mark:'e',color:'#f58220'},
+        {id:'buy-avnet',name:'安富利',description:'Avnet',url:'https://www.avnet.com/apac/',mark:'安',color:'#f05a28'},
+        {id:'buy-arrow',name:'艾睿电子',description:'Arrow Electronics',url:'https://www.arrow.com/zh/home.html',mark:'艾',color:'#005596'}
+      ]},
+      {id:'connector-vendors',name:'连接器',links:[
+        {id:'conn-te',name:'泰科',description:'TE Connectivity',url:'https://www.te.com.cn/chn-zh/home.html',mark:'泰',color:'#e98300'},
+        {id:'conn-samtec',name:'砷泰',description:'Samtec',url:'https://www.samtec.com/',mark:'砷',color:'#005596'},
+        {id:'conn-amphenol',name:'安费诺',description:'Amphenol',url:'https://www.amphenol.com/',mark:'安',color:'#1c4b82'},
+        {id:'conn-erni',name:'ERNI',description:'ERNI',url:'https://www.te.com/en/products/brands/erni.html',mark:'E',color:'#e98300'},
+        {id:'conn-molex',name:'Molex',description:'Molex',url:'https://www.molex.com/',mark:'M',color:'#e1251b'}
+      ]},
+      {id:'shopping',name:'购物',links:[
+        {id:'shop-taobao',name:'淘宝',description:'综合购物平台',url:'https://www.taobao.com/',mark:'淘',color:'#ff5000'},
+        {id:'shop-jd',name:'京东',description:'综合购物与数码家电',url:'https://www.jd.com/',mark:'京',color:'#e1251b'},
+        {id:'shop-pinduoduo',name:'拼多多',description:'综合购物平台',url:'https://www.pinduoduo.com/',mark:'拼',color:'#e02e24'},
+        {id:'shop-douyin',name:'抖音商城',description:'短视频与直播购物',url:'https://www.douyin.com/',mark:'抖',color:'#161823'},
+        {id:'shop-vip',name:'唯品会',description:'品牌折扣购物',url:'https://www.vip.com/',mark:'唯',color:'#d4237a'},
+        {id:'shop-xianyu',name:'闲鱼',description:'二手闲置交易',url:'https://www.goofish.com/',mark:'闲',color:'#ffda44'},
+        {id:'shop-1688',name:'1688',description:'批发与企业采购',url:'https://www.1688.com/',mark:'批',color:'#ff6a00'},
+        {id:'shop-xiaohongshu',name:'小红书',description:'生活方式与种草购物',url:'https://www.xiaohongshu.com/',mark:'红',color:'#ff2442'},
+        {id:'shop-meituan',name:'美团',description:'本地生活与即时零售',url:'https://www.meituan.com/',mark:'美',color:'#ffd100'},
+        {id:'shop-suning',name:'苏宁易购',description:'家电数码与综合购物',url:'https://www.suning.com/',mark:'苏',color:'#fdbb30'},
+        {id:'shop-dangdang',name:'当当网',description:'图书与综合购物',url:'https://www.dangdang.com/',mark:'当',color:'#ff2832'},
+        {id:'shop-yanxuan',name:'网易严选',description:'品质生活与家居好物',url:'https://you.163.com/',mark:'严',color:'#b4a078'}
+      ]},
+      {id:'common',name:'常用',links:[
+        {id:'common-feishu',name:'飞书',description:'沟通、文档与协作',url:'https://www.feishu.cn/',mark:'飞',color:'#3370ff'},
+        {id:'common-tencent-docs',name:'腾讯文档',description:'在线文档与表格',url:'https://docs.qq.com/',mark:'T',color:'#20a06b'},
+        {id:'common-notion',name:'Notion',description:'知识库与项目管理',url:'https://www.notion.so/',mark:'N',color:'#25272b'},
+        {id:'common-figma',name:'Figma',description:'界面与原型设计',url:'https://www.figma.com/',mark:'F',color:'#a259ff'},
+        {id:'common-bilibili',name:'哔哩哔哩',description:'视频学习与灵感',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
+        {id:'common-zhihu',name:'知乎',description:'发现问题与答案',url:'https://www.zhihu.com/',mark:'知',color:'#1772f6'},
+        {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
+      ]},
+      {id:'life',name:'视频',links:[
+        {id:'video-bilibili',name:'哔哩哔哩',description:'综合视频与社区',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
+        {id:'video-douyu',name:'斗鱼',description:'游戏与娱乐直播',url:'https://www.douyu.com/',mark:'斗',color:'#ff5d23'},
+        {id:'video-huya',name:'虎牙',description:'游戏与娱乐直播',url:'https://www.huya.com/',mark:'虎',color:'#ff8a00'},
+        {id:'video-iqiyi',name:'爱奇艺',description:'影视与综艺视频',url:'https://www.iqiyi.com/',mark:'爱',color:'#00be06'},
+        {id:'video-youku',name:'优酷',description:'影视与综艺视频',url:'https://www.youku.com/',mark:'优',color:'#1e9fff'},
+        {id:'video-tencent',name:'腾讯视频',description:'影视、综艺与体育',url:'https://v.qq.com/',mark:'腾',color:'#2dbd72'},
+        {id:'video-acfun',name:'A站',description:'AcFun 弹幕视频社区',url:'https://www.acfun.cn/',mark:'A',color:'#fd4c5b'},
+        {id:'video-youtube',name:'YouTube',description:'全球视频分享平台',url:'https://www.youtube.com/',mark:'Y',color:'#ff0000'},
+        {id:'video-netflix',name:'Netflix',description:'全球影视流媒体',url:'https://www.netflix.com/',mark:'N',color:'#e50914'},
+        {id:'video-twitch',name:'Twitch',description:'游戏与创作者直播',url:'https://www.twitch.tv/',mark:'T',color:'#9146ff'}
+      ]}
+    ];
+    const DEFAULT_VERSION='2026-10-29-v3';
+    const cloneDefaults=()=>JSON.parse(JSON.stringify(defaults));
+    let data;
+    if(localStorage.getItem('homebase-default-version')!==DEFAULT_VERSION){
+      data=cloneDefaults();
+      localStorage.setItem('homebase-local-v1',JSON.stringify(data));
+      localStorage.setItem('homebase-default-version',DEFAULT_VERSION);
+    }else{
+      try{data=JSON.parse(localStorage.getItem('homebase-local-v1'))||cloneDefaults()}catch(e){data=cloneDefaults()}
+    }
+    let active=data[0].id;
+    const save=()=>localStorage.setItem('homebase-local-v1',JSON.stringify(data));const current=()=>data.find(x=>x.id===active)||data[0];const esc=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    if(!data.some(x=>x.id==='chip-vendors'||x.name==='芯片厂商')){data.push({id:'chip-vendors',name:'芯片厂商',links:[
+      {id:'chip-ti',name:'TI',description:'Texas Instruments',url:'https://www.ti.com/',mark:'TI',color:'#cc0000'},
+      {id:'chip-amd',name:'AMD',description:'AMD',url:'https://www.amd.com/',mark:'A',color:'#222222'},
+      {id:'chip-adi',name:'ADI',description:'Analog Devices',url:'https://www.analog.com/',mark:'AD',color:'#111111'},
+      {id:'chip-microchip',name:'MICROCHIP',description:'Microchip Technology',url:'https://www.microchip.com/',mark:'M',color:'#e31837'},
+      {id:'chip-skyworks',name:'SKYWORK',description:'Skyworks Solutions',url:'https://www.skyworksinc.com/',mark:'S',color:'#1675bc'},
+      {id:'chip-micron',name:'镁光',description:'Micron Technology',url:'https://www.micron.com/',mark:'镁',color:'#0057a8'},
+      {id:'chip-nvidia',name:'英伟达',description:'NVIDIA',url:'https://www.nvidia.com/',mark:'N',color:'#76b900'}
+    ]});save()}
+    function ensureCategory(id,name,links){let category=data.find(x=>x.id===id||x.name===name);if(!category){category={id,name,links:[]};data.push(category)}for(const link of links){if(!category.links.some(x=>x.id===link.id||x.name===link.name))category.links.push(link)}}
+    ensureCategory('common','常用',[
+      {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
+    ]);
+    ensureCategory('work','工作',[
+      {id:'work-wikipedia',name:'维基百科',description:'自由的在线百科全书',url:'https://zh.wikipedia.org/',mark:'维',color:'#202122'},
+      {id:'work-163-mail',name:'163邮箱',description:'网易电子邮箱',url:'https://mail.163.com/',mark:'邮',color:'#d71920'},
+      {id:'work-gmail',name:'Gmail',description:'Google 电子邮箱',url:'https://mail.google.com/',mark:'G',color:'#ea4335'},
+      {id:'work-baidu-translate',name:'百度翻译',description:'文本与网页翻译',url:'https://fanyi.baidu.com/',mark:'译',color:'#3975f6'},
+      {id:'work-baidu-pan',name:'百度网盘',description:'云端文件与分享',url:'https://pan.baidu.com/',mark:'盘',color:'#2563eb'},
+      {id:'work-github',name:'GitHub',description:'代码托管与协作',url:'https://github.com/',mark:'G',color:'#24292f'}
+    ]);
+    ensureCategory('ai-agents','智能体',[
+      {id:'agent-chatgpt',name:'ChatGPT',description:'OpenAI 通用智能体',url:'https://chatgpt.com/',mark:'C',color:'#10a37f'},
+      {id:'agent-claude',name:'Claude',description:'Anthropic AI 助手',url:'https://claude.ai/',mark:'C',color:'#d97757'},
+      {id:'agent-gemini',name:'Gemini',description:'Google AI 助手',url:'https://gemini.google.com/',mark:'G',color:'#4285f4'},
+      {id:'agent-copilot',name:'Copilot',description:'Microsoft AI 助手',url:'https://copilot.microsoft.com/',mark:'C',color:'#7b61ff'},
+      {id:'agent-grok',name:'Grok',description:'xAI 智能助手',url:'https://grok.com/',mark:'G',color:'#1f1f1f'},
+      {id:'agent-deepseek',name:'DeepSeek',description:'DeepSeek AI 助手',url:'https://chat.deepseek.com/',mark:'D',color:'#4d6bfe'},
+      {id:'agent-kimi',name:'Kimi',description:'月之暗面 AI 助手',url:'https://www.kimi.com/',mark:'K',color:'#111111'},
+      {id:'agent-qwen',name:'通义千问',description:'阿里巴巴 AI 助手',url:'https://tongyi.aliyun.com/',mark:'千',color:'#615ced'},
+      {id:'agent-doubao',name:'豆包',description:'字节跳动 AI 助手',url:'https://www.doubao.com/',mark:'豆',color:'#3f6df6'},
+      {id:'agent-yuanbao',name:'腾讯元宝',description:'腾讯 AI 助手',url:'https://yuanbao.tencent.com/',mark:'元',color:'#20a06b'}
+    ]);
+    ensureCategory('chip-vendors','芯片厂商',[
+      {id:'chip-arm',name:'ARM',description:'Arm',url:'https://www.arm.com/',mark:'A',color:'#0091bd'},
+      {id:'chip-panasonic',name:'松下',description:'Panasonic Industry',url:'https://www.panasonic.com/global/industry.html',mark:'松',color:'#00529b'}
+    ]);
+    ensureCategory('chip-purchase','芯片采购',[
+      {id:'buy-lcsc',name:'立创商城',description:'立创商城',url:'https://www.szlcsc.com/',mark:'立',color:'#2468c9'},
+      {id:'buy-ickey',name:'云汉芯城',description:'ICkey',url:'https://www.ickey.cn/',mark:'云',color:'#ed6c00'},
+      {id:'buy-digikey',name:'得捷电子',description:'DigiKey',url:'https://www.digikey.cn/',mark:'得',color:'#cc0000'},
+      {id:'buy-mouser',name:'贸泽',description:'Mouser Electronics',url:'https://www.mouser.cn/',mark:'贸',color:'#004a8f'},
+      {id:'buy-element14',name:'e络盟',description:'element14',url:'https://www.element14.cn/',mark:'e',color:'#f58220'},
+      {id:'buy-avnet',name:'安富利',description:'Avnet',url:'https://www.avnet.com/apac/',mark:'安',color:'#f05a28'},
+      {id:'buy-arrow',name:'艾睿电子',description:'Arrow Electronics',url:'https://www.arrow.com/zh/home.html',mark:'艾',color:'#005596'}
+    ]);
+    ensureCategory('connector-vendors','连接器厂商',[
+      {id:'conn-te',name:'泰科',description:'TE Connectivity',url:'https://www.te.com.cn/chn-zh/home.html',mark:'泰',color:'#e98300'},
+      {id:'conn-samtec',name:'砷泰',description:'Samtec',url:'https://www.samtec.com/',mark:'砷',color:'#005596'},
+      {id:'conn-amphenol',name:'安费诺',description:'Amphenol',url:'https://www.amphenol.com/',mark:'安',color:'#1c4b82'},
+      {id:'conn-erni',name:'ERNI',description:'ERNI',url:'https://www.te.com/en/products/brands/erni.html',mark:'E',color:'#e98300'},
+      {id:'conn-molex',name:'Molex',description:'Molex',url:'https://www.molex.com/',mark:'M',color:'#e1251b'}
+    ]);
+    ensureCategory('shopping','购物',[
+      {id:'shop-taobao',name:'淘宝',description:'综合购物平台',url:'https://www.taobao.com/',mark:'淘',color:'#ff5000'},
+      {id:'shop-jd',name:'京东',description:'综合购物与数码家电',url:'https://www.jd.com/',mark:'京',color:'#e1251b'},
+      {id:'shop-pinduoduo',name:'拼多多',description:'综合购物平台',url:'https://www.pinduoduo.com/',mark:'拼',color:'#e02e24'},
+      {id:'shop-douyin',name:'抖音商城',description:'短视频与直播购物',url:'https://www.douyin.com/',mark:'抖',color:'#161823'},
+      {id:'shop-vip',name:'唯品会',description:'品牌折扣购物',url:'https://www.vip.com/',mark:'唯',color:'#d4237a'},
+      {id:'shop-xianyu',name:'闲鱼',description:'二手闲置交易',url:'https://www.goofish.com/',mark:'闲',color:'#ffda44'},
+      {id:'shop-1688',name:'1688',description:'批发与企业采购',url:'https://www.1688.com/',mark:'批',color:'#ff6a00'},
+      {id:'shop-xiaohongshu',name:'小红书',description:'生活方式与种草购物',url:'https://www.xiaohongshu.com/',mark:'红',color:'#ff2442'},
+      {id:'shop-meituan',name:'美团',description:'本地生活与即时零售',url:'https://www.meituan.com/',mark:'美',color:'#ffd100'},
+      {id:'shop-suning',name:'苏宁易购',description:'家电数码与综合购物',url:'https://www.suning.com/',mark:'苏',color:'#fdbb30'},
+      {id:'shop-dangdang',name:'当当网',description:'图书与综合购物',url:'https://www.dangdang.com/',mark:'当',color:'#ff2832'},
+      {id:'shop-yanxuan',name:'网易严选',description:'品质生活与家居好物',url:'https://you.163.com/',mark:'严',color:'#b4a078'}
+    ]);
+    save();
+    if(!localStorage.getItem('homebase-category-cleanup-v1')){
+      const removedNames=new Set(['设计','开发','效率']);
+      data=data.filter(category=>!removedNames.has(category.name));
+      if(!data.some(category=>category.id==='life'||category.name==='生活'||category.name==='视频'))data.push({id:'life',name:'视频',links:[]});
+      if(!data.some(category=>category.id===active))active=data[0].id;
+      save();localStorage.setItem('homebase-category-cleanup-v1','done');
+    }
+    if(!localStorage.getItem('homebase-category-layout-v1')){
+      const connector=data.find(category=>category.id==='connector-vendors'||category.name==='连接器厂商');
+      if(connector)connector.name='连接器';
+      const preferred=['ai-agents','chip-vendors','chip-purchase','connector-vendors','work','common','life'];
+      const rank=new Map(preferred.map((id,index)=>[id,index]));
+      data=data.map((category,index)=>({category,index})).sort((a,b)=>(rank.get(a.category.id)??1000+a.index)-(rank.get(b.category.id)??1000+b.index)).map(item=>item.category);
+      save();localStorage.setItem('homebase-category-layout-v1','done');
+    }
+    if(!localStorage.getItem('homebase-purchase-order-v1')){
+      const purchase=data.find(category=>category.id==='chip-purchase'||category.name==='芯片采购');
+      if(purchase){
+        const preferred=['buy-lcsc','buy-ickey'];
+        const first=preferred.map(id=>purchase.links.find(link=>link.id===id)).filter(Boolean);
+        purchase.links=[...first,...purchase.links.filter(link=>!preferred.includes(link.id))];
+        save();
+      }
+      localStorage.setItem('homebase-purchase-order-v1','done');
+    }
+    if(!localStorage.getItem('homebase-agent-layout-v1')){
+      const preferred=['ai-agents','chip-vendors','chip-purchase','connector-vendors','work','common','life'];
+      const rank=new Map(preferred.map((id,index)=>[id,index]));
+      data=data.map((category,index)=>({category,index})).sort((a,b)=>(rank.get(a.category.id)??1000+a.index)-(rank.get(b.category.id)??1000+b.index)).map(item=>item.category);
+      save();localStorage.setItem('homebase-agent-layout-v1','done');
+    }
+    const defaultAgentCategory=data.find(category=>category.id==='ai-agents'||category.name==='智能体');
+    if(defaultAgentCategory)active=defaultAgentCategory.id;
+    if(!localStorage.getItem('homebase-agent-selection-v2')){
+      const agents=data.find(category=>category.id==='ai-agents'||category.name==='智能体');
+      if(agents){
+        const removedIds=new Set(['agent-manus','agent-perplexity','agent-genspark','agent-poe']);
+        const removedNames=new Set(['Manus','Perplexity','Genspark','Poe']);
+        agents.links=agents.links.filter(link=>!removedIds.has(link.id)&&!removedNames.has(link.name));
+        const preferred=['agent-chatgpt','agent-claude','agent-gemini','agent-copilot','agent-grok','agent-deepseek','agent-kimi','agent-qwen','agent-doubao','agent-yuanbao'];
+        const rank=new Map(preferred.map((id,index)=>[id,index]));
+        agents.links=agents.links.map((link,index)=>({link,index})).sort((a,b)=>(rank.get(a.link.id)??1000+a.index)-(rank.get(b.link.id)??1000+b.index)).map(item=>item.link);
+        save();
+      }
+      localStorage.setItem('homebase-agent-selection-v2','done');
+    }
+    if(!localStorage.getItem('homebase-agent-links-v3')){
+      const agents=data.find(category=>category.id==='ai-agents'||category.name==='智能体');
+      const qwen=agents?.links.find(link=>link.id==='agent-qwen'||link.name==='通义千问');
+      if(qwen)qwen.url='https://tongyi.aliyun.com/';
+      save();localStorage.setItem('homebase-agent-links-v3','done');
+    }
+    if(!localStorage.getItem('homebase-common-cleanup-v1')){
+      const common=data.find(category=>category.id==='common'||category.name==='常用');
+      if(common)common.links=common.links.filter(link=>link.name!=='ChatGPT'&&!/chatgpt\.com/i.test(link.url||''));
+      save();localStorage.setItem('homebase-common-cleanup-v1','done');
+    }
+    if(!localStorage.getItem('homebase-common-restore-v2')){
+      ensureCategory('common','常用',[
+        {id:'common-feishu',name:'飞书',description:'沟通、文档与协作',url:'https://www.feishu.cn/',mark:'飞',color:'#3370ff'},
+        {id:'common-tencent-docs',name:'腾讯文档',description:'在线文档与表格',url:'https://docs.qq.com/',mark:'T',color:'#20a06b'},
+        {id:'common-notion',name:'Notion',description:'知识库与项目管理',url:'https://www.notion.so/',mark:'N',color:'#25272b'},
+        {id:'common-figma',name:'Figma',description:'界面与原型设计',url:'https://www.figma.com/',mark:'F',color:'#a259ff'},
+        {id:'common-bilibili',name:'哔哩哔哩',description:'视频学习与灵感',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
+        {id:'common-zhihu',name:'知乎',description:'发现问题与答案',url:'https://www.zhihu.com/',mark:'知',color:'#1772f6'},
+        {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
+      ]);
+      save();localStorage.setItem('homebase-common-restore-v2','done');
+    }
+    if(!localStorage.getItem('homebase-shopping-layout-v1')){
+      const preferred=['ai-agents','chip-vendors','chip-purchase','connector-vendors','shopping','work','common','life'];
+      const rank=new Map(preferred.map((id,index)=>[id,index]));
+      data=data.map((category,index)=>({category,index})).sort((a,b)=>(rank.get(a.category.id)??1000+a.index)-(rank.get(b.category.id)??1000+b.index)).map(item=>item.category);
+      save();localStorage.setItem('homebase-shopping-layout-v1','done');
+    }
+    if(!localStorage.getItem('homebase-work-layout-v1')){
+      const preferred=['ai-agents','work','chip-vendors','chip-purchase','connector-vendors','shopping','common','life'];
+      const rank=new Map(preferred.map((id,index)=>[id,index]));
+      data=data.map((category,index)=>({category,index})).sort((a,b)=>(rank.get(a.category.id)??1000+a.index)-(rank.get(b.category.id)??1000+b.index)).map(item=>item.category);
+      save();localStorage.setItem('homebase-work-layout-v1','done');
+    }
+    if(!localStorage.getItem('homebase-common-to-work-v1')){
+      const common=data.find(category=>category.id==='common'||category.name==='常用');
+      if(common){
+        const movedNames=new Set(['Gmail','Google邮箱','百度网盘','GitHub']);
+        common.links=common.links.filter(link=>!movedNames.has(link.name)&&!/(?:mail\.google\.com|pan\.baidu\.com|github\.com)/i.test(link.url||''));
+      }
+      save();localStorage.setItem('homebase-common-to-work-v1','done');
+    }
+    if(!localStorage.getItem('homebase-gmail-name-v1')){
+      const work=data.find(category=>category.id==='work'||category.name==='工作');
+      const gmail=work?.links.find(link=>link.id==='work-gmail'||/mail\.google\.com/i.test(link.url||''));
+      if(gmail){gmail.name='Gmail';gmail.description='Google 电子邮箱'}
+      save();localStorage.setItem('homebase-gmail-name-v1','done');
+    }
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span>${esc(x.name)}</button>${x.id===active?`<button class="edit" onclick="openCategory(true)">✎</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';document.getElementById('links').innerHTML=c.links.length?`<div class="grid">${c.links.map(l=>`<div class="wrap"><a class="card" href="${esc(l.url)}" target="_blank"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span><span>↗</span></a><button class="del" onclick="removeLink('${l.id}')">×</button></div>`).join('')}</div>`:`<button class="empty" onclick="openLink()">＋ 添加第一个网站</button>`}
+    function showModal(title,desc,html,submit){document.getElementById('modalTitle').textContent=title;document.getElementById('modalDesc').textContent=desc;const f=document.getElementById('modalForm');f.innerHTML=html;f.onsubmit=submit;document.getElementById('modalBg').classList.add('show');setTimeout(()=>f.querySelector('input').focus(),50)}function hideModal(){document.getElementById('modalBg').classList.remove('show')}function closeModal(e){if(e.target.id==='modalBg')hideModal()}
+    function openCategory(rename){const val=rename?current().name:'';showModal(rename?'修改分类名称':'添加分类',rename?'输入新的分类名称':'创建一个新的网址分类',`<label>分类名称<input name="name" value="${esc(val)}" required></label><button class="primary">保存分类</button>`,e=>{e.preventDefault();const n=e.target.name.value.trim();if(!n)return;if(rename)current().name=n;else{const id='c'+Date.now();data.push({id,name:n,links:[]});active=id}save();render();hideModal()})}
+    function openLink(){showModal('添加网站','网站会添加到“'+current().name+'”分类','<label>网站名称<input name="name" placeholder="例如：企业邮箱" required></label><label>网址<input name="url" placeholder="例如：mail.example.com" required></label><label>说明（选填）<input name="description" placeholder="简单描述网站用途"></label><button class="primary">保存网站</button>',e=>{e.preventDefault();let u=e.target.url.value.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;const n=e.target.name.value.trim();current().links.push({id:'l'+Date.now(),name:n,url:u,description:e.target.description.value.trim()||'自定义快捷链接',mark:n.slice(0,1).toUpperCase(),color:'#5865d8'});save();render();hideModal()})}
+    function removeLink(id){current().links=current().links.filter(x=>x.id!==id);save();render()}
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span>${esc(x.name)}</button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';document.getElementById('links').innerHTML=c.links.length?`<div class="grid">${c.links.map(l=>`<div class="wrap"><a class="card" href="${esc(l.url)}" target="_blank"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span><span>↗</span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('')}</div>`:`<button class="empty" onclick="openLink()">＋ 添加第一个网站</button>`}
+    function openLink(editId){const item=editId?current().links.find(x=>x.id===editId):null;const n=item?item.name:'';const u=item?item.url:'';const d=item?item.description:'';showModal(item?'修改网站':'添加网站',item?'修改网站名称、网址或说明':'网站会添加到“'+current().name+'”分类',`<label>网站名称<input name="name" value="${esc(n)}" placeholder="例如：企业邮箱" required></label><label>网址<input name="url" value="${esc(u)}" placeholder="例如：mail.example.com" required></label><label>说明（选填）<input name="description" value="${esc(d)}" placeholder="简单描述网站用途"></label><button class="primary">${item?'保存修改':'保存网站'}</button>`,e=>{e.preventDefault();let url=e.target.url.value.trim();if(!/^https?:\/\//i.test(url))url='https://'+url;const name=e.target.name.value.trim();if(item){item.name=name;item.url=url;item.description=e.target.description.value.trim()||'自定义快捷链接';item.mark=name.slice(0,1).toUpperCase()}else{current().links.push({id:'l'+Date.now(),name,url,description:e.target.description.value.trim()||'自定义快捷链接',mark:name.slice(0,1).toUpperCase(),color:'#5865d8'})}save();render();hideModal()})}
+    let draggedLinkId=null;
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span>${esc(x.name)}</button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';document.getElementById('links').innerHTML=c.links.length?`<div class="grid">${c.links.map(l=>`<div class="wrap" draggable="true" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('')}</div>`:`<button class="empty" onclick="openLink()">＋ 添加第一个网站</button>`}
+    function dragStart(event,id){draggedLinkId=id;event.currentTarget.classList.add('dragging');event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',id)}
+    function dragEnd(event){event.currentTarget.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));draggedLinkId=null}
+    function dragOver(event){event.preventDefault();event.dataTransfer.dropEffect='move';event.currentTarget.classList.add('drag-over')}
+    function dragLeave(event){event.currentTarget.classList.remove('drag-over')}
+    function dropLink(event,targetId){event.preventDefault();event.currentTarget.classList.remove('drag-over');const sourceId=draggedLinkId||event.dataTransfer.getData('text/plain');if(!sourceId||sourceId===targetId)return;const links=current().links;const from=links.findIndex(x=>x.id===sourceId);const to=links.findIndex(x=>x.id===targetId);if(from<0||to<0)return;const moved=links.splice(from,1)[0];links.splice(to,0,moved);save();render()}
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span>${esc(x.name)}</button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';const cards=c.links.map(l=>`<div class="wrap" draggable="true" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('');document.getElementById('links').innerHTML=`<div class="grid">${cards}<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button></div>`}
+    let draggedCategoryId=null;
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="true" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span>${esc(x.name)}</button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';const cards=c.links.map(l=>`<div class="wrap" draggable="true" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('');document.getElementById('links').innerHTML=`<div class="grid">${cards}<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button></div>`}
+    function categoryDragStart(event,id){draggedCategoryId=id;event.currentTarget.classList.add('category-dragging');event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/category-id',id)}
+    function categoryDragEnd(event){event.currentTarget.classList.remove('category-dragging');document.querySelectorAll('.category-drag-over').forEach(x=>x.classList.remove('category-drag-over'));draggedCategoryId=null}
+    function categoryDragOver(event){event.preventDefault();event.dataTransfer.dropEffect='move';event.currentTarget.classList.add('category-drag-over')}
+    function categoryDragLeave(event){event.currentTarget.classList.remove('category-drag-over')}
+    function categoryDrop(event,targetId){event.preventDefault();event.currentTarget.classList.remove('category-drag-over');const sourceId=draggedCategoryId||event.dataTransfer.getData('text/category-id');if(!sourceId||sourceId===targetId)return;const from=data.findIndex(x=>x.id===sourceId);const to=data.findIndex(x=>x.id===targetId);if(from<0||to<0)return;const moved=data.splice(from,1)[0];data.splice(to,0,moved);save();render()}
+    function deleteCategory(id){if(data.length<=1){alert('至少需要保留一个分类');return}const category=data.find(x=>x.id===id);if(!category||!confirm(`确定删除“${category.name}”分类吗？\n该分类中的网站也会一起删除。`))return;const index=data.findIndex(x=>x.id===id);data=data.filter(x=>x.id!==id);if(active===id)active=data[Math.min(index,data.length-1)].id;save();render()}
+    function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="true" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span><span>${esc(x.name)}</span></button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button><button class="delete-category" onclick="deleteCategory('${x.id}')" title="删除分类">×</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';const cards=c.links.map(l=>`<div class="wrap" draggable="true" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('');document.getElementById('links').innerHTML=`<div class="grid">${cards}<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button></div>`}
+    let editMode=false;
+    function toggleEditMode(){editMode=!editMode;document.body.classList.toggle('edit-mode',editMode);render()}
+    const vectorLogoHosts=new Set(['zh.wikipedia.org','mail.163.com','fanyi.baidu.com']);
+    const symbolLogoHosts=new Set(['www.amd.com','www.analog.com','www.microchip.com','www.skyworksinc.com','www.arm.com','www.panasonic.com']);
+    function faviconUrl(url){try{const host=new URL(url).hostname;if(symbolLogoHosts.has(host))return 'logos/'+host+'-icon.svg';return 'logos/'+host+(vectorLogoHosts.has(host)?'.svg':'.png')}catch{return ''}}
+    function logoClass(){return ''}
+    function render(){
+      const c=current();
+      document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="${editMode}" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span><span>${esc(x.name)}</span></button>${editMode&&x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button><button class="delete-category" onclick="deleteCategory('${x.id}')" title="删除分类">×</button>`:''}</div>`).join('');
+      document.getElementById('title').textContent=c.name+'网站';
+      const cards=c.links.map(l=>`<div class="wrap" draggable="${editMode}" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}"><span>${esc(l.mark)}</span>${faviconUrl(l.url)?`<img class="${logoClass(l.url)}" src="${esc(faviconUrl(l.url))}" alt="" onerror="this.remove()">`:''}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a>${editMode?`<button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button>`:''}</div>`).join('');
+      document.getElementById('links').innerHTML=`<div class="grid">${cards}${editMode?'<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button>':''}</div>`;
+      const toggle=document.getElementById('editModeToggle');toggle.title=editMode?'退出修改模式':'进入修改模式';toggle.setAttribute('aria-label',toggle.title);
+    }
+    function openEngineHome(engine){const homes={baidu:'https://www.baidu.com/',google:'https://www.google.com/'};window.open(homes[engine],'_blank')}
+    document.querySelectorAll('.search').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const q=f.querySelector('input').value.trim();if(!q)return;const urls={baidu:'https://www.baidu.com/s?wd=',google:'https://www.google.com/search?q='};window.open(urls[f.dataset.engine]+encodeURIComponent(q),'_blank')}));
+    function tick(){const d=new Date();const pad=n=>String(n).padStart(2,'0');const weeks=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];document.getElementById('time').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;document.getElementById('date').textContent=`${d.getFullYear()} 年 ${pad(d.getMonth()+1)} 月 ${pad(d.getDate())} 日 ${weeks[d.getDay()]}`}tick();setInterval(tick,30000);render();
+  </script>
+</body>
+</html>
