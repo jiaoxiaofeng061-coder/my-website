@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Homebase · 本地个人门户</title>
+  <title>我的工作台</title>
+  <script>
+    const themeKey = 'homebase-theme';
+    try {
+      const savedTheme = localStorage.getItem(themeKey);
+      if (savedTheme === 'dark' || savedTheme === 'green') document.documentElement.dataset.theme = savedTheme;
+    } catch {}
+  </script>
   <style>
-    :root{--ink:#20232b;--muted:#7c818d;--line:#e7e9ef;--accent:#5865d8;--soft:#eef0ff;--canvas:#f7f8fb}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font-family:Arial,"Microsoft YaHei",sans-serif}button,input{font:inherit}.top{height:78px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand i{width:35px;height:35px;display:grid;place-items:center;color:#fff;background:var(--accent);border-radius:10px;font:normal 21px Georgia}.clock{display:flex;align-items:center;gap:14px}.clock strong{font-size:22px}.clock span{padding-left:14px;border-left:1px solid var(--line);color:var(--muted);font-size:13px}.hero{padding:34px 20px;text-align:center;background:#fff}.searches{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}.search{height:60px;padding:8px 9px 8px 16px;display:flex;align-items:center;border:1px solid #dfe2ea;border-radius:16px;background:#fff;box-shadow:0 8px 24px #1c1f2b0f}.search .engine-home{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;border-radius:8px}.search input{width:100%;padding:0 12px;border:0;outline:0;background:transparent}.search button{width:43px;height:43px;border:0;border-radius:11px;color:#fff;background:var(--accent);cursor:pointer;font-size:22px}.workspace{max-width:1200px;margin:38px auto 0;padding:0 22px;display:grid;grid-template-columns:205px 1fr;gap:28px}aside{min-height:500px;padding:22px 16px;border:1px solid var(--line);border-radius:18px;background:#fff}.label{padding:0 10px 14px;color:#9aa0aa;font-size:12px;font-weight:700}.cat{margin-bottom:5px;display:flex;align-items:center;border-radius:11px}.cat.active{background:var(--soft)}.cat>button:first-child{width:100%;height:47px;padding:0 11px;display:flex;align-items:center;gap:10px;border:0;color:#626875;background:transparent;cursor:pointer;text-align:left}.cat.active>button:first-child{color:var(--accent);font-weight:700}.badge{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;background:#f0f1f5;font-size:12px}.cat.active .badge{color:#fff;background:var(--accent)}.edit{width:32px;height:32px;margin-right:5px;border:0;border-radius:8px;color:var(--accent);background:transparent;cursor:pointer}.edit:hover{background:#fff}.add-cat{width:100%;height:48px;margin-top:14px;padding:0 10px;border:0;border-top:1px solid var(--line);color:#858b97;background:transparent;cursor:pointer;text-align:left}.heading{min-height:64px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start}.heading h2{margin:0 0 6px;font-size:23px}.heading p{margin:0;color:var(--muted);font-size:13px}.actions{display:flex;align-items:center;gap:10px}.actions span{padding:7px 11px;color:var(--accent);background:var(--soft);border-radius:20px;font-size:12px;font-weight:700}.actions button,.primary{height:38px;padding:0 14px;border:0;border-radius:10px;color:#fff;background:var(--accent);cursor:pointer;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.wrap{position:relative}.card{min-height:90px;padding:18px;display:flex;align-items:center;gap:14px;color:inherit;border:1px solid var(--line);border-radius:15px;background:#fff;text-decoration:none;transition:.2s}.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px #1c1f2b12}.mark{width:44px;height:44px;display:grid;place-items:center;flex:0 0 auto;color:#fff;border-radius:12px;font-weight:800}.copy{min-width:0;display:flex;flex:1;flex-direction:column;gap:6px}.copy small{overflow:hidden;color:var(--muted);text-overflow:ellipsis;white-space:nowrap}.del{position:absolute;top:7px;right:8px;width:24px;height:24px;border:0;border-radius:50%;color:#999faa;background:#f1f2f5;cursor:pointer;opacity:0}.wrap:hover .del{opacity:1}.empty{width:100%;min-height:220px;display:grid;place-items:center;border:1px dashed #cfd3df;border-radius:16px;color:var(--muted);background:#ffffff99;cursor:pointer}.modal-bg{position:fixed;inset:0;padding:20px;display:none;place-items:center;background:#191c2666;backdrop-filter:blur(3px)}.modal-bg.show{display:grid}.modal{position:relative;width:min(420px,100%);padding:27px;border-radius:20px;background:#fff;box-shadow:0 24px 70px #1c1f2b38}.close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:0;border-radius:9px;color:#858a96;background:#f2f3f6;cursor:pointer;font-size:21px}.modal h3{margin:0 0 7px;font-size:21px}.modal>p{margin:0 0 22px;color:var(--muted);font-size:13px}.modal label{margin-bottom:15px;display:flex;flex-direction:column;gap:7px;color:#555b67;font-size:13px;font-weight:700}.modal input{height:46px;padding:0 13px;border:1px solid #dfe2ea;border-radius:10px;outline:0}.modal input:focus{border-color:#a7aeec;box-shadow:0 0 0 3px var(--soft)}.primary{width:100%;height:47px}footer{padding:36px;text-align:center;color:#a0a5af;font-size:12px}@media(max-width:760px){.clock span{display:none}.hero{padding:24px 16px}.searches{grid-template-columns:1fr}.workspace{grid-template-columns:1fr;padding:0 15px}aside{min-height:auto;padding:12px;overflow:auto}aside .label,.add-cat{display:none}#categories{display:flex;gap:5px}.cat{min-width:max-content}.edit{display:none}.grid{grid-template-columns:1fr}.actions span{display:none}.del{opacity:1}}
+    :root{--ink:#20232b;--muted:#7c818d;--line:#e7e9ef;--accent:#5865d8;--soft:#eef0ff;--canvas:#f7f8fb}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font-family:Arial,"Microsoft YaHei",sans-serif}button,input{font:inherit}.top{background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand i{width:35px;height:35px;display:grid;place-items:center;color:#fff;background:var(--accent);border-radius:10px;font:normal 21px Georgia}.clock{display:flex;align-items:center;gap:14px}.clock strong{font-size:22px}.clock span{padding-left:14px;border-left:1px solid var(--line);color:var(--muted);font-size:13px}.hero{padding:34px 20px;text-align:center;background:#fff}.searches{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}.search{height:60px;padding:8px 9px 8px 16px;display:flex;align-items:center;border:1px solid #dfe2ea;border-radius:16px;background:#fff;box-shadow:0 8px 24px #1c1f2b0f}.search input{width:100%;padding:0 12px;border:0;outline:0;background:transparent}.search button{width:43px;height:43px;border:0;border-radius:11px;color:#fff;background:var(--accent);cursor:pointer;font-size:22px}.workspace{max-width:1200px;margin:38px auto 0;padding:0 22px;display:grid;grid-template-columns:205px 1fr;gap:28px}aside{min-height:500px;padding:22px 16px;border:1px solid var(--line);border-radius:18px;background:#fff}.label{padding:0 10px 14px;color:#9aa0aa;font-size:12px;font-weight:700}.cat{margin-bottom:5px;display:flex;align-items:center;border-radius:11px}.cat.active{background:var(--soft)}.cat>button:first-child{width:100%;height:47px;padding:0 11px;display:flex;align-items:center;gap:10px;border:0;color:#626875;background:transparent;cursor:pointer;text-align:left}.cat.active>button:first-child{color:var(--accent);font-weight:700}.badge{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;background:#f0f1f5;font-size:12px}.cat.active .badge{color:#fff;background:var(--accent)}.edit{width:32px;height:32px;margin-right:5px;border:0;border-radius:8px;color:var(--accent);background:transparent;cursor:pointer}.edit:hover{background:#fff}.add-cat{width:100%;height:48px;margin-top:14px;padding:0 10px;border:0;border-top:1px solid var(--line);color:#858b97;background:transparent;cursor:pointer;text-align:left}.heading{min-height:64px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start}.heading h2{margin:0 0 6px;font-size:23px}.heading p{margin:0;color:var(--muted);font-size:13px}.actions{display:flex;align-items:center;gap:10px}.actions span{padding:7px 11px;color:var(--accent);background:var(--soft);border-radius:20px;font-size:12px;font-weight:700}.actions button,.primary{height:38px;padding:0 14px;border:0;border-radius:10px;color:#fff;background:var(--accent);cursor:pointer;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.wrap{position:relative}.card{min-height:90px;padding:18px;display:flex;align-items:center;gap:14px;color:inherit;border:1px solid var(--line);border-radius:15px;background:#fff;text-decoration:none;transition:.2s}.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px #1c1f2b12}.mark{width:44px;height:44px;display:grid;place-items:center;flex:0 0 auto;color:#fff;border-radius:12px;font-weight:800}.copy{min-width:0;display:flex;flex:1;flex-direction:column;gap:6px}.copy small{overflow:hidden;color:var(--muted);text-overflow:ellipsis;white-space:nowrap}.del{position:absolute;top:7px;right:8px;width:24px;height:24px;border:0;border-radius:50%;color:#999faa;background:#f1f2f5;cursor:pointer;opacity:0}.wrap:hover .del{opacity:1}.empty{width:100%;min-height:220px;display:grid;place-items:center;border:1px dashed #cfd3df;border-radius:16px;color:var(--muted);background:#ffffff99;cursor:pointer}.modal-bg{position:fixed;inset:0;padding:20px;display:none;place-items:center;background:#191c2666;backdrop-filter:blur(3px)}.modal-bg.show{display:grid}.modal{position:relative;width:min(420px,100%);padding:27px;border-radius:20px;background:#fff;box-shadow:0 24px 70px #1c1f2b38}.close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:0;border-radius:9px;color:#858a96;background:#f2f3f6;cursor:pointer;font-size:21px}.modal h3{margin:0 0 7px;font-size:21px}.modal>p{margin:0 0 22px;color:var(--muted);font-size:13px}.modal label{margin-bottom:15px;display:flex;flex-direction:column;gap:7px;color:#555b67;font-size:13px;font-weight:700}.modal input{height:46px;padding:0 13px;border:1px solid #dfe2ea;border-radius:10px;outline:0}.modal input:focus{border-color:#a7aeec;box-shadow:0 0 0 3px var(--soft)}.primary{width:100%;height:47px}footer{padding:36px;text-align:center;color:#a0a5af;font-size:12px}@media(max-width:760px){.clock span{display:none}.hero{padding:24px 16px}.searches{grid-template-columns:1fr}.workspace{grid-template-columns:1fr;padding:0 15px}aside{min-height:auto;padding:12px;overflow:auto}aside .label,.add-cat{display:none}#categories{display:flex;gap:5px}.cat{min-width:max-content}.edit{display:none}.grid{grid-template-columns:1fr}.actions span{display:none}.del{opacity:1}}
     .heading[hidden]{display:none!important}
     #links{padding-top:24px}
     .grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
@@ -33,36 +40,52 @@
     .cat .badge{display:none}
     .delete-category{width:30px;height:32px;margin-right:4px;padding:0;flex:0 0 auto;border:0;border-radius:8px;color:#a1a5af;background:transparent;cursor:pointer;font-size:17px}
     .delete-category:hover{color:#fff;background:#dc5a5a}
-    .workspace{grid-template-columns:230px 1fr}
+    .top-inner,.workspace,.searches{max-width:1200px;padding-inline:22px}
+    .workspace,.searches{grid-template-columns:230px minmax(0,1fr);column-gap:28px}
     .cat{position:relative}
     .cat>button:first-child>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .cat.active>button:first-child{padding-right:70px}
     .cat .edit{position:absolute;right:35px;margin:0;z-index:2}
     .cat .delete-category{position:absolute;right:4px;margin:0;z-index:2}
-    .cat>button:first-child{justify-content:center;text-align:center;padding-left:12px;padding-right:12px}
+    .cat>button:first-child{justify-content:center;text-align:center;padding-left:12px;padding-right:12px;border-radius:inherit;transition:background-color 150ms ease,color 150ms ease}
+    @media(hover:hover){
+      .cat:not(.active,.category-dragging,.category-drag-over)>button:first-child:hover{background-color:#f5f5ff;color:#454d69}
+    }
     .cat.active>button:first-child{padding-left:12px;padding-right:12px}
     .cat>button:first-child>span:last-child{width:88px;flex:0 0 88px;overflow:visible;text-align:justify;text-align-last:justify;white-space:nowrap}
     .cat .edit{left:auto;right:4px}
     .cat .delete-category{left:4px;right:auto}
     .cat .edit,.cat .delete-category{opacity:0;pointer-events:none;transition:opacity .15s,background .15s,color .15s}
     .cat:hover .edit,.cat:hover .delete-category,.cat .edit:focus,.cat .delete-category:focus{opacity:1;pointer-events:auto}
-    @media(max-width:760px){.workspace{grid-template-columns:1fr}.cat.active>button:first-child{padding-right:42px}.cat .delete-category{right:4px}}
+    @media(max-width:760px){.top-inner,.workspace,.searches{padding-inline:15px}.workspace,.searches{grid-template-columns:1fr}.cat.active>button:first-child{padding-right:42px}.cat .delete-category{right:4px}}
     .add-site-card{min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px dashed #bcc2d2;border-radius:15px;color:#747b89;background:#ffffff80;cursor:pointer;transition:.2s}
     .add-site-card:hover{border-color:var(--accent);color:var(--accent);background:var(--soft);transform:translateY(-2px)}
     .add-site-card b{font-size:23px;line-height:1}.add-site-card span{font-size:13px;font-weight:700}
-    .searches{max-width:960px;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-    .search .engine-home{transition:transform .15s,box-shadow .15s} .search .engine-home img{width:24px;height:24px;object-fit:contain}
-    .search .engine-home:hover{transform:translateY(-1px);box-shadow:0 3px 9px #1c1f2b18}
-    @media(max-width:600px){.searches{grid-template-columns:1fr}}
+    .hero{padding:24px 0 34px;background:#f1f2fa;text-align:left}
+    .searches{align-items:end}
+    @media(min-width:761px){.search{width:min(94%,820px);justify-self:center}}
+    .clock{display:flex;flex-direction:column;align-items:center;justify-self:start;gap:8px;color:#1a2035}
+    .clock #date{display:block;padding:0;border:0;color:#626e90;font-size:14px;white-space:nowrap}
+    .clock #time{font-family:"Segoe UI",Arial,sans-serif;font-size:clamp(24px,2.7vw,32px);font-weight:600;line-height:.98;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+    .search{height:58px;padding:8px;gap:8px;border-color:#dfe2f0;border-radius:16px;box-shadow:0 4px 14px #25295d0d}
+    .search:focus-within{border-color:#a6a9ee}
+    .search input{flex:1;min-width:0;padding:0 6px;color:#222742}
+    .search input::placeholder{color:#626e90}
+    .search-engines{display:flex;flex:none;gap:2px;padding:3px;background:#f1f2fa;border-radius:10px}
+    .search-engines button{width:auto;height:32px;padding:0 12px;border-radius:8px;background:transparent;color:#626e90;font-size:13px}
+    .search-engines button[aria-pressed="true"]{background:#fff;color:#4947cf;font-weight:700;box-shadow:0 1px 4px #25295d1c}
+    .search-submit{display:grid;place-items:center;flex:0 0 40px;height:40px!important;background:#4947cf!important}
+    .search-submit svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+    .search-shortcut{flex:none;padding:1px 6px;border:1px solid #e2e4f2;border-radius:6px;color:#626e90;font-size:12px}
+    @media(max-width:760px){.searches{row-gap:16px}.search-shortcut{display:none}}
+    @media(max-width:400px){.search{gap:4px}.search-engines button{padding:0 6px}}
     @media(max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:880px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:760px){.grid{grid-template-columns:1fr}.edit-link{opacity:1}}
     .top{height:80px}
-    .clock{min-width:180px;padding:0;display:flex;flex-direction:column;align-items:flex-end;gap:2px;border:0;border-radius:0;color:var(--ink);background:transparent;box-shadow:none}
-    .clock span{order:1;padding:0;border:0;color:#3f4550;font-size:12px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
-    .clock strong{order:2;font-family:"Courier New",Consolas,monospace;font-size:22px;font-weight:700;line-height:1;letter-spacing:.5px;font-variant-numeric:tabular-nums}
-    .edit-settings{position:fixed;top:230px;right:18px;z-index:20;width:42px;height:42px;padding:0;display:grid;place-items:center;border:0;border-radius:9px;color:#7d8490;background:transparent;box-shadow:none;cursor:pointer;line-height:1;transition:color .15s,background .15s}
-    .edit-settings svg{width:23px;height:23px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .top-inner{height:100%;margin-inline:auto;display:flex;align-items:center;justify-content:space-between}
+    .edit-settings{width:38px;height:38px;padding:0;display:grid;place-items:center;border:0;border-radius:9px;color:#7d8490;background:transparent;box-shadow:none;cursor:pointer;line-height:1;transition:color .15s,background .15s}
+    .edit-settings svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     .edit-settings .home-icon{display:none}
     .edit-settings:hover{color:#4e5664;background:#f0f1f5}
     body.edit-mode .edit-settings{color:#687180;background:transparent}
@@ -70,18 +93,341 @@
     body.edit-mode .edit-settings .home-icon{display:block}
     body:not(.edit-mode) .add-cat,body:not(.edit-mode) .add-site-card,body:not(.edit-mode) .edit-link,body:not(.edit-mode) .del,body:not(.edit-mode) .cat .edit,body:not(.edit-mode) .cat .delete-category{display:none!important}
     body:not(.edit-mode) .wrap,body:not(.edit-mode) .cat{cursor:default}
-    @media(max-width:600px){.top{height:76px;padding:0 14px}.clock{min-width:170px;padding:0}.clock span{font-size:10px;letter-spacing:0}.clock strong{font-size:24px}.brand strong{display:none}.cat.active .delete-category{opacity:1;pointer-events:auto}}
+    @media(max-width:600px){.top{height:76px}.brand strong{display:none}.cat.active .delete-category{opacity:1;pointer-events:auto}}
+    .top-actions{display:flex;align-items:center;gap:8px}
+    .theme-picker{position:relative;display:flex;align-items:center;gap:6px;color:#626875;font-size:13px}
+    .theme-toggle{display:flex;align-items:center;gap:8px;min-height:34px;padding:0 8px;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit;cursor:pointer;white-space:nowrap}
+    .theme-toggle svg,.theme-option svg{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .theme-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+    .theme-picker button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+    .theme-menu{position:absolute;z-index:5;inset-block-start:calc(100% + 6px);inset-inline-end:0;min-width:124px;padding:5px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 8px 22px #25295d20}
+    .theme-option{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:34px;padding:0 9px;border:0;border-radius:7px;background:transparent;color:var(--ink);text-align:left;white-space:nowrap;cursor:pointer}
+    .theme-option+.theme-option{margin-top:2px}
+    .theme-option:is(:hover,:focus-visible,[aria-pressed="true"]){background:var(--soft);color:var(--accent)}
+    .theme-option[aria-pressed="false"] svg{visibility:hidden}
+    [data-theme="dark"] .theme-menu{background:var(--surface);box-shadow:0 8px 22px #0006}
+    [data-theme="dark"] .theme-option:is(:hover,:focus-visible,[aria-pressed="true"]){color:var(--accent-text)}
+
+    :root[data-theme="dark"]{
+      color-scheme:dark;
+      --ink:#edf0fb;--muted:#a7afc2;--line:#252a3b;--soft:#222447;--canvas:#0e1018;
+      --surface:#161926;--accent-text:#b1baff;
+    }
+    [data-theme="dark"] :is(.top,.hero,aside){background:var(--canvas)}
+    [data-theme="dark"] :is(.top,aside){border-color:transparent}
+    [data-theme="dark"] :is(.card,.search,.modal){background:var(--surface)}
+    [data-theme="dark"] .search{border-color:var(--line);box-shadow:0 4px 14px #0003}
+    [data-theme="dark"] .search:focus-within,[data-theme="dark"] .modal input:focus{border-color:var(--accent-text)}
+    [data-theme="dark"] :is(.clock,.search input){color:var(--ink)}
+    [data-theme="dark"] .clock #date,
+    [data-theme="dark"] .search input::placeholder,
+    [data-theme="dark"] :is(.search-engines button,.search-shortcut,.label,footer,.theme-picker,.edit-settings,.add-cat,.modal label,.delete-category){color:var(--muted)}
+    [data-theme="dark"] .cat>button:first-child{color:var(--muted)}
+    [data-theme="dark"] .cat.active>button:first-child{color:var(--accent-text)}
+    [data-theme="dark"] .search-shortcut{border-color:var(--line)}
+    [data-theme="dark"] .search-engines{background:var(--canvas)}
+    [data-theme="dark"] .search-engines button[aria-pressed="true"]{background:var(--soft);color:var(--accent-text);box-shadow:none}
+    [data-theme="dark"] .search-submit{background:#5954db!important}
+    [data-theme="dark"] .mark:has(img){background:#f2f3fa!important}
+    [data-theme="dark"] .card:hover{border-color:#626c93;box-shadow:0 10px 26px #0004}
+    @media(hover:hover){
+      [data-theme="dark"] .cat:not(.active,.category-dragging,.category-drag-over)>button:first-child:hover{background:var(--soft);color:var(--ink)}
+    }
+    [data-theme="dark"] :is(.edit-settings:hover,.edit:hover,.edit-link,.del,.close){background:var(--soft);color:var(--accent-text)}
+    [data-theme="dark"] body.edit-mode .edit-settings{color:var(--muted)}
+    [data-theme="dark"] .cat .edit{color:var(--accent-text)}
+    [data-theme="dark"] :is(.add-site-card,.empty,.modal input){background:var(--canvas);border-color:var(--line);color:var(--muted)}
+    [data-theme="dark"] .add-site-card:hover{background:var(--soft);border-color:var(--accent-text);color:var(--accent-text)}
+    [data-theme="dark"] .modal input{color:var(--ink)}
+
+    :root[data-theme="green"]{
+      --ink:#24362b;--muted:#526758;--line:#c8d6c9;--accent:#356548;--soft:#dbe9da;--canvas:#e7eee3;
+      --surface:#f0f5eb;--green-tint:#dfeadd;
+    }
+    [data-theme="green"] :is(.top,aside,.card,.search,.modal,.theme-menu,.modal input){background:var(--surface)}
+    [data-theme="green"] :is(.hero,.search-engines){background:var(--green-tint)}
+    [data-theme="green"] :is(.search,.search-shortcut,.modal input){border-color:var(--line)}
+    [data-theme="green"] :is(.search:focus-within,.modal input:focus){border-color:var(--accent)}
+    [data-theme="green"] :is(.clock,.search input,.modal input){color:var(--ink)}
+    [data-theme="green"] .clock #date,
+    [data-theme="green"] .search input::placeholder,
+    [data-theme="green"] :is(.search-engines button,.search-shortcut,.label,footer,.theme-picker,.edit-settings,.add-cat,.modal label){color:var(--muted)}
+    [data-theme="green"] .cat:not(.active)>button:first-child{color:var(--muted)}
+    [data-theme="green"] .search-engines button[aria-pressed="true"]{background:var(--surface);color:var(--accent)}
+    [data-theme="green"] .search-submit{background:var(--accent)!important}
+    @media(hover:hover){
+      [data-theme="green"] .cat:not(.active,.category-dragging,.category-drag-over)>button:first-child:hover{background:var(--soft);color:var(--ink)}
+    }
+    [data-theme="green"] :is(.edit-settings:hover,.edit:hover,.edit-link,.del,.close){background:var(--soft);color:var(--accent)}
+    [data-theme="green"] :is(.add-site-card,.empty){background:var(--surface);border-color:var(--line);color:var(--muted)}
+    [data-theme="green"] .add-site-card:hover{background:var(--soft);border-color:var(--accent);color:var(--accent)}
+    .tool-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media(max-width:1100px){.tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.tool-grid{grid-template-columns:1fr}}
+    .tool-card{width:100%;justify-content:flex-start;padding-inline:16px;cursor:pointer}
+    .tool-card .mark{background:var(--soft);color:var(--accent);font-size:18px}
+    [data-theme="dark"] .tool-card .mark{color:var(--accent-text)}
+    .tool-card .mark svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .tool-card .copy{text-align:left}
+    .tool-card .copy small{display:block;margin-top:4px}
+    .tool-dialog{width:min(440px,calc(100% - 32px));max-height:calc(100% - 32px);padding:0;border:1px solid var(--line);border-radius:20px;background:var(--surface,#fff);color:var(--ink);box-shadow:0 24px 70px #1c1f2b38}
+    .tool-dialog::backdrop{background:#191c2666;backdrop-filter:blur(3px)}
+    .tool-dialog:has(.tool-animation:not([hidden])){width:min(600px,calc(100% - 32px))}
+    .tool-animation{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}
+    .tool-panel .tool-animation p{margin:0}
+    .length-comparison{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}
+    .tool-panel .length-comparison p{margin:0}
+    .length-track{height:10px;margin:4px 0 10px;background:var(--line);border-radius:5px}
+    .length-bar{display:block;height:100%;background:var(--accent);border-radius:5px}
+    .length-reference{background:var(--muted)}
+    [data-theme="dark"] .length-bar:not(.length-reference){background:var(--accent-text)}
+    .length-scale{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}
+    .wave-spectrum{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+    .tool-animation svg{display:block;width:100%;height:auto;margin:8px 0}
+    .wave-grid{fill:none;stroke:var(--line)}
+    .wave-trace,.wave-period{fill:none;stroke:var(--accent);stroke-width:2}
+    [data-theme="dark"] :is(.wave-trace,.wave-period){stroke:var(--accent-text)}
+    .wave-period-fill{fill:var(--soft)}
+    .wave-period-edge{stroke-width:1;stroke-dasharray:4 3}
+    .wave-period-label{fill:var(--accent);font-size:16px;font-weight:700}
+    [data-theme="dark"] .wave-period-label{fill:var(--accent-text)}
+    .wave-ticks{fill:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+    .wave-cursor{stroke:var(--muted);stroke-dasharray:4 4;animation:wave-sweep 3s linear infinite}
+    @keyframes wave-sweep{to{transform:translateX(512px)}}
+    @media(prefers-reduced-motion:reduce){.wave-cursor{display:none}}
+    .tool-panel{position:relative;padding:24px}
+    .tool-panel h2{margin:0 40px 6px 0;font-size:21px}
+    .tool-panel p{margin:0 0 20px;color:var(--muted);font-size:13px}
+    .tool-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(76px,auto);gap:10px}
+    .tool-fields[hidden]{display:none}
+    .feedback-mode{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0 0 12px;padding:4px;border:1px solid var(--line);border-radius:11px;background:var(--canvas)}
+    .feedback-mode label{position:relative;cursor:pointer}
+    .feedback-mode input{position:absolute;width:1px;height:1px;opacity:0}
+    .feedback-mode span{display:block;padding:8px 4px;border-radius:7px;color:var(--muted);text-align:center;font-size:13px}
+    .feedback-mode input:checked+span{color:var(--accent-text,var(--accent));background:var(--soft);font-weight:600}
+    .feedback-mode input:focus-visible+span{outline:2px solid var(--accent)}
+    .feedback-fields{grid-template-columns:clamp(74px,30%,138px) minmax(0,1fr);grid-template-rows:repeat(4,68px) 16px;gap:0 clamp(8px,3vw,20px);align-items:center;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--canvas)}
+    .feedback-schematic{grid-column:1;grid-row:1/-1;min-width:0;width:100%;height:100%;border-radius:9px;background:radial-gradient(circle,var(--line) 1px,transparent 1px) 0 0/12px 12px var(--surface,#fff);color:var(--muted)}
+    .feedback-schematic :is(path,rect,circle){vector-effect:non-scaling-stroke}
+    .feedback-schematic text{fill:currentColor;font:600 10px Arial,sans-serif;letter-spacing:.3px}
+    .feedback-fields>label,.feedback-node{grid-column:2;min-width:0}
+    .feedback-fields input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+    .feedback-node{display:grid;gap:5px;font-size:13px}
+    .feedback-fields :is(.feedback-node input,.feedback-readout)[hidden]{display:none}
+    .feedback-readout{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:40px;padding:3px 6px 3px 9px;border-radius:9px;background:var(--soft)}
+    .feedback-readout output{min-width:0;color:var(--accent-text,var(--accent));font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .feedback-readout .tool-copy{padding-inline:5px}
+    [data-solve="upper"] .feedback-symbol-upper,[data-solve="lower"] .feedback-symbol-lower{stroke:var(--accent-text,var(--accent));fill:var(--soft)}
+    .tool-fields label{display:grid;gap:6px;font-size:13px}
+    .tool-fields .tool-extra-field{grid-column:1/-1}
+    .tool-fields .tool-extra-field[hidden]{display:none}
+    .tool-fields :is(input,select){width:100%;min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--canvas);color:var(--ink);font:inherit;font-size:15px}
+    .tool-results{display:grid;gap:6px;margin-top:16px}
+    .tool-results[hidden]{display:none}
+    .tool-result{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 10px;border-radius:9px;background:var(--canvas)}
+    .tool-result[hidden]{display:none}
+    .tool-result output{min-width:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .resistor-result small{display:block;margin-bottom:2px;color:var(--muted);font-size:12px}
+    .resistor-values{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}
+    .resistor-values h3{margin:0 0 8px;font-size:14px}
+    .resistor-values ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:5px;max-height:178px;overflow:auto;margin:0;padding:2px;list-style:none}
+    .resistor-values li{padding:4px;border-radius:5px;background:var(--surface,#fff);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .tool-copy{flex:none;padding:5px 9px;border:0;border-radius:6px;background:var(--soft);color:var(--accent);font-size:12px;cursor:pointer}
+    [data-theme="dark"] .tool-copy{color:var(--accent-text)}
+    .tool-copy:disabled{opacity:.55;cursor:default}
+    .tool-panel .tool-status{min-height:1.4em;margin:10px 0 0}
   </style>
 </head>
 <body>
-  <header class="top"><div class="brand"><i>H</i><strong>Homebase</strong></div><div class="clock"><span id="date"></span><strong id="time">--:--</strong></div></header>
-  <section class="hero"><div class="searches"><form class="search" data-engine="baidu"><a class="engine-home" href="https://www.baidu.com/" target="_blank" rel="noopener" title="打开百度首页"><img src="data:image/x-icon;base64,AAABAAEAQEAAAAEAIAAoQgAAFgAAACgAAABAAAAAgAAAAAEAIAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////Kv///4/////V////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P////V////j////yoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8G////lf////3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9////lf///wYAAAAAAAAAAAAAAAD///8G////vf////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+9////BgAAAAAAAAAA////lf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5UAAAAA////Kv////3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9////Kv///4////////////////////////////////////////////////////////////////////////////3y8f/2vLn/8JSP/+2Efv/tg33/74yH//Gcl//0s7D/+M7M//3x8P///////////////////////////////////////////////////////////////////////e/v//jNy//0sq7/8ZuX/+6Lhv/tg33/7YR+//CVkf/2vrz//vT0/////////////////////////////////////////////////////////////////////////////////////4/////V/////////////////////////////////////////////////////////////////Ojn/+2Aev/iOC//4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/5UtD/+t3cf/xn5v/9sC9//ve3P/86+r//vPy//zq6f/63Nv/9r68//GdmP/rdG7/5UhA/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+M7Mv/uhYD//ezr///////////////////////////////////////////////////////////////////////////V////8///////////////////////////////////////////////////////////9bay/+M9NP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+NAOP/2vrz/////////////////////////////////////////////////////////////////////8///////////////////////////////////////////////////////////9LCs/+IzKv/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4jYt//W6t///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+tzb/+I2Lf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/iOTD/++Tj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////+ljXP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+I+Nv/sfXf/8qmm//W7uP/1wb7/9cG+//XBvv/1wb7/9cG+//XBvv/sgXz/4TIp/+EyKf/hMin/4TIp/+VNRf/vko3/87Gt//XBvv/1wb7/9cG+//XBvv/1wb7/9cG+//XBvv/xpKD/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+pvaP////////////////////////////////////////////////////////////////////////////////////////////////////////////rb2f/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+p0bv/86+r/////////////////////////////////////////////////8aSg/+EyKf/hMin/4TIp/+yAe//++Pj/////////////////////////////////////////////////+NXT/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin//Obl///////////////////////////////////////////////////////////////////////////////////////////////////////xm5f/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//Ccl/////////////////////////////////////////////////////////////GkoP/hMin/4TIp/+RKQ//99/f///////////////////////////////////////////////////////jV0//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//Kmov//////////////////////////////////////////////////////////////////////////////////////////////////////6WRe/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+ZXUP/++/v///////////////////////76+f/99PT//fT0//329v/////////////////xpKD/4TIp/+EyKf/sgXz///////////////////////309P/98vL//fLy//3y8v/+/v7////////////41dP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/rcGr//////////////////////////////////////////////////////////////////////////////////////////////////////+ZTS//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/3ycf/////////////////+dbU/+dcVf/hNCv/4TIp/+EyKf/nX1j/////////////////8aSg/+EyKf/hMin/8J2Z/////////////////+2Ggf/hMin/4TIp/+EyKf/hMin/++bk////////////+NXT/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/6F9Y///////////////////////////////////////////////////////////////////////////////////////////////////////kRDz/4TIp/+EyKf/hMin/4TIp/+EyKf/iPTT//vz8/////////////O/v/+NBOP/hMin/4TIp/+EyKf/hMin/519Y//////////////////GkoP/hMin/4TIp//Ghnf/////////////////lTUX/4TIp/+EyKf/hMin/4TIp//vm5P////////////jV0//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+ZQSf//////////////////////////////////////////////////////////////////////////////////////////////////////5UtE/+EyKf/hMin/4TIp/+EyKf/hMin/5lZP//////////////////Oyr//hMin/4TIp/+EyKf/hMin/4TIp/+dfWP/////////////////xpKD/4TIp/+EyKf/xoZ3/////////////////5EhA/+EyKf/hMin/4TIp/+EyKf/75uT////////////41dP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/nV1D//////////////////////////////////////////////////////////////////////////////////////////////////////+twav/hMin/4TIp/+EyKf/hMin/4TIp/+dfV//////////////////ypqL/4TIp/+EyKf/hMin/4TIp/+EyKf/nX1j/////////////////8aSg/+EyKf/hMin/8aGd/////////////////+RIQP/hMin/4TIp/+EyKf/hMin/++bk////////////+NXT/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/7Hx3///////////////////////////////////////////////////////////////////////////////////////////////////////xnpr/4TIp/+EyKf/hMin/4TIp/+EyKf/kSkP/////////////////+dfV/+EyKf/hMin/4TIp/+EyKf/hMin/519Y//////////////////GkoP/hMin/4TIp//Ghnf/////////////////kSED/4TIp/+EyKf/hMin/4TIp//vm5P////////////jV0//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//Oqp////////////////////////////////////////////////////////////////////////////////////////////////////////e7t/+I4L//hMin/4TIp/+EyKf/hMin/4TIp//vm5P/////////////////vlJD/4TIp/+EyKf/hMin/4TIp/+dfWP/////////////////xpKD/4TIp/+EyKf/xoZ3/////////////////5EhA/+EyKf/hMin/4TIp/+EyKf/75uT////////////41dP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+M9NP/+9fX////////////////////////////////////////////////////////////////////////////////////////////////////////////uiYT/4TIp/+EyKf/hMin/4TIp/+EyKf/sgXz///////////////////////nc2v/zsq//8qyo//KsqP/1vrv/////////////////8aSg/+EyKf/hMin/8aGd/////////////////+RIQP/hMin/4TIp/+EyKf/hMin/++bk////////////+NXT/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/wlZH//////////////////////////////////////////////////////////////////////////////////////////////////////////////////vf2/+ZQSf/hMin/4TIp/+EyKf/hMin/4TIp//fJxv////////////////////////////////////////////////////////////GkoP/hMin/4TIp//Ghnf/////////////////kSED/4TIp/+EyKf/hMin/4TIp//vm5P////////////jV0//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/nWFH///v6///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////63dv/5EI5/+EyKf/hMin/4TIp/+EyKf/jQDj/9Le0///////////////////////////////////////////////////////xpKD/4TIp/+EyKf/xoZ3/////////////////5EhA/+EyKf/hMin/4TIp/+EyKf/75uT////////////41dP/4TIp/+EyKf/hMin/4TIp/+EyKf/kRz7/++Tj//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////nW1f/kQzv/4TIp/+EyKf/hMin/4TIp/+EyKf/qcWv/9sXC//3x8P//////////////////////////////////////8aSg/+EyKf/hMin/8aGd/////////////////+RIQP/hMin/4TIp/+EyKf/hMin/++bk////////////+NXT/+EyKf/hMin/4TIp/+EyKf/lSED/+97c////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////++Tj/+dVTv/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TUs/+E3Lv/hNy7/6GNd//////////////////GkoP/hMin/4TIp/+NCOf/lT0j/5U9I/+VPSP/hNSz/4TIp/+EyKf/hMin/4TIp/+RMRP/lT0j/5U9I/+RJQf/hMin/4TIp/+EyKf/nW1T//Orp///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+9/b/7Hhy/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+dfV//////////////////xpKD/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/tgXz///r6///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////xmpb/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/nX1f/////////////////8aSg/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+I0K//ypKD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////W2s//iNy//4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/519X//////////////////GkoP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+M6Mf/2v7z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+MvJ/+M/Nv/hMin/4TIp/+EyKf/hMin/4TIp/+dfV//////////////////xpKD/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+RDOv/509H////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////50tD/4zsz/+EyKf/hMin/4TIp/+EyKf/mWVL/++Pi//vj4v/74+L/75SQ/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+NAOP/62tj/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////++Tj//Syr//zp6P/9LSx//zn5f////////////////////////////jKyP/iOTD/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+M8NP/509H////////////////////////////74+L/9LKv//Ono//1tbH//Ofm///////////////////////////////////////////////////////////////////////////////////////////////////////97u3/63Zw/+IzKv/hMin/4TIp/+EyKf/iMyr/7Hx2//719f//////////////////////9LOw/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/2v7z///////////////////////3x8P/rdW//4TIp/+EyKf/hMin/4TIp/+I0K//sfHf//vPy///////////////////////////////////////////////////////////////////////////////////////97+//5k9H/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/oYVr///z8///////////////////////senT/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/uhYD///////////////////////74+P/nWFH/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+dVTv/+9fX/////////////////////////////////////////////////////////////////////////////////7YR+/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//KkoP///////////////////////vPz/+VMRP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/mU0z//vj4///////////////////////wmJP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/75CL////////////////////////////////////////////////////////////////////////////+dbU/+I0K//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/nW1P////////////////////////////51dP/4jgv/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/jPDT/+t3b////////////////////////////5k9H/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+I3Lv/7397//////////////////////////////////////////////////////////////////////+2Ae//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//zp6P////////////////////////////SvrP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/9bu4////////////////////////////+97c/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/742H///////////////////////////////////////////////////////////////////////mT0j/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/2wb7/////////////////////////////////9LGt/+I4L//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/jOzP/9bq2//////////////////////////////////W1sf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+dbVP//////////////////////////////////////////////////////////////////////4zox/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/9r26///////////////////////////////////////51tT/6WNc/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/paGH/+tzb///////////////////////////////////////0sa3/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/kRj7//////////////////////////////////////////////////////////////////////+RDOv/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//W6tv/////////////////////////////////////////////////51tT/8JSP/+x4c//pZV7/7Hp0//CWkv/629n/////////////////////////////////////////////////862q/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/5k9H///////////////////////////////////////////////////////////////////////oXlf/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/4z83///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////fDwf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+lpY///////////////////////////////////////////////////////////////////////7Hlz/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/iOTD///v6///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+8/P/4jQr/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/uhYD///////////////////////////////////////////////////////////////////////a+u//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/6mtk/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hfWP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/+MrH/////////////////////////////////////////////////////////////////////////v7/5lFJ/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//nS0P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3xsT/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/51tU//////////////////////////////////////////////////////////////////////////////////a8uf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+x6dP/////////////////+8/P/8JmU/+dbU//kQjn/5EU9/+puaP/3xsT/////////////////////////////////////////////////9sC9/+prZP/kQzv/5EM6/+heV//xnpr//vb1/////////////////+puaP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4jQr//fGxP//////////////////////////////////////////////////////////////////////////////////////8qSg/+I0K//hMin/4TIp/+EyKf/hMin/4TIp/+heV//+8/P////////////51NL/5EQ8/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//CUj///////////////////////////////////////7omD/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+VJQf/629r////////////97+//51dP/+EyKf/hMin/4TIp/+EyKf/hMin/4jcu//Otqv/////////////////////////////////////////////////////////////////////////////////////////////////509H/63Rt/+NAOP/iNi3/5k9I//GdmP//+/r////////////75OP/4z41/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/9r26////////////////////////////9LGt/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/5EM6//3r6/////////////74+P/wl5L/5U1F/+I1LP/kQzr/7Hhz//rY1v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////6mpj/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+hcVf///////////////////////////+ZQSf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/rdnD/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+tva/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/++Pi//////////////////rY1v/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4jQr//zm5f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////KhnP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//Klov/////////////////xmZX/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/zran////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////seXP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/vkIv/////////////////7YR+/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/7oWA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////6mxm/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/7YB6/////////////////+t0bf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+x4c////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+txa//hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+x5c//////////////////qbWf/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/sfXj////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////uiYP/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/wl5L/////////////////7ouG/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/8JWR////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9bi1/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/9bi1//////////////////Otqf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp//fEwf////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////709P/kQjn/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4jQr//vj4v/////////////////62df/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+VJQf//+fn/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8qSg/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+x7df///////////////////////////+pvaP/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/0sKz///////////////////////////////////////////////////////////////////////////////////////////////////////////P////////////////////////////////////////////////////////////////////////////////////////////6+v/mUUn/4TIp/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+I2Lf/74eD////////////////////////////619b/4jMq/+EyKf/hMin/4TIp/+EyKf/hMin/4TIp/+EyKf/nWlP///39//////////////////////////////////////////////////////////////////////////////////////////////////////P////V/////////////////////////////////////////////////////////////////////////////////////////////////Ofl/+ZTS//hMin/4TIp/+EyKf/hMin/4TIp/+I2Lf/1t7T///////////////////////////////////////Otqf/iNCv/4TIp/+EyKf/hMin/4TIp/+EyKf/nWFH//ezr///////////////////////////////////////////////////////////////////////////////////////////////////////////V////j//////////////////////////////////////////////////////////////////////////////////////////////////////+9/f/8Z6a/+dXT//jOjH/5EQ8/+x4c//62tj/////////////////////////////////////////////////+dTS/+t0bv/kQzr/4zox/+dZUv/ypKD///r6////////////////////////////////////////////////////////////////////////////////////////////////////////////////j////yr////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f///yoAAAAA////lf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////5UAAAAAAAAAAP///wb///+9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////73///8GAAAAAAAAAAAAAAAA////Bv///5X////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f///5X///8GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////Kv///4/////V////8/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////P////V////j////yoAAAAAAAAAAAAAAAAAAAAA+AAAAAAAAB/gAAAAAAAAB8AAAAAAAAADgAAAAAAAAAGAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAABgAAAAAAAAAHAAAAAAAAAA+AAAAAAAAAH+AAAAAAAAB8=" alt="百度首页"></a><input placeholder="百度一下"><button>⌕</button></form><form class="search" data-engine="google"><a class="engine-home" href="https://www.google.com/" target="_blank" rel="noopener" title="打开 Google 首页"><img src="data:image/png;base64,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" alt="Google 首页"></a><input placeholder="在 Google 中搜索"><button>⌕</button></form></div></section>
-  <button class="edit-settings" id="editModeToggle" onclick="toggleEditMode()" title="进入修改模式" aria-label="进入修改模式"><svg class="gear-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path></svg></button>
+  <header class="top"><div class="top-inner"><div class="brand"><i>H</i><strong>我的工作台</strong></div><div class="top-actions"><div class="theme-picker" id="themePicker">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-expanded="false" aria-controls="themeMenu" aria-labelledby="themeValue">
+        <span id="themeValue">简洁白</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+      </button>
+      <div class="theme-menu" id="themeMenu" role="group" aria-label="主题" hidden>
+        <button class="theme-option" type="button" data-theme-value="light" aria-pressed="true">
+          <span>简洁白</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8 3 3 6-6"/></svg>
+        </button>
+        <button class="theme-option" type="button" data-theme-value="dark" aria-pressed="false">
+          <span>夜幕黑</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8 3 3 6-6"/></svg>
+        </button>
+        <button class="theme-option" type="button" data-theme-value="green" aria-pressed="false">
+          <span>护眼绿</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8 3 3 6-6"/></svg>
+        </button>
+      </div>
+    </div><button class="edit-settings" id="editModeToggle" onclick="toggleEditMode()" title="进入修改模式" aria-label="进入修改模式"><svg class="gear-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path></svg></button></div></div></header>
+  <section class="hero">
+    <div class="searches">
+      <div class="clock">
+        <strong id="time">--:--</strong>
+        <span id="date"></span>
+      </div>
+      <form class="search" role="search">
+        <div class="search-engines" role="group" aria-label="搜索引擎">
+          <button type="button" data-engine="baidu" aria-pressed="false">百度</button>
+          <button type="button" data-engine="google" aria-pressed="true">Google</button>
+        </div>
+        <input type="search" aria-label="在 Google 中搜索" placeholder="在 Google 中搜索">
+        <kbd class="search-shortcut" aria-hidden="true">/</kbd>
+        <button class="search-submit" type="submit" aria-label="搜索">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4 4"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
   <section class="workspace"><aside><div class="label">分类</div><nav id="categories"></nav><button class="add-cat" onclick="openCategory(false)">＋ 添加分类</button></aside><div><div class="heading" hidden><div><h2 id="title"></h2></div></div><div id="links"></div></div></section>
-  <footer>Homebase · 本地个人工作门户</footer>
+  <footer>我的工作台 · 本地个人工作门户</footer>
+  <dialog class="tool-dialog" id="toolDialog" aria-labelledby="toolTitle" aria-describedby="toolDescription">
+    <div class="tool-panel">
+      <form method="dialog"><button class="close" aria-label="关闭换算工具">×</button></form>
+      <h2 id="toolTitle"></h2>
+      <p id="toolDescription"></p>
+      <div class="tool-fields" id="conversionFields">
+        <label>数值<input id="toolInput" type="number" step="any" placeholder="输入数值" autofocus></label>
+        <label>单位<select id="toolUnit"></select></label>
+        <label class="tool-extra-field" id="toolLoadField" hidden>负载阻抗（Ω）<input id="toolLoad" type="number" step="any" value="50"></label>
+        <label class="tool-extra-field" id="resistorSeriesField" hidden>标准系列
+          <select id="resistorSeries">
+            <option>E6</option><option>E12</option><option>E24</option><option>E48</option><option selected>E96</option>
+          </select>
+        </label>
+      </div>
+      <section id="feedbackFields" hidden>
+        <div class="feedback-mode" role="radiogroup" aria-label="要计算的电阻">
+          <label><input type="radio" name="feedbackSolve" id="feedbackSolveUpper" checked><span>算上臂 R1</span></label>
+          <label><input type="radio" name="feedbackSolve"><span>算下臂 R2</span></label>
+        </div>
+        <div class="tool-fields feedback-fields">
+          <svg class="feedback-schematic" viewBox="0 0 128 288" preserveAspectRatio="none" role="img" aria-label="Vout 经 R1 接到 FB，FB 经 R2 接地。">
+            <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M30 34H80V83M80 121V200M80 238V268M30 170H80"/>
+              <circle cx="26" cy="34" r="4"/>
+              <circle cx="26" cy="170" r="4"/>
+              <rect class="feedback-symbol-upper" x="70" y="83" width="20" height="38" rx="1"/>
+              <rect class="feedback-symbol-lower" x="70" y="200" width="20" height="38" rx="1"/>
+              <path d="M66 268h28M71 273h18M76 278h8"/>
+            </g>
+            <circle cx="80" cy="170" r="3" fill="currentColor"/>
+            <text x="26" y="23" text-anchor="middle">VOUT</text>
+            <text x="26" y="159" text-anchor="middle">FB</text>
+            <text x="99" y="106">R1</text>
+            <text x="99" y="223">R2</text>
+          </svg>
+          <label>Vout · 输出电压（V）<input id="feedbackOutput" type="number" min="0" step="any" placeholder="例如 3.3"></label>
+          <div class="feedback-node" data-feedback-resistor="upper">
+            <label for="feedbackUpper" id="feedbackUpperLabel">R1 · 上臂电阻（kΩ）</label>
+            <input id="feedbackUpper" type="number" min="0" step="any" value="10" hidden>
+            <div class="feedback-readout">
+              <output aria-labelledby="feedbackUpperLabel" for="feedbackOutput feedbackReference feedbackLower"></output>
+              <button type="button" class="tool-copy" aria-label="复制上臂电阻" disabled>复制</button>
+            </div>
+          </div>
+          <label>FB · 参考电压 Vref（V）<input id="feedbackReference" type="number" min="0" step="any" placeholder="例如 0.8"></label>
+          <div class="feedback-node" data-feedback-resistor="lower">
+            <label for="feedbackLower" id="feedbackLowerLabel">R2 · 下臂电阻（kΩ）</label>
+            <input id="feedbackLower" type="number" min="0" step="any" value="10">
+            <div class="feedback-readout" hidden>
+              <output aria-labelledby="feedbackLowerLabel" for="feedbackOutput feedbackReference feedbackUpper"></output>
+              <button type="button" class="tool-copy" aria-label="复制下臂电阻" disabled>复制</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="tool-results" id="toolResults"></div>
+      <p class="tool-status" id="toolStatus" role="status"></p>
+      <section class="resistor-values" id="resistorValuesPanel" aria-labelledby="resistorValuesTitle" hidden>
+        <h3 id="resistorValuesTitle"></h3>
+        <ul id="resistorValuesList" tabindex="0" aria-labelledby="resistorValuesTitle"></ul>
+      </section>
+      <div class="length-comparison" id="lengthComparison" hidden>
+        <p id="lengthCaption">输入长度后与 1 mm 对比。</p>
+        <div id="lengthPlot" hidden>
+          <p id="lengthInputLabel"></p>
+          <div class="length-track" aria-hidden="true"><span class="length-bar" id="lengthInputBar"></span></div>
+          <p>参照长度 · 1 mm</p>
+          <div class="length-track" aria-hidden="true"><span class="length-bar length-reference" id="lengthReferenceBar"></span></div>
+          <div class="length-scale"><span>0 mm</span><span id="lengthScaleEnd"></span></div>
+        </div>
+      </div>
+      <div class="tool-animation" id="frequencyAnimation" hidden>
+        <p id="waveCaption">输入频率或周期后显示波形。</p>
+        <div id="wavePlot" hidden>
+          <svg viewBox="0 0 560 160" role="img" aria-label="正弦波、周期标记和时间轴" aria-describedby="waveCaption">
+            <rect class="wave-period-fill" id="wavePeriodFill" x="24" y="10" height="85"/>
+            <path class="wave-grid" d="M24 10v85M152 10v85M280 10v85M408 10v85M536 10v85M24 52h512M24 95h512"/>
+            <path class="wave-period wave-period-edge" id="wavePeriodEdges"/>
+            <path class="wave-trace" id="waveTrace"/>
+            <path class="wave-period" id="wavePeriod"/>
+            <text class="wave-period-label" id="wavePeriodLabel" y="129" text-anchor="middle"></text>
+            <path class="wave-cursor" d="M24 10v85"/>
+            <g class="wave-ticks" id="waveTicks"></g>
+          </svg>
+          <p>浅色区域为一个完整周期。扫描线为慢速演示。</p>
+          <div class="wave-spectrum" id="waveSpectrum" hidden>
+            <p id="spectrumCaption"></p>
+            <svg viewBox="0 0 560 114" role="img" aria-label="正弦波的单边频谱，纵轴为归一化幅度" aria-describedby="spectrumCaption">
+              <path class="wave-grid" d="M24 14v65h512M24 14h512M152 14v65M280 14v65M408 14v65M536 14v65"/>
+              <g class="wave-ticks"><text x="6" y="19">1</text><text x="6" y="83">0</text></g>
+              <path class="wave-trace" id="spectrumPeak"/>
+              <g class="wave-ticks" id="spectrumTicks"></g>
+            </svg>
+            <p>理想正弦波的单边频谱，峰值幅度归一化为 1。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
   <div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><button class="close" onclick="hideModal()">×</button><h3 id="modalTitle"></h3><p id="modalDesc"></p><form id="modalForm"></form></div></div>
   <script>
+    const themePicker = document.getElementById('themePicker');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeMenu = document.getElementById('themeMenu');
+    const themeValue = document.getElementById('themeValue');
+    const themeOptions = themeMenu.querySelectorAll('.theme-option');
+
+    function updateThemePicker(theme) {
+      for (const option of themeOptions) {
+        const selected = option.dataset.themeValue === theme;
+        option.setAttribute('aria-pressed', String(selected));
+        if (selected) themeValue.textContent = option.firstElementChild.textContent;
+      }
+    }
+
+    function setThemeMenuOpen(open) {
+      themeMenu.hidden = !open;
+      themeToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    updateThemePicker(document.documentElement.dataset.theme || 'light');
+    themeToggle.addEventListener('click', () => setThemeMenuOpen(themeMenu.hidden));
+    for (const option of themeOptions) {
+      option.addEventListener('click', () => {
+        const theme = option.dataset.themeValue;
+        document.documentElement.dataset.theme = theme;
+        updateThemePicker(theme);
+        try { localStorage.setItem(themeKey, theme); } catch {}
+        setThemeMenuOpen(false);
+        themeToggle.focus();
+      });
+    }
+    document.addEventListener('click', event => {
+      if (!themeMenu.hidden && !themePicker.contains(event.target)) setThemeMenuOpen(false);
+    });
+    themePicker.addEventListener('focusout', event => {
+      if (event.relatedTarget && !themePicker.contains(event.relatedTarget)) setThemeMenuOpen(false);
+    });
+    themePicker.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || themeMenu.hidden) return;
+      event.preventDefault();
+      setThemeMenuOpen(false);
+      themeToggle.focus();
+    });
+
     const miniCircuits={id:'chip-mini-circuits',name:'Mini-Circuits',description:'射频与微波元器件',url:'https://www.minicircuits.com/',mark:'MC',color:'#1675bc'}
+    const wechatFileHelper={
+      id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
+      url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
+    };
     const defaults=[
       {id:'ai-agents',name:'智能体',links:[
         {id:'agent-chatgpt',name:'ChatGPT',description:'OpenAI 通用智能体',url:'https://chatgpt.com/',mark:'C',color:'#10a37f'},
@@ -101,7 +447,8 @@
         {id:'work-gmail',name:'Gmail',description:'Google 电子邮箱',url:'https://mail.google.com/',mark:'G',color:'#ea4335'},
         {id:'work-baidu-translate',name:'百度翻译',description:'文本与网页翻译',url:'https://fanyi.baidu.com/',mark:'译',color:'#3975f6'},
         {id:'work-baidu-pan',name:'百度网盘',description:'云端文件与分享',url:'https://pan.baidu.com/',mark:'盘',color:'#2563eb'},
-        {id:'work-github',name:'GitHub',description:'代码托管与协作',url:'https://github.com/',mark:'G',color:'#24292f'}
+        {id:'work-github',name:'GitHub',description:'代码托管与协作',url:'https://github.com/',mark:'G',color:'#24292f'},
+        wechatFileHelper
       ]},
       {id:'chip-vendors',name:'芯片厂商',links:[
         {id:'chip-ti',name:'TI',description:'Texas Instruments',url:'https://www.ti.com/',mark:'TI',color:'#cc0000'},
@@ -150,7 +497,6 @@
         {id:'common-tencent-docs',name:'腾讯文档',description:'在线文档与表格',url:'https://docs.qq.com/',mark:'T',color:'#20a06b'},
         {id:'common-notion',name:'Notion',description:'知识库与项目管理',url:'https://www.notion.so/',mark:'N',color:'#25272b'},
         {id:'common-figma',name:'Figma',description:'界面与原型设计',url:'https://www.figma.com/',mark:'F',color:'#a259ff'},
-        {id:'common-bilibili',name:'哔哩哔哩',description:'视频学习与灵感',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
         {id:'common-zhihu',name:'知乎',description:'发现问题与答案',url:'https://www.zhihu.com/',mark:'知',color:'#1772f6'},
         {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
       ]},
@@ -310,11 +656,19 @@
         {id:'common-tencent-docs',name:'腾讯文档',description:'在线文档与表格',url:'https://docs.qq.com/',mark:'T',color:'#20a06b'},
         {id:'common-notion',name:'Notion',description:'知识库与项目管理',url:'https://www.notion.so/',mark:'N',color:'#25272b'},
         {id:'common-figma',name:'Figma',description:'界面与原型设计',url:'https://www.figma.com/',mark:'F',color:'#a259ff'},
-        {id:'common-bilibili',name:'哔哩哔哩',description:'视频学习与灵感',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
         {id:'common-zhihu',name:'知乎',description:'发现问题与答案',url:'https://www.zhihu.com/',mark:'知',color:'#1772f6'},
         {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
       ]);
       save();localStorage.setItem('homebase-common-restore-v2','done');
+    }
+    if (!localStorage.getItem('homebase-common-bilibili-removal-v1')) {
+      const common = data.find(category => category.id === 'common' || category.name === '常用');
+      if (common) {
+        common.links = common.links.filter(link => link.id !== 'common-bilibili' &&
+          !/^https?:\/\/(?:www\.)?bilibili\.com(?:[/?#]|$)/i.test(link.url));
+        save();
+      }
+      localStorage.setItem('homebase-common-bilibili-removal-v1', 'done');
     }
     if(!localStorage.getItem('homebase-shopping-layout-v1')){
       const preferred=['ai-agents','chip-vendors','chip-purchase','connector-vendors','shopping','work','common','life'];
@@ -343,6 +697,15 @@
         save();
       }
       localStorage.setItem('homebase-mini-circuits-v1','done');
+    }
+    if (!localStorage.getItem('homebase-wechat-filehelper-v1')) {
+      const work = data.find(category => category.id === 'work' || category.name === '工作');
+      if (work && !work.links.some(link => link.id === wechatFileHelper.id ||
+          /^https?:\/\/(?:sz)?filehelper\.weixin\.qq\.com(?:[/?#]|$)/i.test(link.url))) {
+        work.links.push({...wechatFileHelper});
+        save();
+      }
+      localStorage.setItem('homebase-wechat-filehelper-v1', 'done');
     }
     if(!localStorage.getItem('homebase-gmail-name-v1')){
       const work=data.find(category=>category.id==='work'||category.name==='工作');
@@ -374,6 +737,376 @@
     function categoryDrop(event,targetId){event.preventDefault();event.currentTarget.classList.remove('category-drag-over');const sourceId=draggedCategoryId||event.dataTransfer.getData('text/category-id');if(!sourceId||sourceId===targetId)return;const from=data.findIndex(x=>x.id===sourceId);const to=data.findIndex(x=>x.id===targetId);if(from<0||to<0)return;const moved=data.splice(from,1)[0];data.splice(to,0,moved);save();render()}
     function deleteCategory(id){if(data.length<=1){alert('至少需要保留一个分类');return}const category=data.find(x=>x.id===id);if(!category||!confirm(`确定删除“${category.name}”分类吗？\n该分类中的网站也会一起删除。`))return;const index=data.findIndex(x=>x.id===id);data=data.filter(x=>x.id!==id);if(active===id)active=data[Math.min(index,data.length-1)].id;save();render()}
     function render(){const c=current();document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="true" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span><span>${esc(x.name)}</span></button>${x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button><button class="delete-category" onclick="deleteCategory('${x.id}')" title="删除分类">×</button>`:''}</div>`).join('');document.getElementById('title').textContent=c.name+'网站';const cards=c.links.map(l=>`<div class="wrap" draggable="true" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}">${esc(l.mark)}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a><button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button></div>`).join('');document.getElementById('links').innerHTML=`<div class="grid">${cards}<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button></div>`}
+    if (!localStorage.getItem('homebase-tools-v2')) {
+      const toolsIndex = data.findIndex(category => category.id === 'tools');
+      const toolsCategory = toolsIndex < 0 ? {id:'tools', links:[]} : data.splice(toolsIndex, 1)[0];
+      toolsCategory.name = '小工具';
+      data.push(toolsCategory);
+      save();
+      localStorage.setItem('homebase-tools-v2', 'done');
+    }
+    const conversionTools = {
+      length: {
+        name:'长度换算', description:'PCB 线宽、间距和孔径', units:{mil:0.0254, mm:1, cm:10, 'µm':0.001},
+        icon:'<path d="m3 16 13-13 5 5L8 21zM12 7l3 3M9 10l2 2M6 13l3 3"/>'
+      },
+      capacitance: {
+        name:'电容换算', description:'电容标称值与规格换算', units:{nF:1000, pF:1, 'µF':1000000},
+        icon:'<path d="M9 5v14m6-14v14M3 12h6m6 0h6"/>'
+      },
+      power: {
+        name:'功率换算', description:'Vpp 按无直流偏置的正弦波计算，默认负载为 50 Ω。',
+        summary:'dBm ↔ Vpp', units:{dBm:null, Vpp:null, 'µW':0.001, mW:1, W:1000},
+        icon:'<path d="m13 2-8 12h6l-1 8 9-12h-6z"/>'
+      },
+      time: {
+        name:'时间换算', description:'脉宽、延时和时间间隔', defaultUnit:'µs',
+        units:{ns:1e-9, 'µs':1e-6, ms:1e-3, s:1, min:60, h:3600},
+        icon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+      },
+      frequency: {
+        name:'频率与周期', description:'输入频率或周期，自动换算另一项', defaultUnit:'MHz',
+        summary:'Hz / MHz ↔ ns / µs', reciprocal:true,
+        units:{Hz:1, kHz:1e3, MHz:1e6, GHz:1e9, ns:1e-9, 'µs':1e-6, ms:1e-3, s:1},
+        icon:'<path d="M3 16h4V8h5v8h5V8h4"/>'
+      },
+      resistor: {
+        name:'标准电阻值', description:'输入目标阻值，查找所选 E 系列中的相邻标准值。',
+        defaultUnit:'kΩ', summary:'E6 / E12 / E24 / E48 / E96',
+        units:{'Ω':1, 'kΩ':1e3, 'MΩ':1e6},
+        icon:'<path d="M2 12h3l2-4 3 8 3-8 3 8 3-4h3"/>'
+      },
+      feedback: {
+        name:'电源反馈电阻', summary:'输出电压 / 参考电压 → 电阻',
+        description:'选择要计算的电阻，再在图中填入 Vout、Vref 和另一颗电阻的阻值。',
+        icon:'<path d="M12 2v2l-3 2 6 2-3 2v2m0 0h7m-7 0v2l-3 2 6 2-3 2v2"/>'
+      }
+    };
+    // Vishay E-Series Values, document 28372 (IEC 60063).
+    const resistorE24 = [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91];
+    const resistorE96 = [
+      100, 102, 105, 107, 110, 113, 115, 118, 121, 124, 127, 130, 133, 137, 140, 143,
+      147, 150, 154, 158, 162, 165, 169, 174, 178, 182, 187, 191, 196, 200, 205, 210,
+      215, 221, 226, 232, 237, 243, 249, 255, 261, 267, 274, 280, 287, 294, 301, 309,
+      316, 324, 332, 340, 348, 357, 365, 374, 383, 392, 402, 412, 422, 432, 442, 453,
+      464, 475, 487, 499, 511, 523, 536, 549, 562, 576, 590, 604, 619, 634, 649, 665,
+      681, 698, 715, 732, 750, 768, 787, 806, 825, 845, 866, 887, 909, 931, 953, 976
+    ];
+    const resistorSeriesValues = {
+      E6:resistorE24.filter((_, index) => index % 4 === 0),
+      E12:resistorE24.filter((_, index) => index % 2 === 0),
+      E24:resistorE24,
+      E48:resistorE96.filter((_, index) => index % 2 === 0),
+      E96:resistorE96
+    };
+    const toolDialog = document.getElementById('toolDialog');
+    const toolInput = document.getElementById('toolInput');
+    const toolUnit = document.getElementById('toolUnit');
+    const conversionFields = document.getElementById('conversionFields');
+    const feedbackFields = document.getElementById('feedbackFields');
+    const feedbackOutput = document.getElementById('feedbackOutput');
+    const feedbackReference = document.getElementById('feedbackReference');
+    const feedbackSolveUpper = document.getElementById('feedbackSolveUpper');
+    const feedbackResistors = feedbackFields.querySelectorAll('[data-feedback-resistor]');
+    const toolLoadField = document.getElementById('toolLoadField');
+    const toolLoad = document.getElementById('toolLoad');
+    const resistorSeriesField = document.getElementById('resistorSeriesField');
+    const resistorSeries = document.getElementById('resistorSeries');
+    const resistorValuesPanel = document.getElementById('resistorValuesPanel');
+    const toolResults = document.getElementById('toolResults');
+    const toolStatus = document.getElementById('toolStatus');
+    const frequencyAnimation = document.getElementById('frequencyAnimation');
+    const lengthComparison = document.getElementById('lengthComparison');
+    const toolNumberFormat = new Intl.NumberFormat('en', {useGrouping:false, maximumSignificantDigits:10});
+    let activeTool;
+
+    function convertToolValue(value, from, to, units, reciprocal = false, resistance = 50) {
+      if (reciprocal) return (1 / (units[from] * units[to])) / value;
+      if (from === 'Vpp' || to === 'Vpp') {
+        // For a sine wave, Vpp² = 8 × resistance × power in watts.
+        const voltageFactor = Math.log10(8) + Math.log10(resistance) - 3;
+        if (to === 'Vpp') {
+          const logMilliwatts = from === 'dBm' ? value / 10 : Math.log10(value) + Math.log10(units[from]);
+          return 10 ** ((logMilliwatts + voltageFactor) / 2);
+        }
+        const logMilliwatts = 2 * Math.log10(value) - voltageFactor;
+        return to === 'dBm' ? 10 * logMilliwatts : 10 ** (logMilliwatts - Math.log10(units[to]));
+      }
+      if (from === 'dBm') return 10 ** (value / 10 - Math.log10(units[to]));
+      if (to === 'dBm') return 10 * (Math.log10(value) + Math.log10(units[from]));
+      return value * (units[from] / units[to]);
+    }
+
+    function openTool(key) {
+      activeTool = conversionTools[key];
+      const units = Object.keys(activeTool.units ?? {});
+      document.getElementById('toolTitle').textContent = activeTool.name;
+      document.getElementById('toolDescription').textContent = activeTool.description;
+      toolInput.value = '';
+      feedbackFields.hidden = key !== 'feedback';
+      conversionFields.hidden = !feedbackFields.hidden;
+      toolResults.hidden = !feedbackFields.hidden;
+      toolInput.autofocus = feedbackFields.hidden;
+      feedbackOutput.autofocus = !feedbackFields.hidden;
+      toolLoadField.hidden = key !== 'power';
+      resistorSeriesField.hidden = key !== 'resistor';
+      resistorValuesPanel.hidden = resistorSeriesField.hidden;
+      frequencyAnimation.hidden = key !== 'frequency';
+      lengthComparison.hidden = key !== 'length';
+      toolUnit.innerHTML = units.map(unit => `<option>${unit}</option>`).join('');
+      toolUnit.value = activeTool.defaultUnit ?? units[0] ?? '';
+      if (key === 'feedback') {
+        toolResults.innerHTML = '';
+      } else if (key === 'resistor') {
+        toolResults.innerHTML = ['最接近', '相邻偏小', '相邻偏大'].map(label => `
+          <div class="tool-result resistor-result">
+            <div><small>${label}</small><output for="toolInput toolUnit resistorSeries"></output></div>
+            <button type="button" class="tool-copy" aria-label="复制${label}的标准阻值">复制</button>
+          </div>`).join('');
+      } else {
+        toolResults.innerHTML = units.map(unit => `<div class="tool-result" data-unit="${unit}"><output for="toolInput toolUnit${key === 'power' ? ' toolLoad' : ''}"></output><button type="button" class="tool-copy" aria-label="复制 ${unit} 结果">复制</button></div>`).join('');
+      }
+      updateToolResults();
+      toolDialog.showModal();
+    }
+
+    function updateLengthComparison(millimeters) {
+      const plot = document.getElementById('lengthPlot');
+      const caption = document.getElementById('lengthCaption');
+      plot.hidden = !Number.isFinite(millimeters);
+      if (plot.hidden) {
+        caption.textContent = Number.isNaN(millimeters) ? '输入长度后与 1 mm 对比。' : '长度超出图示范围。';
+        return;
+      }
+
+      const reference = 1;
+      const scaleEnd = Math.max(millimeters, reference);
+      caption.textContent = `等比例对比 · 输入长度是 1 mm 的 ${Number((millimeters / reference).toPrecision(5))} 倍`;
+      document.getElementById('lengthInputLabel').textContent = `输入长度 · ${Number(millimeters.toPrecision(7))} mm`;
+      document.getElementById('lengthInputBar').style.width = `${millimeters / scaleEnd * 100}%`;
+      document.getElementById('lengthReferenceBar').style.width = `${reference / scaleEnd * 100}%`;
+      document.getElementById('lengthScaleEnd').textContent = `${Number(scaleEnd.toPrecision(7))} mm`;
+    }
+
+    function updateFrequencyWave(period) {
+      const plot = document.getElementById('wavePlot');
+      const caption = document.getElementById('waveCaption');
+      plot.hidden = !Number.isFinite(period) || period <= 0;
+      if (plot.hidden) {
+        caption.textContent = Number.isNaN(period) ? '输入频率或周期后显示波形。' : '周期超出波形显示范围。';
+        return;
+      }
+
+      const cycles = Number.isFinite(period * 2) ? 2 : 1;
+      const [axisUnit, secondsPerUnit] = period >= 1 ? ['s',1] :
+        period >= 1e-3 ? ['ms',1e-3] : period >= 1e-6 ? ['µs',1e-6] : ['ns',1e-9];
+      const formatTime = seconds => `${Number((seconds / secondsPerUnit).toPrecision(4))} ${axisUnit}`;
+      caption.textContent = `周期 T = ${formatTime(period)}`;
+
+      const points = [];
+      for (let i = 0; i <= 256; i++) {
+        const x = 24 + i * 2;
+        const y = 52 - 29 * Math.sin(2 * Math.PI * cycles * i / 256);
+        points.push(`${i === 0 ? 'M' : 'L'}${x} ${y.toFixed(2)}`);
+      }
+      document.getElementById('waveTrace').setAttribute('d', points.join(' '));
+      const periodWidth = 512 / cycles;
+      document.getElementById('wavePeriodFill').setAttribute('width', periodWidth);
+      document.getElementById('wavePeriodEdges').setAttribute('d', `M24 10v85M${24 + periodWidth} 10v85`);
+      document.getElementById('wavePeriod').setAttribute('d', `M24 103v8m0-4h${periodWidth}m0-4v8`);
+      const periodLabel = document.getElementById('wavePeriodLabel');
+      periodLabel.setAttribute('x', 24 + periodWidth / 2);
+      periodLabel.textContent = `一个周期 T = ${formatTime(period)}`;
+      document.getElementById('waveTicks').innerHTML = [0,1,2,3,4].map(i => {
+        const anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle';
+        return `<text x="${24 + i * 128}" y="151" text-anchor="${anchor}">${formatTime(period * (cycles * i / 4))}</text>`;
+      }).join('');
+      updateFrequencySpectrum(1 / period);
+    }
+
+    function updateFrequencySpectrum(frequency) {
+      const spectrum = document.getElementById('waveSpectrum');
+      spectrum.hidden = !Number.isFinite(frequency) || frequency <= 0;
+      if (spectrum.hidden) return;
+
+      // Aim for a peak near the middle, with round tick intervals.
+      const targetStep = frequency / 3;
+      const base = 10 ** Math.floor(Math.log10(targetStep)) || frequency;
+      const step = base * ([1, 2, 5, 10].find(multiplier => multiplier * base >= targetStep) ?? 10);
+      const maxFrequency = Math.min(step * 4, Number.MAX_VALUE);
+      const [unit, hertzPerUnit] = frequency >= 1e9 ? ['GHz',1e9] :
+        frequency >= 1e6 ? ['MHz',1e6] : frequency >= 1e3 ? ['kHz',1e3] : ['Hz',1];
+      const formatFrequency = hertz => `${Number((hertz / hertzPerUnit).toPrecision(4))} ${unit}`;
+      document.getElementById('spectrumCaption').textContent = `频谱 · 主峰 ${formatFrequency(frequency)}`;
+
+      const peakX = 24 + 512 * (frequency / maxFrequency);
+      document.getElementById('spectrumPeak').setAttribute('d', `M${peakX} 79V14`);
+      document.getElementById('spectrumTicks').innerHTML = [0,1,2,3,4].map(i => {
+        const anchor = i === 0 ? 'start' : i === 4 ? 'end' : 'middle';
+        return `<text x="${24 + i * 128}" y="104" text-anchor="${anchor}">${formatFrequency(maxFrequency * (i / 4))}</text>`;
+      }).join('');
+    }
+
+    function standardResistorDecade(series, exponent) {
+      const values = resistorSeriesValues[series];
+      const decimalPlaces = values[0] === 10 ? 1 : 2;
+      return values.map(value => Number(`${value}e${exponent - decimalPlaces}`))
+        .filter(nominal => Number.isFinite(nominal) && nominal > 0);
+    }
+
+    function findStandardResistors(target, series) {
+      const exponent = Math.floor(Math.log10(target));
+      let lower, upper, nearest;
+      for (const decade of [exponent - 1, exponent, exponent + 1]) {
+        for (const nominal of standardResistorDecade(series, decade)) {
+          if (nominal < target) lower = nominal;
+          else if (nominal === target) nearest = nominal;
+          else if (upper === undefined) upper = nominal;
+        }
+      }
+      if (nearest === undefined) {
+        nearest = upper === undefined || target - (lower ?? -Infinity) <= upper - target ? lower : upper;
+      }
+      return [nearest, lower, upper];
+    }
+
+    function updateResistorResults(target, unit) {
+      const valid = Number.isFinite(target) && target > 0;
+      toolStatus.textContent = !valid && (toolInput.value || toolInput.validity.badInput) ? '请输入大于 0 的有效阻值。' : '';
+      const series = resistorSeries.value;
+      const decade = valid ? Math.floor(Math.log10(target)) : 0;
+      const standardValues = [...new Set(standardResistorDecade(series, decade))];
+      document.getElementById('resistorValuesTitle').textContent = `${series} 标准阻值（${unit}）`;
+      document.getElementById('resistorValuesList').innerHTML = standardValues.map(value => `<li>${value}</li>`).join('');
+      const values = valid ? findStandardResistors(target, series) : [];
+      [...toolResults.children].forEach((row, index) => {
+        const value = values[index];
+        const output = row.querySelector('output');
+        output.textContent = '—';
+        if (value !== undefined) {
+          const formatted = value >= 1e9 || value < 1e-6 ? value.toExponential() : toolNumberFormat.format(value);
+          output.textContent = `${formatted} ${unit}`;
+        }
+        row.querySelector('button').disabled = value === undefined;
+      });
+    }
+
+    function updateFeedbackResults() {
+      const solveUpper = feedbackSolveUpper.checked;
+      const target = solveUpper ? 'upper' : 'lower';
+      const knownInput = document.getElementById(solveUpper ? 'feedbackLower' : 'feedbackUpper');
+      const output = feedbackOutput.valueAsNumber;
+      const reference = feedbackReference.valueAsNumber;
+      const known = knownInput.valueAsNumber;
+      let message = '';
+      let result;
+      const hasInvalidInput = [feedbackOutput, feedbackReference, knownInput].some(field =>
+        field.validity.badInput || (field.value !== '' && !(field.valueAsNumber > 0)));
+      if (hasInvalidInput) {
+        message = '电压和已知电阻都需大于 0。';
+      } else if (output > 0 && reference > 0 && output <= reference) {
+        message = '目标输出电压需大于参考电压。';
+      } else if (output > reference && reference > 0 && known > 0) {
+        const ratio = (output - reference) / reference;
+        result = solveUpper ? known * ratio : known / ratio;
+        if (!Number.isFinite(result) || result <= 0) message = '计算结果超出数值范围。';
+      }
+      toolStatus.textContent = message;
+      feedbackFields.dataset.solve = target;
+      for (const resistor of feedbackResistors) {
+        const isTarget = resistor.dataset.feedbackResistor === target;
+        const readout = resistor.querySelector('.feedback-readout');
+        const copy = readout.querySelector('button');
+        resistor.querySelector('input').hidden = isTarget;
+        readout.hidden = !isTarget;
+        copy.disabled = !isTarget || result === undefined || Boolean(message);
+        let display = '—';
+        if (!copy.disabled) {
+          const formatted = result >= 1e9 || result < 1e-6 ? result.toExponential(7) : toolNumberFormat.format(result);
+          display = `${formatted} kΩ`;
+        }
+        readout.querySelector('output').textContent = display;
+      }
+    }
+
+    function updateToolResults() {
+      if (!feedbackFields.hidden) {
+        updateFeedbackResults();
+        return;
+      }
+      const from = toolUnit.value;
+      const value = toolInput.valueAsNumber;
+      if (!resistorSeriesField.hidden) {
+        updateResistorResults(value, from);
+        return;
+      }
+      const {units, reciprocal} = activeTool;
+      const valid = Number.isFinite(value) && (reciprocal ? value > 0 : from === 'dBm' || value >= 0);
+      const resistance = toolLoad.valueAsNumber;
+      const validResistance = Number.isFinite(resistance) && resistance > 0;
+      toolStatus.textContent = '';
+      if (!valid && (toolInput.value || toolInput.validity.badInput)) {
+        if (!Number.isFinite(value)) toolStatus.textContent = '请输入有效数值。';
+        else toolStatus.textContent = reciprocal ? '请输入大于 0 的数值。' : '此单位请输入非负数。';
+      }
+      if (!toolLoadField.hidden && !validResistance && !toolStatus.textContent) {
+        toolStatus.textContent = '负载阻抗需大于 0 Ω。';
+      }
+      if (reciprocal) {
+        const period = !valid ? NaN : from.endsWith('Hz') ?
+          convertToolValue(value, from, 's', units, true) : value * units[from];
+        updateFrequencyWave(period);
+      }
+      if (!lengthComparison.hidden) {
+        updateLengthComparison(valid ? convertToolValue(value, from, 'mm', units) : NaN);
+      }
+      for (const row of toolResults.children) {
+        const to = row.dataset.unit;
+        row.hidden = from === to || (reciprocal && from.endsWith('Hz') === to.endsWith('Hz'));
+        if (row.hidden) continue;
+        const canConvert = valid && ((from !== 'Vpp' && to !== 'Vpp') || validResistance);
+        const result = canConvert ? convertToolValue(value, from, to, units, reciprocal, resistance) : NaN;
+        const zeroPower = canConvert && to === 'dBm' && value === 0;
+        const representable = Number.isFinite(result) && (result !== 0 || (from !== 'dBm' && value === 0));
+        let formatted = '—';
+        if (zeroPower) formatted = '−∞';
+        else if (representable) {
+          const magnitude = Math.abs(result);
+          formatted = magnitude >= 1e9 || (magnitude > 0 && magnitude < 1e-6) ?
+            result.toExponential(7) : toolNumberFormat.format(result);
+        } else if (canConvert) formatted = '超出数值范围';
+        row.querySelector('output').textContent = `${formatted} ${to}`;
+        row.querySelector('button').disabled = !representable && !zeroPower;
+      }
+    }
+
+    toolInput.addEventListener('input', updateToolResults);
+    feedbackFields.addEventListener('input', updateToolResults);
+    toolUnit.addEventListener('change', updateToolResults);
+    toolLoad.addEventListener('input', updateToolResults);
+    resistorSeries.addEventListener('change', updateToolResults);
+    toolResults.addEventListener('click', copyToolResult);
+    feedbackFields.addEventListener('click', copyToolResult);
+    async function copyToolResult(event) {
+      const button = event.target.closest('.tool-copy');
+      if (!button || button.disabled) return;
+      const output = button.parentElement.querySelector('output');
+      try {
+        await navigator.clipboard.writeText(output.textContent);
+        toolStatus.textContent = '已复制';
+      } catch {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(output);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        toolStatus.textContent = document.execCommand('copy') ? '已复制' : '已选中结果，可按 Ctrl+C 复制。';
+      }
+    }
+    toolDialog.addEventListener('click', event => {
+      if (event.target === toolDialog) toolDialog.close();
+    });
+
     let editMode=false;
     function toggleEditMode(){editMode=!editMode;document.body.classList.toggle('edit-mode',editMode);render()}
     const vectorLogoHosts=new Set(['zh.wikipedia.org','mail.163.com','fanyi.baidu.com']);
@@ -383,13 +1116,54 @@
     function render(){
       const c=current();
       document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="${editMode}" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span><span>${esc(x.name)}</span></button>${editMode&&x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button><button class="delete-category" onclick="deleteCategory('${x.id}')" title="删除分类">×</button>`:''}</div>`).join('');
-      document.getElementById('title').textContent=c.name+'网站';
+      document.getElementById('title').textContent=c.id==='tools'?c.name:c.name+'网站';
+      const toolCards = c.id === 'tools' ? Object.entries(conversionTools).map(([key, tool]) => `
+        <button type="button" class="card tool-card" onclick="openTool('${key}')">
+          <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true">${tool.icon}</svg></span>
+          <span class="copy"><strong>${tool.name}</strong><small>${tool.summary ?? Object.keys(tool.units).join(' / ')}</small></span>
+        </button>`).join('') : '';
       const cards=c.links.map(l=>`<div class="wrap" draggable="${editMode}" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}"><span>${esc(l.mark)}</span>${faviconUrl(l.url)?`<img class="${logoClass(l.url)}" src="${esc(faviconUrl(l.url))}" alt="" onerror="this.remove()">`:''}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a>${editMode?`<button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button>`:''}</div>`).join('');
-      document.getElementById('links').innerHTML=`<div class="grid">${cards}${editMode?'<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button>':''}</div>`;
+      document.getElementById('links').innerHTML=`<div class="grid${toolCards?' tool-grid':''}">${toolCards}${cards}${editMode?'<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button>':''}</div>`;
       const toggle=document.getElementById('editModeToggle');toggle.title=editMode?'退出修改模式':'进入修改模式';toggle.setAttribute('aria-label',toggle.title);
     }
-    document.querySelectorAll('.search').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const q=f.querySelector('input').value.trim();if(!q)return;const urls={baidu:'https://www.baidu.com/s?wd=',google:'https://www.google.com/search?q='};window.open(urls[f.dataset.engine]+encodeURIComponent(q),'_blank')}));
-    function tick(){const d=new Date();const pad=n=>String(n).padStart(2,'0');const weeks=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];document.getElementById('time').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;document.getElementById('date').textContent=`${d.getFullYear()} 年 ${pad(d.getMonth()+1)} 月 ${pad(d.getDate())} 日 ${weeks[d.getDay()]}`}tick();setInterval(tick,30000);render();
+    const searchForm=document.querySelector('.search');
+    const searchInput=searchForm.querySelector('input');
+    const engineButtons=searchForm.querySelectorAll('[data-engine]');
+    const searchEngines={
+      baidu:{url:'https://www.baidu.com/s?wd=',label:'百度一下'},
+      google:{url:'https://www.google.com/search?q=',label:'在 Google 中搜索'}
+    };
+    let searchEngine='google';
+    engineButtons.forEach(button=>button.addEventListener('click',()=>{
+      searchEngine=button.dataset.engine;
+      engineButtons.forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
+      searchInput.placeholder=searchEngines[searchEngine].label;
+      searchInput.setAttribute('aria-label',searchInput.placeholder);
+      searchInput.focus();
+    }));
+    searchForm.addEventListener('submit',event=>{
+      event.preventDefault();
+      const query=searchInput.value.trim();
+      if(query)window.open(searchEngines[searchEngine].url+encodeURIComponent(query),'_blank','noopener');
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key!=='/'||event.ctrlKey||event.metaKey||event.altKey||event.defaultPrevented)return;
+      if(event.target.closest('input,textarea,select,[contenteditable]')||toolDialog.open||document.getElementById('modalBg').classList.contains('show'))return;
+      event.preventDefault();
+      searchInput.focus();
+    });
+    function tick(){
+      const now=new Date();
+      const hour=now.getHours();
+      const pad=number=>String(number).padStart(2,'0');
+      const greeting=hour<5?'夜深了':hour<12?'上午好':hour<18?'下午好':'晚上好';
+      const weeks=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+      document.getElementById('time').textContent=pad(hour)+'\u202f:\u202f'+pad(now.getMinutes());
+      document.getElementById('date').textContent=greeting+' · '+now.getFullYear()+' 年 '+(now.getMonth()+1)+' 月 '+now.getDate()+' 日 '+weeks[now.getDay()];
+    }
+    tick();
+    setInterval(tick,30000);
+    render();
   </script>
 </body>
 </html>
