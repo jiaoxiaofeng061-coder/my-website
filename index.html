@@ -206,14 +206,18 @@
     .feedback-mode span{display:block;padding:8px 4px;border-radius:7px;color:var(--muted);text-align:center;font-size:13px}
     .feedback-mode input:checked+span{color:var(--accent-text,var(--accent));background:var(--soft);font-weight:600}
     .feedback-mode input:focus-visible+span{outline:2px solid var(--accent)}
-    .feedback-fields{grid-template-columns:clamp(74px,30%,138px) minmax(0,1fr);grid-template-rows:repeat(4,68px) 16px;gap:0 clamp(8px,3vw,20px);align-items:center;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--canvas)}
-    .feedback-schematic{grid-column:1;grid-row:1/-1;min-width:0;width:100%;height:100%;border-radius:9px;background:radial-gradient(circle,var(--line) 1px,transparent 1px) 0 0/12px 12px var(--surface,#fff);color:var(--muted)}
+    #feedbackFields{margin-top:16px}
+    .feedback-fields{grid-template-columns:minmax(68px,28%) minmax(0,1fr);gap:clamp(10px,3vw,18px);align-items:stretch}
+    .feedback-drawing{display:grid;place-items:center;padding:4px;border-radius:11px;background:var(--canvas)}
+    .feedback-schematic{display:block;width:100%;max-width:104px;height:auto;color:var(--muted)}
     .feedback-schematic :is(path,rect,circle){vector-effect:non-scaling-stroke}
-    .feedback-schematic text{fill:currentColor;font:600 10px Arial,sans-serif;letter-spacing:.3px}
-    .feedback-fields>label,.feedback-node{grid-column:2;min-width:0}
+    .feedback-schematic text{fill:currentColor;font:600 12px Arial,sans-serif}
+    .feedback-controls{display:grid;align-content:center;gap:12px;min-width:0}
+    .feedback-fields .feedback-controls label{font-weight:600}
+    .feedback-fields .feedback-controls label[hidden]{display:none}
+    .feedback-fields .feedback-controls input{border-color:var(--muted);background:var(--surface,#fff);font-weight:400}
     .feedback-fields input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
     .feedback-node{display:grid;gap:5px;font-size:13px}
-    .feedback-fields :is(.feedback-node input,.feedback-readout)[hidden]{display:none}
     .feedback-readout{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:40px;padding:3px 6px 3px 9px;border-radius:9px;background:var(--soft)}
     .feedback-readout output{min-width:0;color:var(--accent-text,var(--accent));font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
     .feedback-readout .tool-copy{padding-inline:5px}
@@ -236,6 +240,11 @@
     [data-theme="dark"] .tool-copy{color:var(--accent-text)}
     .tool-copy:disabled{opacity:.55;cursor:default}
     .tool-panel .tool-status{min-height:1.4em;margin:10px 0 0}
+    .power-formulas{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}
+    .power-formulas h3{margin:0 0 10px;font-size:14px}
+    .power-formulas ul{display:grid;gap:8px;margin:0;padding:0;list-style:none;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+    .power-formulas li{font-variant-numeric:tabular-nums}
+    .tool-panel .power-formulas p{margin:10px 0 0;font-size:12px;line-height:1.6}
   </style>
 </head>
 <body>
@@ -298,43 +307,83 @@
           <label><input type="radio" name="feedbackSolve"><span>算下臂 R2</span></label>
         </div>
         <div class="tool-fields feedback-fields">
-          <svg class="feedback-schematic" viewBox="0 0 128 288" preserveAspectRatio="none" role="img" aria-label="Vout 经 R1 接到 FB，FB 经 R2 接地。">
-            <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-              <path d="M30 34H80V83M80 121V200M80 238V268M30 170H80"/>
-              <circle cx="26" cy="34" r="4"/>
-              <circle cx="26" cy="170" r="4"/>
-              <rect class="feedback-symbol-upper" x="70" y="83" width="20" height="38" rx="1"/>
-              <rect class="feedback-symbol-lower" x="70" y="200" width="20" height="38" rx="1"/>
-              <path d="M66 268h28M71 273h18M76 278h8"/>
-            </g>
-            <circle cx="80" cy="170" r="3" fill="currentColor"/>
-            <text x="26" y="23" text-anchor="middle">VOUT</text>
-            <text x="26" y="159" text-anchor="middle">FB</text>
-            <text x="99" y="106">R1</text>
-            <text x="99" y="223">R2</text>
-          </svg>
-          <label>Vout · 输出电压（V）<input id="feedbackOutput" type="number" min="0" step="any" placeholder="例如 3.3"></label>
-          <div class="feedback-node" data-feedback-resistor="upper">
-            <label for="feedbackUpper" id="feedbackUpperLabel">R1 · 上臂电阻（kΩ）</label>
-            <input id="feedbackUpper" type="number" min="0" step="any" value="10" hidden>
-            <div class="feedback-readout">
-              <output aria-labelledby="feedbackUpperLabel" for="feedbackOutput feedbackReference feedbackLower"></output>
-              <button type="button" class="tool-copy" aria-label="复制上臂电阻" disabled>复制</button>
-            </div>
+          <div class="feedback-drawing">
+            <svg class="feedback-schematic" viewBox="0 0 104 248" role="img" aria-label="Vout 经 R1 接到 FB，FB 经 R2 接地。">
+              <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M23 24H55V60M55 92V164M55 196V232M23 128H55"/>
+                <circle cx="20" cy="24" r="3"/>
+                <circle cx="20" cy="128" r="3"/>
+                <rect class="feedback-symbol-upper" x="47" y="60" width="16" height="32" rx="1"/>
+                <rect class="feedback-symbol-lower" x="47" y="164" width="16" height="32" rx="1"/>
+                <path d="M43 232h24M47 237h16M51 242h8"/>
+              </g>
+              <circle cx="55" cy="128" r="3" fill="currentColor"/>
+              <text x="20" y="15" text-anchor="middle">Vout</text>
+              <text x="20" y="119" text-anchor="middle">FB</text>
+              <text x="73" y="80">R1</text>
+              <text x="73" y="184">R2</text>
+            </svg>
           </div>
-          <label>FB · 参考电压 Vref（V）<input id="feedbackReference" type="number" min="0" step="any" placeholder="例如 0.8"></label>
-          <div class="feedback-node" data-feedback-resistor="lower">
-            <label for="feedbackLower" id="feedbackLowerLabel">R2 · 下臂电阻（kΩ）</label>
-            <input id="feedbackLower" type="number" min="0" step="any" value="10">
-            <div class="feedback-readout" hidden>
-              <output aria-labelledby="feedbackLowerLabel" for="feedbackOutput feedbackReference feedbackUpper"></output>
-              <button type="button" class="tool-copy" aria-label="复制下臂电阻" disabled>复制</button>
+          <div class="feedback-controls">
+            <label>输出电压（V）<input id="feedbackOutput" type="number" min="0" step="any" placeholder="例如 3.3"></label>
+            <label>参考电压（V）<input id="feedbackReference" type="number" min="0" step="any" placeholder="例如 0.8"></label>
+            <label id="feedbackUpperField" hidden>已知 R1（kΩ）<input id="feedbackUpper" type="number" min="0" step="any" value="10"></label>
+            <label id="feedbackLowerField">已知 R2（kΩ）<input id="feedbackLower" type="number" min="0" step="any" value="10"></label>
+            <div class="feedback-node">
+              <span id="feedbackResultLabel">R1 结果</span>
+              <div class="feedback-readout">
+                <output id="feedbackResult" aria-labelledby="feedbackResultLabel" for="feedbackOutput feedbackReference feedbackLower">—</output>
+                <button type="button" class="tool-copy" id="feedbackCopy" aria-label="复制计算结果" disabled>复制</button>
+              </div>
             </div>
           </div>
         </div>
       </section>
+      <section id="adcFields" hidden>
+        <div class="tool-fields feedback-controls">
+          <label>采样率（MS/s）<input id="adcRate" type="number" min="0" step="any" value="100"></label>
+          <label>输入频率（MHz）<input id="adcFrequency" type="number" min="0" step="any" value="10"></label>
+        </div>
+        <p id="adcSummary" class="tool-status" aria-live="polite"></p>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+          <button class="tool-copy" id="adcPlay" type="button" aria-pressed="false">播放</button>
+          <span style="font-size:12px;color:var(--muted)">慢速演示 · 每 2 秒滚动一个周期</span>
+        </div>
+        <svg id="adcPlot" role="img" aria-label="正弦波、采样点及一个完整周期" style="display:block;width:100%;height:300px"></svg>
+        <p style="margin:4px 0 0">实线为输入信号，圆点为采样值；阴影区标记一个周期。</p>
+      </section>
+      <section id="exchangeFields" hidden>
+        <div class="tool-fields">
+          <label class="tool-extra-field">金额<input id="exchangeAmount" type="number" min="0" step="any" value="100"></label>
+          <label>从<select id="exchangeFrom"></select></label>
+          <label>换成<select id="exchangeTo"></select></label>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button type="button" class="tool-copy" id="exchangeSwap">交换币种 ⇄</button>
+          <button type="button" class="tool-copy" id="exchangeRefresh">刷新汇率</button>
+        </div>
+        <div class="tool-result" style="margin-top:16px">
+          <output id="exchangeResult" for="exchangeAmount exchangeFrom exchangeTo">—</output>
+          <button type="button" class="tool-copy" id="exchangeCopy" disabled>复制</button>
+        </div>
+        <p class="tool-status" id="exchangeStatus" role="status"></p>
+        <p style="margin:8px 0 0;font-size:12px">来源 <a href="https://frankfurter.dev" target="_blank" rel="noopener" style="color:inherit">Frankfurter</a> · 每日参考汇率，实际兑换以银行报价为准。</p>
+      </section>
       <div class="tool-results" id="toolResults"></div>
       <p class="tool-status" id="toolStatus" role="status"></p>
+      <section class="power-formulas" id="powerFormulas" hidden aria-labelledby="powerFormulasTitle">
+        <h3 id="powerFormulasTitle">转换公式</h3>
+        <ul>
+          <li>P<sub>dBm</sub> = 10 log<sub>10</sub>(P<sub>mW</sub>)</li>
+          <li>P<sub>mW</sub> = 10<sup>(P<sub>dBm</sub> / 10)</sup></li>
+          <li>V<sub>rms</sub> = V<sub>pp</sub> / (2√2)</li>
+          <li>P<sub>W</sub> = V<sub>rms</sub>² / R = V<sub>pp</sub>² / (8R)</li>
+          <li>V<sub>pp</sub> = √(8R × 10<sup>(P<sub>dBm</sub> − 30) / 10</sup>)</li>
+          <li>P<sub>dBm</sub> = 10 log<sub>10</sub>(1000V<sub>pp</sub>² / (8R))</li>
+          <li>1 W = 1000 mW = 1,000,000 µW</li>
+        </ul>
+        <p>Vpp 为峰峰值，Vrms 为有效值，单位均为 V；R 为上方填写的负载阻抗，单位为 Ω。电压公式适用于无直流偏置的正弦波和纯电阻负载。</p>
+      </section>
       <section class="resistor-values" id="resistorValuesPanel" aria-labelledby="resistorValuesTitle" hidden>
         <h3 id="resistorValuesTitle"></h3>
         <ul id="resistorValuesList" tabindex="0" aria-labelledby="resistorValuesTitle"></ul>
@@ -746,6 +795,14 @@
       localStorage.setItem('homebase-tools-v2', 'done');
     }
     const conversionTools = {
+      adc: {
+        name:'ADC 采样示意', summary:'采样率 / 信号频率 / 采样点',
+        icon:'<path d="M2 12c4-12 6 12 10 0s6 12 10 0"/><circle cx="6" cy="10" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="14" r="1"/>'
+      },
+      exchange: {
+        name:'汇率换算', summary:'人民币 / 美元 / 欧元等',
+        icon:'<path d="M3 7h17l-4-4M21 17H4l4 4M20 7l-4 4M4 17l4-4"/>'
+      },
       length: {
         name:'长度换算', description:'PCB 线宽、间距和孔径', units:{mil:0.0254, mm:1, cm:10, 'µm':0.001},
         icon:'<path d="m3 16 13-13 5 5L8 21zM12 7l3 3M9 10l2 2M6 13l3 3"/>'
@@ -778,7 +835,6 @@
       },
       feedback: {
         name:'电源反馈电阻', summary:'输出电压 / 参考电压 → 电阻',
-        description:'选择要计算的电阻，再在图中填入 Vout、Vref 和另一颗电阻的阻值。',
         icon:'<path d="M12 2v2l-3 2 6 2-3 2v2m0 0h7m-7 0v2l-3 2 6 2-3 2v2"/>'
       }
     };
@@ -807,7 +863,8 @@
     const feedbackOutput = document.getElementById('feedbackOutput');
     const feedbackReference = document.getElementById('feedbackReference');
     const feedbackSolveUpper = document.getElementById('feedbackSolveUpper');
-    const feedbackResistors = feedbackFields.querySelectorAll('[data-feedback-resistor]');
+    const feedbackResult = document.getElementById('feedbackResult');
+    const feedbackCopy = document.getElementById('feedbackCopy');
     const toolLoadField = document.getElementById('toolLoadField');
     const toolLoad = document.getElementById('toolLoad');
     const resistorSeriesField = document.getElementById('resistorSeriesField');
@@ -819,6 +876,154 @@
     const lengthComparison = document.getElementById('lengthComparison');
     const toolNumberFormat = new Intl.NumberFormat('en', {useGrouping:false, maximumSignificantDigits:10});
     let activeTool;
+    const adcFields = document.getElementById('adcFields');
+    const adcRate = document.getElementById('adcRate');
+    const adcFrequency = document.getElementById('adcFrequency');
+    const adcPlot = document.getElementById('adcPlot');
+    const adcPlay = document.getElementById('adcPlay');
+    let adcOffset = 0;
+    let adcFrame = 0;
+    let adcLastFrame = 0;
+    let adcPlaying = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function syncADCAnimation() {
+      cancelAnimationFrame(adcFrame);
+      adcFrame = 0;
+      adcLastFrame = 0;
+      adcPlay.textContent = adcPlaying ? '暂停' : '播放';
+      adcPlay.setAttribute('aria-pressed', String(adcPlaying));
+      if (adcPlaying && toolDialog.open && !adcFields.hidden && !document.hidden) {
+        adcFrame = requestAnimationFrame(animateADC);
+      }
+    }
+    function animateADC(timestamp) {
+      if (!adcLastFrame) adcLastFrame = timestamp;
+      const elapsed = timestamp - adcLastFrame;
+      if (elapsed >= 33) {
+        adcOffset += Math.min(elapsed, 100) / 2000;
+        adcLastFrame = timestamp;
+        updateADC();
+      }
+      adcFrame = requestAnimationFrame(animateADC);
+    }
+    adcPlay.addEventListener('click', () => {
+      adcPlaying = !adcPlaying;
+      syncADCAnimation();
+    });
+    toolDialog.addEventListener('close', syncADCAnimation);
+    document.addEventListener('visibilitychange', syncADCAnimation);
+    function updateADC() {
+      const rate = adcRate.valueAsNumber;
+      const frequency = adcFrequency.valueAsNumber;
+      const summary = document.getElementById('adcSummary');
+      adcPlot.innerHTML = '';
+      if (!Number.isFinite(rate) || !Number.isFinite(frequency) || rate <= 0 || frequency <= 0) {
+        summary.textContent = '请输入大于 0 的采样率和信号频率。';
+        return;
+      }
+      const ratio = rate / frequency;
+      const period = 1000 / frequency;
+      if (!Number.isFinite(period) || !Number.isFinite(ratio) || period <= 0 || ratio <= 0) {
+        summary.textContent = '数值超出显示范围，请调整输入。';
+        return;
+      }
+      const fmt = value => Number(value.toPrecision(4)).toString();
+      const scale = period >= 1e9 ? 1e9 : period >= 1e6 ? 1e6 : period >= 1000 ? 1000 : 1;
+      const unit = scale === 1e9 ? 's' : scale === 1e6 ? 'ms' : scale === 1000 ? 'µs' : 'ns';
+      summary.textContent = `周期 T = ${fmt(period/scale)} ${unit} · 每周期平均 ${fmt(ratio)} 个采样点`;
+      const width = Math.max(260, adcPlot.clientWidth);
+      adcPlot.setAttribute('viewBox', `0 0 ${width} 300`);
+      const x = cycles => 38 + cycles / 3 * (width - 66);
+      const y = value => 228 - value * 56;
+      const voltage = cycles => 1.5 + Math.sin(2 * Math.PI * (cycles + adcOffset));
+      let svg = `<rect x="${x(0)}" y="61" width="${x(1)-x(0)}" height="167" fill="var(--soft)"/>
+        <text x="${(x(0)+x(1))/2}" y="20" text-anchor="middle" fill="var(--ink)" font-size="13">一个周期 T</text>
+        <path d="M${x(0)} 49V33H${x(1)}V49M${x(0)+5} 29L${x(0)} 33L${x(0)+5} 37M${x(1)-5} 29L${x(1)} 33L${x(1)-5} 37" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="3" y="53" fill="var(--muted)" font-size="12">V</text>`;
+      for (let tick=0; tick<=3; tick++) {
+        svg += `<line x1="38" y1="${y(tick)}" x2="${width-28}" y2="${y(tick)}" stroke="var(--line)"/><text x="15" y="${y(tick)+4}" fill="var(--muted)" font-size="12">${tick}</text>`;
+        svg += `<text x="${x(tick)}" y="253" text-anchor="middle" fill="var(--muted)" font-size="12">${fmt(tick*period/scale)}</text>`;
+      }
+      let curve = '';
+      for (let i=0;i<=600;i++) curve += `${i ? 'L' : 'M'}${x(i/200)} ${y(voltage(i/200))} `;
+      svg += `<path d="${curve}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+      if (ratio <= 500) {
+        const first = Math.ceil(adcOffset*ratio);
+        const last = Math.floor((adcOffset+3)*ratio+1e-9);
+        for (let i=first;i<=last;i++) {
+          const cycles = i/ratio - adcOffset;
+          svg += `<circle cx="${x(cycles)}" cy="${y(voltage(cycles))}" r="${last-first>100?2:4}" fill="var(--ink)"><title>采样 ${i+1} · ${fmt(i/ratio*period/scale)} ${unit} · ${voltage(cycles).toFixed(3)} V</title></circle>`;
+        }
+      } else {
+        summary.textContent += ' · 采样点过密，暂隐藏圆点；降低采样率可查看。';
+      }
+      svg += `<text x="${width-28}" y="282" text-anchor="end" fill="var(--muted)" font-size="12">窗口内相对时间 / ${unit}</text>`;
+      adcPlot.innerHTML = svg;
+    }
+    adcFields.addEventListener('input', () => {
+      adcOffset = 0;
+      adcLastFrame = 0;
+      updateADC();
+    });
+    new ResizeObserver(() => {if (!adcFields.hidden) updateADC();}).observe(adcPlot);
+    const exchangeFields = document.getElementById('exchangeFields');
+    const exchangeAmount = document.getElementById('exchangeAmount');
+    const exchangeFrom = document.getElementById('exchangeFrom');
+    const exchangeTo = document.getElementById('exchangeTo');
+    const exchangeStatus = document.getElementById('exchangeStatus');
+    const exchangeResult = document.getElementById('exchangeResult');
+    const exchangeCopy = document.getElementById('exchangeCopy');
+    const currencies = {CNY:'人民币', USD:'美元', EUR:'欧元', HKD:'港币', JPY:'日元', GBP:'英镑', KRW:'韩元', SGD:'新加坡元', AUD:'澳元', CAD:'加元', CHF:'瑞士法郎'};
+    const currencyOptions = Object.entries(currencies).map(([code, name]) => `<option value="${code}">${name} ${code}</option>`).join('');
+    exchangeFrom.innerHTML = exchangeTo.innerHTML = currencyOptions;
+    exchangeFrom.value = 'USD';
+    exchangeTo.value = 'CNY';
+    let exchangeRate;
+    let exchangeNote = '';
+    let exchangeRequest = 0;
+
+    function updateExchangeResult() {
+      const amount = exchangeAmount.valueAsNumber;
+      const value = amount * exchangeRate;
+      const valid = Number.isFinite(amount) && amount >= 0 && Number.isFinite(value);
+      exchangeResult.textContent = valid ? `${new Intl.NumberFormat('zh-CN', {maximumFractionDigits:4}).format(value)} ${exchangeTo.value}` : '—';
+      exchangeCopy.disabled = !valid;
+      exchangeStatus.textContent = exchangeNote;
+      if (exchangeAmount.validity.badInput || (exchangeAmount.value && (!Number.isFinite(amount) || amount < 0))) {
+        exchangeStatus.textContent = '请输入非负的有效金额。';
+      } else if (Number.isFinite(amount) && Number.isFinite(exchangeRate) && !Number.isFinite(value)) {
+        exchangeStatus.textContent = '金额超出计算范围。';
+      }
+    }
+
+    async function loadExchangeRate() {
+      const request = ++exchangeRequest;
+      exchangeRate = undefined;
+      exchangeNote = '正在获取汇率…';
+      updateExchangeResult();
+      if (exchangeFrom.value === exchangeTo.value) {
+        exchangeRate = 1;
+        exchangeNote = '同币种按 1∶1 换算。';
+        updateExchangeResult();
+        return;
+      }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      try {
+        const response = await fetch(`https://api.frankfurter.dev/v2/rate/${exchangeFrom.value}/${exchangeTo.value}`, {signal:controller.signal});
+        if (!response.ok) throw new Error('Rate request failed');
+        const data = await response.json();
+        if (!(Number.isFinite(data.rate) && data.rate > 0 && /^\d{4}-\d{2}-\d{2}$/.test(data.date))) throw new Error('Invalid rate');
+        if (request !== exchangeRequest) return;
+        exchangeRate = data.rate;
+        exchangeNote = `1 ${exchangeFrom.value} = ${data.rate} ${exchangeTo.value} · ${data.date}`;
+      } catch {
+        if (request !== exchangeRequest) return;
+        exchangeNote = '汇率获取失败，请检查网络后点击“刷新汇率”。';
+      } finally {
+        clearTimeout(timeout);
+      }
+      updateExchangeResult();
+    }
 
     function convertToolValue(value, from, to, units, reciprocal = false, resistance = 50) {
       if (reciprocal) return (1 / (units[from] * units[to])) / value;
@@ -841,14 +1046,21 @@
       activeTool = conversionTools[key];
       const units = Object.keys(activeTool.units ?? {});
       document.getElementById('toolTitle').textContent = activeTool.name;
-      document.getElementById('toolDescription').textContent = activeTool.description;
+      const description = document.getElementById('toolDescription');
+      description.textContent = activeTool.description ?? '';
+      description.hidden = !activeTool.description;
       toolInput.value = '';
       feedbackFields.hidden = key !== 'feedback';
-      conversionFields.hidden = !feedbackFields.hidden;
-      toolResults.hidden = !feedbackFields.hidden;
-      toolInput.autofocus = feedbackFields.hidden;
+      exchangeFields.hidden = key !== 'exchange';
+      adcFields.hidden = key !== 'adc';
+      conversionFields.hidden = !feedbackFields.hidden || !exchangeFields.hidden || !adcFields.hidden;
+      toolResults.hidden = conversionFields.hidden;
+      toolInput.autofocus = !conversionFields.hidden;
+      exchangeAmount.autofocus = !exchangeFields.hidden;
+      adcRate.autofocus = !adcFields.hidden;
       feedbackOutput.autofocus = !feedbackFields.hidden;
       toolLoadField.hidden = key !== 'power';
+      document.getElementById('powerFormulas').hidden = key !== 'power';
       resistorSeriesField.hidden = key !== 'resistor';
       resistorValuesPanel.hidden = resistorSeriesField.hidden;
       frequencyAnimation.hidden = key !== 'frequency';
@@ -868,6 +1080,8 @@
       }
       updateToolResults();
       toolDialog.showModal();
+      syncADCAnimation();
+      if (key === 'exchange') loadExchangeRate();
     }
 
     function updateLengthComparison(millimeters) {
@@ -1013,23 +1227,29 @@
       }
       toolStatus.textContent = message;
       feedbackFields.dataset.solve = target;
-      for (const resistor of feedbackResistors) {
-        const isTarget = resistor.dataset.feedbackResistor === target;
-        const readout = resistor.querySelector('.feedback-readout');
-        const copy = readout.querySelector('button');
-        resistor.querySelector('input').hidden = isTarget;
-        readout.hidden = !isTarget;
-        copy.disabled = !isTarget || result === undefined || Boolean(message);
-        let display = '—';
-        if (!copy.disabled) {
-          const formatted = result >= 1e9 || result < 1e-6 ? result.toExponential(7) : toolNumberFormat.format(result);
-          display = `${formatted} kΩ`;
-        }
-        readout.querySelector('output').textContent = display;
+      document.getElementById('feedbackUpperField').hidden = solveUpper;
+      document.getElementById('feedbackLowerField').hidden = !solveUpper;
+      document.getElementById('feedbackResultLabel').textContent = solveUpper ? 'R1 结果' : 'R2 结果';
+      feedbackResult.setAttribute('for', `feedbackOutput feedbackReference ${knownInput.id}`);
+      feedbackCopy.disabled = result === undefined || Boolean(message);
+      feedbackResult.textContent = '—';
+      if (!feedbackCopy.disabled) {
+        const formatted = result >= 1e9 || result < 1e-6 ? result.toExponential(7) : toolNumberFormat.format(result);
+        feedbackResult.textContent = `${formatted} kΩ`;
       }
     }
 
     function updateToolResults() {
+      if (!adcFields.hidden) {
+        toolStatus.textContent = '';
+        updateADC();
+        return;
+      }
+      if (!exchangeFields.hidden) {
+        toolStatus.textContent = '';
+        updateExchangeResult();
+        return;
+      }
       if (!feedbackFields.hidden) {
         updateFeedbackResults();
         return;
@@ -1081,6 +1301,17 @@
     }
 
     toolInput.addEventListener('input', updateToolResults);
+    exchangeAmount.addEventListener('input', updateExchangeResult);
+    exchangeFrom.addEventListener('change', loadExchangeRate);
+    exchangeTo.addEventListener('change', loadExchangeRate);
+    document.getElementById('exchangeRefresh').addEventListener('click', loadExchangeRate);
+    document.getElementById('exchangeSwap').addEventListener('click', () => {
+      const from = exchangeFrom.value;
+      exchangeFrom.value = exchangeTo.value;
+      exchangeTo.value = from;
+      loadExchangeRate();
+    });
+    exchangeFields.addEventListener('click', copyToolResult);
     feedbackFields.addEventListener('input', updateToolResults);
     toolUnit.addEventListener('change', updateToolResults);
     toolLoad.addEventListener('input', updateToolResults);
