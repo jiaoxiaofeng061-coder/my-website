@@ -20,6 +20,7 @@
     .mark{position:relative;width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:10px;overflow:visible}
     .mark img{position:absolute;left:50%;top:50%;width:32px;height:32px;padding:0;display:block;object-fit:contain;object-position:center;border:0;border-radius:0;background:transparent;transform:translate(-50%,-50%)}
     .mark:has(img){background:transparent!important}
+    .mark:has(> img[src="logos/google-maps.png"]) > span{visibility:hidden}
     .copy strong,.copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .copy small{display:none}
     .card{justify-content:center}
@@ -273,10 +274,10 @@
       </div>
       <form class="search" role="search">
         <div class="search-engines" role="group" aria-label="搜索引擎">
-          <button type="button" data-engine="baidu" aria-pressed="false">百度</button>
-          <button type="button" data-engine="google" aria-pressed="true">Google</button>
+          <button type="button" data-engine="baidu" aria-pressed="true">百度</button>
+          <button type="button" data-engine="google" aria-pressed="false">Google</button>
         </div>
-        <input type="search" aria-label="在 Google 中搜索" placeholder="在 Google 中搜索">
+        <input type="search" aria-label="百度一下" placeholder="百度一下">
         <kbd class="search-shortcut" aria-hidden="true">/</kbd>
         <button class="search-submit" type="submit" aria-label="搜索">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4 4"/></svg>
@@ -477,6 +478,15 @@
       id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
       url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
     };
+    const railway12306={
+      id:'common-12306', name:'12306', description:'中国铁路官方购票与车次查询',
+      url:'https://www.12306.cn/index/', mark:'铁', color:'#2878c8'
+    };
+    const googleMapsUrlPattern = /^https?:\/\/(?:(?:www\.)?google\.com\/maps(?:[/?#]|$)|maps\.google\.com(?:[/?#]|$)|maps\.app\.goo\.gl(?:[/?#]|$)|goo\.gl\/maps(?:[/?#]|$))/i;
+    const googleMaps={
+      id:'common-google-maps', name:'Google 地图', description:'地图、路线与地点查询',
+      url:'https://www.google.com/maps', mark:'G', color:'#1a73e8'
+    };
     const defaults=[
       {id:'ai-agents',name:'智能体',links:[
         {id:'agent-chatgpt',name:'ChatGPT',description:'OpenAI 通用智能体',url:'https://chatgpt.com/',mark:'C',color:'#10a37f'},
@@ -542,12 +552,14 @@
         {id:'shop-yanxuan',name:'网易严选',description:'品质生活与家居好物',url:'https://you.163.com/',mark:'严',color:'#b4a078'}
       ]},
       {id:'common',name:'常用',links:[
+        railway12306,
         {id:'common-feishu',name:'飞书',description:'沟通、文档与协作',url:'https://www.feishu.cn/',mark:'飞',color:'#3370ff'},
         {id:'common-tencent-docs',name:'腾讯文档',description:'在线文档与表格',url:'https://docs.qq.com/',mark:'T',color:'#20a06b'},
         {id:'common-notion',name:'Notion',description:'知识库与项目管理',url:'https://www.notion.so/',mark:'N',color:'#25272b'},
         {id:'common-figma',name:'Figma',description:'界面与原型设计',url:'https://www.figma.com/',mark:'F',color:'#a259ff'},
         {id:'common-zhihu',name:'知乎',description:'发现问题与答案',url:'https://www.zhihu.com/',mark:'知',color:'#1772f6'},
-        {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
+        {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'},
+        googleMaps
       ]},
       {id:'life',name:'视频',links:[
         {id:'video-bilibili',name:'哔哩哔哩',description:'综合视频与社区',url:'https://www.bilibili.com/',mark:'B',color:'#00aeec'},
@@ -709,6 +721,21 @@
         {id:'common-baidu-map',name:'百度地图',description:'地图、路线与地点查询',url:'https://map.baidu.com/',mark:'图',color:'#3975f6'}
       ]);
       save();localStorage.setItem('homebase-common-restore-v2','done');
+    }
+    if (!localStorage.getItem('homebase-common-12306-v1')) {
+      ensureCategory('common','常用',[railway12306]);
+      save();
+      localStorage.setItem('homebase-common-12306-v1','done');
+    }
+    if (!localStorage.getItem('homebase-common-google-maps-v1')) {
+      const common = data.find(category => category.id === 'common' || category.name === '常用');
+      if (common && !common.links.some(link => link.id === googleMaps.id || link.name === googleMaps.name ||
+        googleMapsUrlPattern.test(link.url))) {
+        const baiduIndex = common.links.findIndex(link => link.id === 'common-baidu-map' || link.name === '百度地图');
+        common.links.splice(baiduIndex === -1 ? common.links.length : baiduIndex + 1, 0, {...googleMaps});
+        save();
+      }
+      localStorage.setItem('homebase-common-google-maps-v1', 'done');
     }
     if (!localStorage.getItem('homebase-common-bilibili-removal-v1')) {
       const common = data.find(category => category.id === 'common' || category.name === '常用');
@@ -1340,9 +1367,16 @@
 
     let editMode=false;
     function toggleEditMode(){editMode=!editMode;document.body.classList.toggle('edit-mode',editMode);render()}
-    const vectorLogoHosts=new Set(['zh.wikipedia.org','mail.163.com','fanyi.baidu.com']);
+    const vectorLogoHosts=new Set(['zh.wikipedia.org','mail.163.com','fanyi.baidu.com','www.12306.cn']);
     const symbolLogoHosts=new Set(['www.amd.com','www.analog.com','www.microchip.com','www.skyworksinc.com','www.arm.com','www.panasonic.com']);
-    function faviconUrl(url){try{const host=new URL(url).hostname;if(symbolLogoHosts.has(host))return 'logos/'+host+'-icon.svg';return 'logos/'+host+(vectorLogoHosts.has(host)?'.svg':'.png')}catch{return ''}}
+    function faviconUrl(url){
+      if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
+      try {
+        const host = new URL(url).hostname;
+        if (symbolLogoHosts.has(host)) return 'logos/'+host+'-icon.svg';
+        return 'logos/'+host+(vectorLogoHosts.has(host)?'.svg':'.png');
+      } catch { return ''; }
+    }
     function logoClass(){return ''}
     function render(){
       const c=current();
@@ -1364,7 +1398,7 @@
       baidu:{url:'https://www.baidu.com/s?wd=',label:'百度一下'},
       google:{url:'https://www.google.com/search?q=',label:'在 Google 中搜索'}
     };
-    let searchEngine='google';
+    let searchEngine='baidu';
     engineButtons.forEach(button=>button.addEventListener('click',()=>{
       searchEngine=button.dataset.engine;
       engineButtons.forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
