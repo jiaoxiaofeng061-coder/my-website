@@ -171,6 +171,15 @@
     .tool-card .mark svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
     .tool-card .copy{text-align:left}
     .tool-card .copy small{display:block;margin-top:4px}
+    .local-tool-dialog{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--surface,#fff);color:var(--ink)}
+    .local-tool-dialog[open]{display:grid;grid-template-rows:auto minmax(0,1fr)}
+    .local-tool-dialog header{border-bottom:1px solid var(--line)}
+    .local-tool-navigation{max-width:1120px;margin-inline:auto;padding:2px 24px}
+    .local-tool-navigation button{min-height:40px;padding:0 6px;margin-inline-start:-6px;border:0;border-radius:5px;background:transparent;color:var(--accent-text,var(--accent));cursor:pointer}
+    .local-tool-navigation button:hover{background:var(--soft)}
+    .local-tool-navigation button:focus-visible{outline:2px solid currentColor;outline-offset:1px}
+    .local-tool-dialog iframe{display:block;width:100%;height:100%;border:0}
+    @media(max-width:560px){.local-tool-navigation{padding-inline:12px}}
     .tool-dialog{width:min(440px,calc(100% - 32px));max-height:calc(100% - 32px);padding:0;border:1px solid var(--line);border-radius:20px;background:var(--surface,#fff);color:var(--ink);box-shadow:0 24px 70px #1c1f2b38}
     .tool-dialog::backdrop{background:#191c2666;backdrop-filter:blur(3px)}
     .tool-dialog:has(.tool-animation:not([hidden])){width:min(600px,calc(100% - 32px))}
@@ -426,6 +435,11 @@
         </div>
       </div>
     </div>
+  </dialog>
+  <dialog class="local-tool-dialog" id="localToolDialog" aria-label="工具演示">
+    <header><div class="local-tool-navigation">
+      <button type="button" id="returnFromLocalTool" autofocus><span aria-hidden="true">← </span>返回我的工作台</button>
+    </div></header>
   </dialog>
   <div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><button class="close" onclick="hideModal()">×</button><h3 id="modalTitle"></h3><p id="modalDesc"></p><form id="modalForm"></form></div></div>
   <script>
@@ -1382,6 +1396,34 @@
         return 'logos/'+host+(vectorLogoHosts.has(host)?'.svg':'.png');
       } catch { return ''; }
     }
+    const localToolDialog = document.getElementById('localToolDialog');
+    function syncLocalTool() {
+      const tool = workbenchTools[window.history.state?.homebaseLocalTool];
+      if (tool?.href) {
+        if (localToolDialog.open) return;
+        const frame = document.createElement('iframe');
+        frame.src = tool.href;
+        frame.title = tool.name + " " + tool.summary;
+        localToolDialog.append(frame);
+        localToolDialog.showModal();
+      } else if (localToolDialog.open) {
+        localToolDialog.querySelector('iframe').remove();
+        localToolDialog.close();
+      }
+    }
+    function openLocalTool(event, key) {
+      if (window.location.protocol !== 'file:' || event.button !== 0 || event.ctrlKey ||
+          event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      window.history.pushState({...window.history.state, homebaseLocalTool:key}, '');
+      syncLocalTool();
+    }
+    window.addEventListener('popstate', syncLocalTool);
+    document.getElementById('returnFromLocalTool').addEventListener('click', () => window.history.back());
+    localToolDialog.addEventListener('cancel', event => {
+      event.preventDefault();
+      window.history.back();
+    });
     function logoClass(){return ''}
     function render(){
       const c=current();
@@ -1396,7 +1438,7 @@
           <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true">${tool.icon}</svg></span>
           <span class="copy"><strong>${tool.name}</strong><small>${tool.summary ?? Object.keys(tool.units).join(' / ')}</small></span>`;
         return tool.href
-          ? `<a class="card tool-card" href="${tool.href}">${label}</a>`
+          ? `<a class="card tool-card" href="${tool.href}" onclick="openLocalTool(event, '${key}')">${label}</a>`
           : `<button type="button" class="card tool-card" onclick="openTool('${key}')">${label}</button>`;
       }).join('') : '';
       const cards=c.links.map(l=>`<div class="wrap" draggable="${editMode}" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}"><span>${esc(l.mark)}</span>${faviconUrl(l.url)?`<img class="${logoClass(l.url)}" src="${esc(faviconUrl(l.url))}" alt="" onerror="this.remove()">`:''}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a>${editMode?`<button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button>`:''}</div>`).join('');
@@ -1444,6 +1486,7 @@
       active = 'tools';
     }
     render();
+    syncLocalTool();
   </script>
 </body>
 </html>
