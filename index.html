@@ -821,10 +821,15 @@
       save();
       localStorage.setItem('homebase-tools-v2', 'done');
     }
-    const conversionTools = {
+    const workbenchTools = {
       adc: {
         name:'ADC 采样示意', summary:'采样率 / 信号频率 / 采样点',
         icon:'<path d="M2 12c4-12 6 12 10 0s6 12 10 0"/><circle cx="6" cy="10" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="14" r="1"/>'
+      },
+      jesd204b: {
+        name:'JESD204B', summary:'原理演示与参数计算',
+        href:'./JESD204B原理演示与参数计算.html',
+        icon:'<rect x="2" y="6" width="4" height="12" rx="1"/><rect x="18" y="6" width="4" height="12" rx="1"/><path d="M6 9h10m-2-2 2 2-2 2M6 15h10m-2-2 2 2-2 2"/>'
       },
       exchange: {
         name:'汇率换算', summary:'人民币 / 美元 / 欧元等',
@@ -1070,7 +1075,7 @@
     }
 
     function openTool(key) {
-      activeTool = conversionTools[key];
+      activeTool = workbenchTools[key];
       const units = Object.keys(activeTool.units ?? {});
       document.getElementById('toolTitle').textContent = activeTool.name;
       const description = document.getElementById('toolDescription');
@@ -1380,13 +1385,20 @@
     function logoClass(){return ''}
     function render(){
       const c=current();
+      const viewingTools = c.id === 'tools';
+      if (viewingTools !== Boolean(window.history.state?.homebaseTools)) {
+        window.history.replaceState({...window.history.state, homebaseTools:viewingTools}, '');
+      }
       document.getElementById('categories').innerHTML=data.map(x=>`<div class="cat ${x.id===active?'active':''}" draggable="${editMode}" ondragstart="categoryDragStart(event,'${x.id}')" ondragend="categoryDragEnd(event)" ondragover="categoryDragOver(event)" ondragleave="categoryDragLeave(event)" ondrop="categoryDrop(event,'${x.id}')"><button onclick="active='${x.id}';render()"><span class="badge">${esc(x.name.slice(0,1))}</span><span>${esc(x.name)}</span></button>${editMode&&x.id===active?`<button class="edit" onclick="openCategory(true)" title="修改分类名称">✎</button><button class="delete-category" onclick="deleteCategory('${x.id}')" title="删除分类">×</button>`:''}</div>`).join('');
       document.getElementById('title').textContent=c.id==='tools'?c.name:c.name+'网站';
-      const toolCards = c.id === 'tools' ? Object.entries(conversionTools).map(([key, tool]) => `
-        <button type="button" class="card tool-card" onclick="openTool('${key}')">
+      const toolCards = viewingTools ? Object.entries(workbenchTools).map(([key, tool]) => {
+        const label = `
           <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true">${tool.icon}</svg></span>
-          <span class="copy"><strong>${tool.name}</strong><small>${tool.summary ?? Object.keys(tool.units).join(' / ')}</small></span>
-        </button>`).join('') : '';
+          <span class="copy"><strong>${tool.name}</strong><small>${tool.summary ?? Object.keys(tool.units).join(' / ')}</small></span>`;
+        return tool.href
+          ? `<a class="card tool-card" href="${tool.href}">${label}</a>`
+          : `<button type="button" class="card tool-card" onclick="openTool('${key}')">${label}</button>`;
+      }).join('') : '';
       const cards=c.links.map(l=>`<div class="wrap" draggable="${editMode}" ondragstart="dragStart(event,'${l.id}')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropLink(event,'${l.id}')"><a class="card" href="${esc(l.url)}" target="_blank" draggable="false"><span class="mark" style="background:${esc(l.color)}"><span>${esc(l.mark)}</span>${faviconUrl(l.url)?`<img class="${logoClass(l.url)}" src="${esc(faviconUrl(l.url))}" alt="" onerror="this.remove()">`:''}</span><span class="copy"><strong>${esc(l.name)}</strong><small>${esc(l.description)}</small></span></a>${editMode?`<button class="edit-link" onclick="openLink('${l.id}')" title="修改网站">✎</button><button class="del" onclick="removeLink('${l.id}')" title="删除网站">×</button>`:''}</div>`).join('');
       document.getElementById('links').innerHTML=`<div class="grid${toolCards?' tool-grid':''}">${toolCards}${cards}${editMode?'<button class="add-site-card" onclick="openLink()"><b>＋</b><span>添加网站</span></button>':''}</div>`;
       const toggle=document.getElementById('editModeToggle');toggle.title=editMode?'退出修改模式':'进入修改模式';toggle.setAttribute('aria-label',toggle.title);
@@ -1428,6 +1440,9 @@
     }
     tick();
     setInterval(tick,30000);
+    if (window.history.state?.homebaseTools && data.some(category => category.id === 'tools')) {
+      active = 'tools';
+    }
     render();
   </script>
 </body>
