@@ -1785,11 +1785,17 @@
     s += lmfcWaveform(x, txLmfcY, initialLmfcPhase.tx, 'j-lmfc-tx-waveform');
     s += lmfcWaveform(x, rxLmfcY, initialLmfcPhase.rx, 'j-lmfc-waveform');
     s += waveform(x, lo, syncHighY, syncEdges, C.orange, 'j-sync-waveform');
+    let sampleLabel = '';
     if (time >= sample) {
       const sampleX = x(sample);
-      s += line(sampleX, deviceHighY, sampleX, rxLmfcY, C.orange, 'stroke-dasharray="3 3" opacity=".55"');
+      const sampleLabelY = deviceHighY - 10;
+      const labelToLeft = sampleX - left >= 34;
+      const sampleLabelX = sampleX + (labelToLeft ? -5 : 5);
+      s += line(sampleX, sampleLabelY + 4, sampleX, rxLmfcY, C.orange, 'class="j-sysref-sample-guide" stroke-dasharray="3 3" opacity=".55"');
       s += circle(sampleX, sysrefHighY, 3, C.orange, 'class="j-sysref-sample"');
-      s += text(sampleX + 5, sysrefY + 8, '采样', 'j-small j-muted');
+      // On narrow layouts, a matching backdrop keeps the playhead off the label.
+      if (!labelToLeft) sampleLabel += rect(sampleLabelX - 2, sampleLabelY - 13, 29, 17, `color-mix(in srgb,${C.ink} 4%,${C.surface})`, 'class="j-sysref-label-backdrop"');
+      sampleLabel += text(sampleLabelX, sampleLabelY, '采样', 'j-small j-muted j-sysref-sample-label', labelToLeft ? 'end' : 'start');
     }
     if (time >= run.syncRx) s += text(x(run.syncRx) + 5, syncY + 11, 'SYNC~ 拉高', 'j-small j-muted');
     const rows = [{start:run.ilas, y:txY}];
@@ -1843,6 +1849,7 @@
       s += line(x(time),cursorY,x(time),plotBottom,C.ink,'stroke-width="1"');
       s += circle(x(time),cursorY,3,C.ink,'class="j-timeline-cursor"');
     }
+    s += sampleLabel;
     const releaseX = x(run.release);
     const reached = time + M.EPS >= run.release;
     const releaseColor = reached ? (run.blocked ? C.red : C.green) : C.muted;
