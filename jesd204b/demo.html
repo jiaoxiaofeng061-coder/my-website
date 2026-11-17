@@ -1,0 +1,2166 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JESD204B原理演示与参数计算</title>
+<style>
+:root{color-scheme:light dark;--font-size-base:14px;--background:#ffffff;--foreground:#20262e;--muted-foreground:#586474;--muted:#edf0f4;--primary:#283747;--primary-foreground:#ffffff;--accent:#e8edf4;--border:#ccd3dc;--input:#ccd3dc;--blue:#2873b9;--orange:#a76312;--green:#1d7a55;--purple:#7951b5;--destructive:#be3c38;--viz-series-1:var(--blue);--viz-series-2:var(--orange);--viz-series-3:var(--green);--viz-series-4:var(--purple)}
+@media(prefers-color-scheme:dark){:root{--background:#172029;--foreground:#e9eef4;--muted-foreground:#adb9c7;--muted:#273440;--primary:#e2e9f1;--primary-foreground:#18212b;--accent:#2a3b4d;--border:#415262;--input:#415262;--blue:#73b9f2;--orange:#edb466;--green:#6bd6a9;--purple:#bc9be8;--destructive:#ff958e}}
+*{box-sizing:border-box}body{margin:0;background:var(--background);color:var(--foreground);font:400 var(--font-size-base)/1.55 Arial,"Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:28px 24px 48px}h1,h2,h3,p{margin:0}h2{font-size:21px;font-weight:500}h3{font-size:16px;font-weight:500}button,input,select{font:inherit}button,select,input[type=checkbox],summary{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 11px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--foreground);font-weight:400;white-space:normal}.btn:hover{background:var(--accent)}.btn-primary,.btn[aria-pressed=true]{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}.btn-ghost{border-color:transparent}.text-small{font-size:12px}.text-muted{color:var(--muted-foreground)}.text-destructive{color:var(--destructive)}.tabular-nums{font-variant-numeric:tabular-nums}.form-label{display:inline-flex;align-items:center;gap:7px}.form-select{max-width:100%;padding:6px 9px;border:1px solid var(--input);border-radius:6px;background:var(--background);color:var(--foreground)}.form-range{accent-color:var(--primary);min-height:24px}.form-check{display:inline-flex;align-items:center;gap:6px}.form-check-input{accent-color:var(--primary);width:16px;height:16px}.table-responsive{max-width:100%;overflow-x:auto}.table{width:100%;border-collapse:collapse;text-align:left}.table th{font-weight:500}.table th,.table td{border-bottom:1px solid var(--border);padding:9px 7px}.table-sm th,.table-sm td{padding:6px}.text-end{text-align:right}hr{width:100%;border:0;border-top:1px solid var(--border);margin:0}a{color:var(--blue)}@media(max-width:560px){main{padding:18px 12px 32px}}@media(pointer:coarse){.btn,.form-select{min-height:44px}.form-range{min-height:44px}}
+@media(min-width:700px) and (pointer:fine){main{padding-top:12px}}
+@media(min-width:1050px) and (pointer:fine){main{padding-top:8px}}
+@media(width > 1920px){
+  main{--j-page-scale:1;zoom:var(--j-page-scale)}
+  @supports (zoom:calc(100vw / 1920px)){
+    main{--j-page-scale:clamp(1,calc(100vw / 1920px),1.35)}
+  }
+}
+</style></head><body><main>
+<div id="jesd204b-explainer">
+  <style>
+    #jesd204b-explainer{color:var(--foreground);font-family:Arial,"Microsoft YaHei",sans-serif;--j-blue:var(--viz-series-1,var(--blue));--j-orange:var(--viz-series-2,var(--orange));--j-green:var(--viz-series-3,var(--green));--j-purple:var(--viz-series-4,var(--purple));--j-red:var(--destructive);--j-grid:color-mix(in srgb,var(--foreground) 16%,transparent)}
+    #jesd204b-explainer h1{font-size:20px;font-weight:600;line-height:1.3}
+    #jesd204b-explainer .j-stack{display:grid;gap:calc(var(--font-size-base)*1)}
+    #jesd204b-explainer .j-animation.j-foldout{display:block;border-block-start:0}
+    #jesd204b-explainer .j-animation-body{display:grid;row-gap:var(--j-animation-gap,14px);min-width:0}
+    #jesd204b-explainer .j-animation:not([open]) > .j-animation-body{display:none}
+    #jesd204b-explainer .j-animation.j-foldout > summary{padding-block:0}
+    #jesd204b-explainer .j-animation.j-foldout[open] > summary{margin-block-end:14px}
+    #jesd204b-explainer .j-diagrams{gap:5px;min-width:0;padding:14px;border:1px solid var(--border);border-radius:7px}
+    #jesd204b-explainer .j-animation + .j-foldout{margin-block-start:12px}
+    #jesd204b-explainer .j-row{display:flex;align-items:center;flex-wrap:wrap;gap:calc(var(--font-size-base)*.5)}
+    #jesd204b-explainer .j-subclass{margin-inline-start:auto;white-space:nowrap}
+    #jesd204b-explainer .j-player{display:grid;align-items:center;gap:6px 16px;padding:6px 10px;border:1px solid var(--border);border-radius:7px}
+    @media(min-width:900px){
+      #jesd204b-explainer .j-player{grid-template-columns:auto minmax(0,1fr) auto}
+    }
+    #jesd204b-explainer .j-playback-settings{margin-inline-start:auto;justify-content:flex-end;max-width:100%}
+    #jesd204b-explainer .j-stage-controls [data-jump="sysref"]{--j-stage-color:var(--j-orange)}
+    #jesd204b-explainer .j-stage-controls [data-jump="cgs"]{--j-stage-color:var(--j-blue)}
+    #jesd204b-explainer .j-stage-controls [data-jump="ilas"]{--j-stage-color:var(--j-purple)}
+    #jesd204b-explainer .j-stage-controls [data-jump="data"]{--j-stage-color:var(--j-green)}
+    #jesd204b-explainer .j-stage-controls .btn{
+      position:relative;
+      color:color-mix(in srgb,var(--j-stage-color) 60%,var(--foreground));
+      border-color:color-mix(in srgb,var(--j-stage-color) 48%,var(--border));
+      background:color-mix(in srgb,var(--j-stage-color) 10%,var(--background));
+      transition:background-color .18s,border-color .18s;
+    }
+    #jesd204b-explainer .j-stage-controls .btn:hover{
+      background:color-mix(in srgb,var(--j-stage-color) 13%,var(--background));
+    }
+    #jesd204b-explainer .j-stage-controls .btn[aria-pressed="true"]{
+      color:color-mix(in srgb,var(--j-stage-color) 60%,var(--foreground));
+      border-color:color-mix(in srgb,var(--j-stage-color) 70%,var(--border));
+      background:color-mix(in srgb,var(--j-stage-color) 16%,var(--background));
+      font-weight:500;
+    }
+    #jesd204b-explainer .j-stage-controls .btn[aria-pressed="true"]::after{
+      content:"";
+      position:absolute;
+      inset-inline:10px;
+      bottom:2px;
+      height:2px;
+      border-radius:1px;
+      background:var(--j-stage-color);
+      pointer-events:none;
+    }
+    #jesd204b-explainer .j-stage-controls .btn[aria-pressed="true"]:hover{
+      background:color-mix(in srgb,var(--j-stage-color) 18%,var(--background));
+    }
+    @media(forced-colors:active){
+      #jesd204b-explainer .j-stage-controls .btn[aria-pressed="true"]{border-color:Highlight;text-decoration:underline}
+      #jesd204b-explainer .j-stage-controls .btn[aria-pressed="true"]::after{background:Highlight}
+    }
+    #jesd204b-explainer .j-time{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+    #jesd204b-explainer .j-time input{width:100%;min-width:0;margin:0}
+    @media(forced-colors:none){
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range{
+        --j-progress-fill:color-mix(in srgb,var(--j-blue) 55%,var(--muted-foreground));
+        --j-range-track:linear-gradient(to right,var(--j-progress-fill) var(--j-progress,0%),var(--border) var(--j-progress,0%));
+        appearance:none;
+        margin:0;
+        background:transparent;
+      }
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range::-webkit-slider-runnable-track{height:3px;border:0;border-radius:999px;background:var(--j-range-track)}
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range::-moz-range-track{height:3px;border:0;border-radius:999px;background:var(--j-range-track)}
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range::-webkit-slider-thumb{appearance:none;width:10px;height:10px;box-sizing:border-box;border:0;border-radius:50%;background:var(--j-progress-fill);margin-top:-3.5px}
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range::-moz-range-thumb{appearance:none;width:10px;height:10px;box-sizing:border-box;border:0;border-radius:50%;background:var(--j-progress-fill)}
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range:active::-webkit-slider-thumb{box-shadow:0 0 0 3px color-mix(in srgb,var(--j-progress-fill) 25%,transparent)}
+      #jesd204b-explainer :is(.j-time,.j-latency-settings) .form-range:active::-moz-range-thumb{box-shadow:0 0 0 3px color-mix(in srgb,var(--j-progress-fill) 25%,transparent)}
+    }
+    #jesd204b-explainer .j-time output{width:7ch;text-align:end;white-space:nowrap}
+    #jesd204b-explainer .j-latency-result{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:2px 14px;
+      padding:4px 10px;
+      border-radius:5px;
+      background:color-mix(in srgb,var(--foreground) 5%,var(--background));
+      line-height:1.4;
+    }
+    #jesd204b-explainer .j-latency-result strong{font-size:16px;font-weight:600}
+    #jesd204b-explainer .j-visual{display:block;width:100%;overflow:visible}
+    #jesd204b-explainer .j-visual text{fill:var(--foreground);font:inherit}
+    #jesd204b-explainer .j-visual .j-muted{fill:var(--muted-foreground)}
+    #jesd204b-explainer .j-visual .j-small{font-size:calc(var(--font-size-base)*.86)}
+    #jesd204b-explainer .j-visual .j-mono{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+    #jesd204b-explainer .j-visual .j-tx-text{fill:color-mix(in srgb,var(--foreground) 82%,transparent)}
+    #jesd204b-explainer .j-visual .j-rx-text{fill:var(--j-green)}
+    #jesd204b-explainer .j-visual .j-output-title{fill:var(--foreground)}
+    #jesd204b-explainer .j-visual :is(.j-receive-buffer,.j-output-window) > text{fill:color-mix(in srgb,var(--j-green) 50%,var(--foreground))}
+    @media(prefers-color-scheme:dark){
+      #jesd204b-explainer{--j-grid:color-mix(in srgb,var(--foreground) 28%,transparent)}
+      #jesd204b-explainer .j-timeline-band{stroke:color-mix(in srgb,var(--foreground) 16%,transparent);stroke-width:1}
+      #jesd204b-explainer .j-visual :is(.j-receive-buffer,.j-output-window) > text{fill:color-mix(in srgb,var(--j-green) 35%,white)}
+    }
+    #jesd204b-explainer .j-visual .j-cgs-symbol{fill:var(--j-blue)}
+    #jesd204b-explainer .j-visual .j-sysref-text{fill:var(--j-orange)}
+    #jesd204b-explainer .j-visual .j-emphasis{font-weight:500}
+    #jesd204b-explainer .j-visual .j-timeline-heading{font-weight:600}
+    #jesd204b-explainer .j-legend{display:flex;gap:calc(var(--font-size-base)*1);flex-wrap:wrap}
+    #jesd204b-explainer .j-legend span{display:inline-flex;align-items:center;gap:6px}
+    #jesd204b-explainer .j-link-diagram{position:relative;container-type:inline-size;min-width:0}
+    #jesd204b-explainer .j-link-diagram > .j-legend{justify-content:flex-end;margin-block-end:4px}
+    #jesd204b-explainer .j-link-diagram > .j-legend span[hidden]{display:inline-flex;visibility:hidden}
+    @container (min-width:800px){
+      #jesd204b-explainer .j-link-diagram > .j-legend{
+        position:absolute;
+        inset-block-start:30px;
+        inset-inline-end:14px;
+        margin-block-end:0;
+      }
+    }
+    #jesd204b-explainer .j-dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--j-blue)}
+    #jesd204b-explainer .j-foldout{min-width:0;border-block-start:1px solid var(--border)}
+    #jesd204b-explainer .j-foldout > summary{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-block:7px;
+      list-style:none;
+      cursor:pointer;
+    }
+    #jesd204b-explainer .j-foldout > summary::-webkit-details-marker{display:none}
+    #jesd204b-explainer .j-foldout > summary::after{
+      content:"";
+      flex:none;
+      width:9px;
+      height:9px;
+      margin-inline-end:6px;
+      border:solid var(--muted-foreground);
+      border-width:0 1.5px 1.5px 0;
+      transform:translateY(-2px) rotate(45deg);
+    }
+    #jesd204b-explainer .j-foldout[open] > summary{margin-block-end:5px}
+    #jesd204b-explainer .j-foldout[open] > summary::after{transform:translateY(2px) rotate(-135deg)}
+    #jesd204b-explainer .j-foldout h2{font-size:20px;font-weight:600;line-height:1.3}
+    #jesd204b-explainer .j-latency-settings{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(min(100%,max(350px,calc(50% - 8px))),1fr));
+      align-items:stretch;
+      gap:16px;
+    }
+    #jesd204b-explainer .j-latency-column{
+      min-width:0;
+      align-content:start;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:7px;
+      gap:10px;
+    }
+    #jesd204b-explainer .j-latency-column h3{font-weight:600}
+    #jesd204b-explainer .j-rbd-rule{padding:6px 8px;border-radius:4px;background:color-mix(in srgb,var(--j-blue) 6%,var(--background));font-size:13px;font-weight:500;line-height:1.6}
+    #jesd204b-explainer .j-latency-lab{display:grid;gap:14px}
+    #jesd204b-explainer .j-latency-intro{color:var(--muted-foreground);line-height:1.6}
+    #jesd204b-explainer .j-latency-intro strong{color:var(--foreground);font-weight:500}
+    #jesd204b-explainer .j-presets .btn{padding:4px 9px;font-size:13px}
+    #jesd204b-explainer .j-presets .btn[aria-pressed="true"]{background:color-mix(in srgb,var(--j-blue) 10%,var(--background));border-color:var(--j-blue);color:var(--j-blue)}
+    #jesd204b-explainer .j-window-chart{min-width:0}
+    #jesd204b-explainer .j-window-chart svg{height:148px}
+    #jesd204b-explainer .j-window-caption{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-window-legend{display:inline-flex;align-items:center;gap:12px}
+    #jesd204b-explainer .j-window-legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+    #jesd204b-explainer .j-window-opportunity{color:var(--j-orange)}
+    #jesd204b-explainer .j-window-plan{color:var(--j-green)}
+    #jesd204b-explainer .j-window-key{display:inline-block;width:8px;height:8px;border:1.5px solid currentColor;border-radius:50%;box-sizing:border-box}
+    #jesd204b-explainer .j-window-plan .j-window-key{width:9px;height:9px;background:currentColor}
+    #jesd204b-explainer .j-guard-note{margin-block:2px 6px;font-size:12px;line-height:1.6;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-release-calculation{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:4px;margin-block:8px;padding-block:8px;border-block-start:1px solid var(--border)}
+    #jesd204b-explainer .j-release-step{display:grid;gap:2px;text-align:center;min-width:0}
+    #jesd204b-explainer .j-release-step span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-release-step strong{font-size:14px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+    #jesd204b-explainer .j-release-arrival{color:var(--j-blue)}
+    #jesd204b-explainer .j-release-ready{color:var(--j-orange)}
+    #jesd204b-explainer .j-release-planned{color:var(--j-green)}
+    #jesd204b-explainer .j-release-step strong.text-destructive{color:var(--j-red)}
+    #jesd204b-explainer .j-release-arrow{color:var(--muted-foreground)}
+    #jesd204b-explainer .j-rbd-repeatability{display:grid;gap:5px;padding-block-start:10px;border-block-start:1px solid var(--border);line-height:1.7}
+    #jesd204b-explainer .j-rbd-repeatability h4{margin:0;font-size:13px;font-weight:600}
+    #jesd204b-explainer .j-rbd-repeatability [data-output="window"]{font-size:14px;font-weight:500}
+    #jesd204b-explainer .j-run-timing{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;margin-block-start:10px;line-height:1.7}
+    #jesd204b-explainer .j-run-warning{margin-block:4px 6px}
+    #jesd204b-explainer .j-run-timing[hidden]{display:none}
+    #jesd204b-explainer .j-positive{color:var(--j-green)}
+    #jesd204b-explainer .j-comparison-panel{display:grid;grid-column:1/-1;gap:10px}
+    #jesd204b-explainer .j-comparison-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px}
+    #jesd204b-explainer .j-comparison-heading h3{font-weight:600}
+    #jesd204b-explainer .j-comparison-heading .btn{padding:4px 9px}
+    #jesd204b-explainer .j-comparison-heading :is([data-action="batch"],[data-action="reboot"]){background:var(--background);color:var(--foreground);border-color:var(--border);font-weight:400}
+    #jesd204b-explainer .j-comparison-heading :is([data-action="batch"],[data-action="reboot"]):hover:not(:disabled){background:color-mix(in srgb,var(--j-blue) 10%,var(--background));color:color-mix(in srgb,var(--j-blue) 80%,var(--foreground));border-color:color-mix(in srgb,var(--j-blue) 45%,var(--border))}
+    #jesd204b-explainer .j-comparison-heading :is([data-action="batch"],[data-action="reboot"]):active:not(:disabled){background:color-mix(in srgb,var(--j-blue) 16%,var(--background));color:color-mix(in srgb,var(--j-blue) 80%,var(--foreground));border-color:var(--j-blue)}
+    #jesd204b-explainer .j-comparison-heading [data-action="clear"]{background:transparent;color:var(--muted-foreground);border-color:color-mix(in srgb,var(--border) 55%,transparent)}
+    #jesd204b-explainer .j-comparison-heading [data-action="clear"]:hover:not(:disabled){background:color-mix(in srgb,var(--foreground) 4%,var(--background));border-color:var(--border)}
+    #jesd204b-explainer .j-comparison-chart-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 16px}
+    #jesd204b-explainer .j-reboot-metrics > summary{padding:14px 0 10px;font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-reboot-metrics[open] > summary{margin-block-end:0}
+    #jesd204b-explainer .j-reboot-metrics .table :is(th,td){padding:8px 6px}
+    #jesd204b-explainer .j-reboot-metrics .table :is(th,td):first-child{padding-inline-start:0}
+    #jesd204b-explainer .j-reboot-metrics .table :is(th,td):last-child{padding-inline-end:0}
+    #jesd204b-explainer .j-reboot-metrics .table :is(th,td):not(:first-child){text-align:end}
+    #jesd204b-explainer .j-reboot-metrics .table tbody tr:not(:last-child) > *{border-block-end-color:color-mix(in srgb,var(--border) 40%,transparent)}
+    #jesd204b-explainer .btn:disabled{cursor:default;opacity:.45}
+    #jesd204b-explainer .j-glossary-body{display:grid;gap:16px;padding-block:4px 8px;font-size:13px;line-height:1.7}
+    #jesd204b-explainer .j-glossary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    #jesd204b-explainer .j-glossary-group{min-width:0;padding:14px;border:1px solid var(--border);border-radius:7px}
+    #jesd204b-explainer .j-glossary-group h3{margin:0 0 10px;font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-glossary-list{display:grid;gap:12px;margin:0}
+    #jesd204b-explainer .j-glossary-list > div{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:12px;align-items:start}
+    #jesd204b-explainer .j-glossary-list :is(dt,dd){min-width:0;margin:0;overflow-wrap:anywhere}
+    #jesd204b-explainer .j-glossary-list dt{font-weight:600}
+    #jesd204b-explainer .j-glossary-list dt > span{display:block;font-size:12px;font-weight:400;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-term-english{display:block;margin-block-end:2px;font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-glossary-list dd strong{font-weight:600}
+    #jesd204b-explainer .j-calc-body{display:grid;gap:16px;padding-block:4px 8px;font-size:13px;line-height:1.7}
+    #jesd204b-explainer .j-calc-panel{min-width:0;padding:14px;border:1px solid var(--border);border-radius:7px}
+    #jesd204b-explainer .j-calc-body h3{font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-calc-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;margin-block-end:12px}
+    #jesd204b-explainer .j-calc-heading .btn{padding:3px 9px;font-size:13px}
+    #jesd204b-explainer .j-calc-example-actions{display:flex;align-items:center;gap:8px;max-width:100%;min-width:0}
+    #jesd204b-explainer .j-calc-example-actions .form-select{flex:1;min-width:0;width:234px;min-height:31px;padding:4px 8px;font-size:13px}
+    #jesd204b-explainer .j-calc-example-actions .btn{flex:none}
+    #jesd204b-explainer .j-calc-example-note{margin-block:-2px 12px;font-size:12px;line-height:1.6;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-fields{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+    #jesd204b-explainer .j-calc-field{display:grid;align-content:start;gap:5px;min-width:0}
+    #jesd204b-explainer .j-calc-input{display:flex;align-items:center;gap:6px;min-width:0;min-height:34px;padding-inline:8px;border:1px solid var(--input);border-radius:5px;background:var(--background)}
+    #jesd204b-explainer .j-calc-input:focus-within{outline:2px solid var(--j-blue);outline-offset:2px}
+    #jesd204b-explainer .j-calc-input:has([aria-invalid="true"]){border-color:var(--j-red)}
+    #jesd204b-explainer .j-calc-input input{width:100%;min-width:0;min-height:32px;padding:0;border:0;outline:none;background:transparent;color:var(--foreground);font-variant-numeric:tabular-nums}
+    #jesd204b-explainer .j-calc-input > span{font-size:12px;color:var(--muted-foreground);white-space:nowrap}
+    #jesd204b-explainer .j-calc-parameter-note{margin-block-start:10px;font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-mapping{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-block-start:12px;padding-block-start:10px;border-block-start:1px solid var(--border)}
+    #jesd204b-explainer .j-calc-mapping strong{font-weight:600}
+    #jesd204b-explainer .j-calc-message{margin-block-start:8px;color:var(--j-red)}
+    #jesd204b-explainer .j-calc-message[hidden]{display:none}
+    #jesd204b-explainer .j-calc-chain .j-calc-heading{margin-block-end:8px}
+    #jesd204b-explainer .j-calc-chain .j-calc-heading > span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-chain-flow{display:grid;grid-template-columns:minmax(0,1fr) 68px minmax(0,1fr) 68px minmax(0,1fr) 68px minmax(0,1fr) 68px minmax(0,1fr);align-items:center;gap:4px}
+    #jesd204b-explainer .j-calc-chain-node{display:grid;gap:4px;min-width:0;padding:10px 0;text-align:center}
+    #jesd204b-explainer .j-calc-chain-label{font-size:12px}
+    #jesd204b-explainer .j-calc-chain-value{font-size:17px;font-weight:600;color:var(--j-blue);font-variant-numeric:tabular-nums;white-space:nowrap}
+    #jesd204b-explainer .j-calc-chain-value[data-unavailable="true"]{color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-chain-arrow{display:grid;gap:7px;min-width:0;text-align:center;color:var(--muted-foreground);font-size:11px;font-variant-numeric:tabular-nums}
+    #jesd204b-explainer .j-calc-chain-line{position:relative;display:block;border-block-start:1px solid var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-chain-line::after{content:"";position:absolute;inset-inline-end:0;inset-block-start:-3px;width:5px;height:5px;border-block-start:1px solid currentColor;border-inline-end:1px solid currentColor;transform:rotate(45deg)}
+    #jesd204b-explainer .j-calc-chain-arrow[data-state="inactive"]{opacity:.55}
+    #jesd204b-explainer .j-calc-chain-arrow:not([data-state="active"]) .j-calc-chain-line{border-block-start-style:dashed}
+    #jesd204b-explainer .j-calc-chain-arrow:not([data-state="active"]) .j-calc-chain-line::after{display:none}
+    #jesd204b-explainer .j-calc-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    #jesd204b-explainer .j-calc-card{display:flex;flex-direction:column;gap:10px}
+    #jesd204b-explainer .j-calc-card-wide{grid-column:1 / -1}
+    #jesd204b-explainer .j-calc-card > h3,#jesd204b-explainer .j-calc-card-heading{display:flex;align-items:center;min-height:32px}
+    #jesd204b-explainer .j-calc-card-heading{justify-content:space-between;flex-wrap:wrap;gap:8px 12px}
+    #jesd204b-explainer .j-calc-work{display:grid;gap:5px;padding-block-end:10px;border-block-end:1px solid color-mix(in srgb,var(--border) 65%,transparent)}
+    #jesd204b-explainer .j-calc-work-row{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:baseline;gap:8px}
+    #jesd204b-explainer .j-calc-work-row[hidden]{display:none}
+    #jesd204b-explainer .j-calc-work-label{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-formula{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 5px;font-size:13px;overflow-wrap:anywhere}
+    #jesd204b-explainer .j-calc-formula > span{max-width:100%}
+    #jesd204b-explainer .j-calc-equivalent{color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-substitution{font-size:12px;color:var(--muted-foreground);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    #jesd204b-explainer .j-calc-substitution.j-calc-invalid{color:var(--j-red)}
+    #jesd204b-explainer .j-calc-result{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;font-variant-numeric:tabular-nums}
+    #jesd204b-explainer .j-calc-result output{font-size:22px;line-height:1.45;font-weight:600;color:var(--j-blue);overflow-wrap:anywhere}
+    #jesd204b-explainer .j-calc-result > span{font-size:12px;color:var(--muted-foreground);overflow-wrap:anywhere}
+    #jesd204b-explainer .j-calc-note{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-note.j-calc-warning{color:var(--j-orange)}
+    #jesd204b-explainer :is(.j-calc-sysref-controls,.j-calc-link-controls){display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 16px;margin-inline-start:auto;max-width:100%}
+    #jesd204b-explainer :is(.j-calc-sysref-controls,.j-calc-link-controls) .j-calc-field{display:flex;align-items:center;gap:8px;font-size:12px}
+    #jesd204b-explainer :is(.j-calc-sysref-controls,.j-calc-link-controls) .form-select{width:112px;min-height:32px;padding:4px 8px;font-size:12px}
+    #jesd204b-explainer .j-calc-link-controls .form-select{width:84px}
+    #jesd204b-explainer .j-calc-sysref-controls .j-calc-input{width:138px;min-height:32px}
+    #jesd204b-explainer .j-calc-sysref-controls input{min-height:30px}
+    #jesd204b-explainer .j-calc-control-error{font-size:12px;color:var(--j-red)}
+    #jesd204b-explainer .j-calc-field:has(input:disabled){color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-input:has(input:disabled){background:color-mix(in srgb,var(--foreground) 4%,var(--background))}
+    #jesd204b-explainer .j-calc-structure .j-calc-heading{margin-block-end:10px}
+    #jesd204b-explainer .j-calc-structure .j-calc-heading > span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-calc-structure figure{margin:0}
+    #jesd204b-explainer .j-calc-structure [hidden]{display:none}
+    #jesd204b-explainer .j-map-figure{--j-map-label:76px;--j-map-gap:14px;--j-map-inset:34px;--j-map-tone:color-mix(in srgb,var(--foreground) 5%,var(--background));--j-map-context:color-mix(in srgb,var(--j-blue) 7%,var(--background));--j-map-selected:color-mix(in srgb,var(--j-blue) 20%,var(--background))}
+    #jesd204b-explainer .j-map-section{padding-block:9px;border-block-start:1px solid color-mix(in srgb,var(--border) 65%,transparent)}
+    #jesd204b-explainer .j-map-section:first-child{padding-block-start:2px;border:0}
+    #jesd204b-explainer .j-map-section:last-of-type{padding-block-end:7px}
+    #jesd204b-explainer .j-map-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px 14px;margin-block:0 10px}
+    #jesd204b-explainer .j-map-heading strong{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-map-content{min-width:0;margin-inline-start:9px;padding-inline-start:calc(var(--j-map-inset) - 10px);border-inline-start:1px solid color-mix(in srgb,var(--border) 50%,transparent)}
+    #jesd204b-explainer .j-map-step{display:inline-flex;justify-content:center;align-items:center;width:19px;height:19px;border-radius:50%;background:var(--j-map-tone);color:var(--muted-foreground);font-size:11px;font-weight:500}
+    #jesd204b-explainer .j-map-heading > span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-heading > span b{color:var(--foreground);font-weight:600}
+    #jesd204b-explainer .j-map-row{display:grid;grid-template-columns:var(--j-map-label) repeat(var(--j-map-frames,2),minmax(0,1fr));align-items:stretch;gap:var(--j-map-gap);margin-block:3px;min-width:0}
+    #jesd204b-explainer .j-map-label{align-self:center;font-size:12px;color:var(--muted-foreground);white-space:nowrap}
+    #jesd204b-explainer .j-map-packet{display:flex;gap:4px;align-items:stretch;min-width:0}
+    #jesd204b-explainer .j-map-sample{flex:1;min-width:0;min-height:34px;padding:4px 0;border:1px solid transparent;border-radius:3px;background:var(--j-map-tone);color:var(--foreground);font-size:13px}
+    #jesd204b-explainer .j-map-active .j-map-sample{background:var(--j-map-context)}
+    #jesd204b-explainer .j-map-sample:hover{border-color:color-mix(in srgb,var(--j-blue) 55%,var(--border))}
+    #jesd204b-explainer .j-map-sample[aria-pressed="true"]{border-color:var(--j-blue);background:var(--j-map-selected);color:var(--foreground)}
+    #jesd204b-explainer .j-map-ellipsis{flex:0 0 18px;align-self:center;text-align:center;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-brace{--j-brace-color:var(--border);position:relative;border-block-start:1px solid var(--j-brace-color);padding-block-start:4px;text-align:center;font-size:12px;line-height:1.5;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-brace::before,#jesd204b-explainer .j-map-brace::after{content:"";position:absolute;top:-5px;height:5px;border-inline-start:1px solid var(--j-brace-color)}
+    #jesd204b-explainer .j-map-brace::before{left:0}
+    #jesd204b-explainer .j-map-brace::after{right:0}
+    #jesd204b-explainer .j-map-brace.j-map-active{--j-brace-color:color-mix(in srgb,var(--j-blue) 60%,var(--border));color:var(--foreground)}
+    #jesd204b-explainer .j-map-expand{display:grid;grid-template-columns:var(--j-map-label) minmax(0,1fr);gap:var(--j-map-gap);margin-block:12px 0;align-items:center}
+    #jesd204b-explainer .j-map-expand > .j-map-label{white-space:normal;min-width:0}
+    #jesd204b-explainer .j-map-expansion{display:flex;align-items:center;flex-wrap:wrap;gap:7px 16px;min-width:0}
+    #jesd204b-explainer .j-map-fragments{display:flex;flex-wrap:wrap;gap:5px;flex:0 1 400px;min-width:0}
+    #jesd204b-explainer .j-map-fragment{display:grid;align-content:center;gap:3px;min-width:min(100%,80px);padding:5px 3px;background:var(--j-map-selected);border-radius:4px;text-align:center;font-size:12px;line-height:1.4}
+    #jesd204b-explainer .j-map-fragment > span{white-space:nowrap}
+    #jesd204b-explainer .j-map-fragment small{display:flex;justify-content:center;flex-wrap:wrap;gap:0 5px;font-size:11px;color:color-mix(in srgb,var(--j-blue) 60%,var(--foreground))}
+    #jesd204b-explainer .j-map-fragment small span{white-space:nowrap}
+    #jesd204b-explainer .j-map-expansion > span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-frame-title{display:flex;justify-content:center;text-align:center;font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-frame-title > span{padding-inline:10px;padding-block-end:2px;border-block-end:2px solid transparent}
+    #jesd204b-explainer .j-map-frame-title.j-map-active > span{border-color:color-mix(in srgb,var(--j-blue) 60%,transparent);color:var(--j-blue)}
+    #jesd204b-explainer .j-map-bytes{flex-wrap:wrap}
+    #jesd204b-explainer .j-map-byte{display:flex;flex:1 1 72px;min-width:0;gap:1px;overflow:hidden;border-radius:3px;background:var(--background);border:1px solid color-mix(in srgb,var(--foreground) 9%,var(--background))}
+    #jesd204b-explainer .j-map-byte:has(.j-map-byte-part:nth-child(2)){flex-basis:110px;min-width:min(100%,100px)}
+    #jesd204b-explainer .j-map-byte-part{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1px 5px;min-width:0;padding:4px 2px;background:var(--j-map-tone);font-size:12px;line-height:1.3}
+    #jesd204b-explainer .j-map-active .j-map-byte-part{background:var(--j-map-context)}
+    #jesd204b-explainer .j-map-byte-part.j-map-match{background:var(--j-map-selected);box-shadow:inset 0 -2px 0 var(--j-blue)}
+    #jesd204b-explainer .j-map-linked-label{color:var(--j-blue);font-weight:500}
+    #jesd204b-explainer .j-map-source{display:inline-flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:1px 3px;min-width:0}
+    #jesd204b-explainer .j-map-source > span{white-space:nowrap}
+    #jesd204b-explainer .j-map-byte-part small{font-size:11px;white-space:nowrap}
+    #jesd204b-explainer .j-map-multi-row{display:grid;grid-template-columns:var(--j-map-label) minmax(0,1fr);gap:var(--j-map-gap);align-items:center;margin-block:3px;line-height:1.4}
+    #jesd204b-explainer .j-map-multi-cells{display:flex;align-items:center;gap:4px;min-width:0}
+    #jesd204b-explainer .j-map-multi-cells > span:not(.j-map-ellipsis){flex:1;min-width:0;text-align:center;font-size:11px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-multi-cells .j-map-frame-number{border-radius:3px}
+    #jesd204b-explainer .j-map-multi-cells .j-map-frame-number.j-map-current{background:var(--j-map-context);color:var(--j-blue);font-weight:600}
+    #jesd204b-explainer .j-map-mini-frame{height:12px;border-radius:2px;background:var(--j-map-tone)}
+    #jesd204b-explainer .j-map-mini-frame.j-map-current{background:var(--j-map-context)}
+    #jesd204b-explainer .j-map-mini-frame.j-map-linked{background:var(--j-map-selected);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--j-blue) 65%,transparent)}
+    #jesd204b-explainer .j-map-location{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin-block:5px 7px;font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-location strong{color:var(--j-blue);font-weight:500}
+    #jesd204b-explainer .j-map-notes{padding-block-start:7px;border-block-start:1px solid color-mix(in srgb,var(--border) 65%,transparent);font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-notes > summary{width:fit-content;cursor:pointer}
+    #jesd204b-explainer .j-map-balance{display:flex;align-items:center;flex-wrap:wrap;gap:3px 5px;margin-block:6px 0;font-size:12px;line-height:1.8;color:var(--foreground)}
+    #jesd204b-explainer .j-map-equation-part{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+    #jesd204b-explainer .j-map-hint{border:0;border-radius:3px;padding:2px 4px;background:transparent;color:inherit;font:inherit;cursor:pointer;white-space:nowrap}
+    #jesd204b-explainer .j-map-hint small{margin-inline-start:4px;font-size:11px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-hint:hover,#jesd204b-explainer .j-map-hint[aria-expanded="true"]{background:color-mix(in srgb,var(--j-blue) 8%,transparent)}
+    #jesd204b-explainer .j-map-hint:focus-visible{outline:2px solid var(--j-blue);outline-offset:2px}
+    #jesd204b-explainer .j-map-hint-info{min-width:24px;min-height:24px;padding:0;font-size:15px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-map-tooltip{position:fixed;inset:auto;margin:0;width:max-content;max-width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--background);color:var(--foreground);box-shadow:0 4px 16px rgb(0 0 0 / .12);font-size:12px;line-height:1.6}
+    #jesd204b-explainer .j-map-tooltip strong{display:block;margin-block-end:4px;font-weight:600}
+    #jesd204b-explainer .j-map-tooltip span{white-space:pre-line}
+    #jesd204b-explainer .j-calc-diagram-empty{padding:24px 12px;border-radius:4px;background:color-mix(in srgb,var(--foreground) 3%,var(--background));text-align:center;color:var(--muted-foreground)}
+    @media(max-width:480px){#jesd204b-explainer .j-map-figure{--j-map-label:62px;--j-map-gap:8px;--j-map-inset:22px}}
+    @media(max-width:1000px){
+      #jesd204b-explainer .j-calc-fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+    @media(max-width:900px){
+      #jesd204b-explainer .j-calc-chain-flow{grid-template-columns:minmax(0,1fr);gap:0}
+      #jesd204b-explainer .j-calc-chain-node{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 4px;text-align:start}
+      #jesd204b-explainer .j-calc-chain-arrow{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);align-items:center;gap:10px;padding:2px 4px}
+      #jesd204b-explainer .j-calc-chain-arrow > :first-child{text-align:end}
+      #jesd204b-explainer .j-calc-chain-arrow > :last-child{text-align:start}
+      #jesd204b-explainer .j-calc-chain-line{justify-self:center;width:0;height:22px;border-block-start:0;border-inline-start:1px solid var(--muted-foreground)}
+      #jesd204b-explainer .j-calc-chain-line::after{inset-inline-end:auto;inset-block-start:auto;inset-inline-start:-3px;inset-block-end:0;transform:rotate(135deg)}
+      #jesd204b-explainer .j-calc-chain-arrow:not([data-state="active"]) .j-calc-chain-line{border-inline-start-style:dashed}
+    }
+    @media(max-width:760px){
+      #jesd204b-explainer .j-calc-cards{grid-template-columns:minmax(0,1fr)}
+    }
+    @media(max-width:480px){
+      #jesd204b-explainer .j-calc-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #jesd204b-explainer .j-diagrams{padding:12px}
+      #jesd204b-explainer .j-calc-panel{padding:12px}
+      #jesd204b-explainer .j-calc-example-actions{width:100%}
+    }
+    @media(pointer:coarse){
+      #jesd204b-explainer .j-calc-input input,#jesd204b-explainer :is(.j-calc-sysref-controls,.j-calc-link-controls) .form-select{min-height:44px}
+    }
+    @media(max-width:900px){
+      #jesd204b-explainer .j-glossary-grid{grid-template-columns:minmax(0,1fr)}
+    }
+    @media(max-width:480px){
+      #jesd204b-explainer .j-glossary-group{padding:12px}
+      #jesd204b-explainer .j-glossary-list > div{grid-template-columns:minmax(0,1fr);gap:3px}
+      #jesd204b-explainer .j-glossary-list dt > span{display:inline;margin-inline-start:8px}
+      #jesd204b-explainer .j-glossary-list{gap:16px}
+    }
+    #jesd204b-explainer .j-lane-panel{--j-control-inset:16px;--j-control-label:5em;--j-control-value:4em;--j-control-gap:10px}
+    #jesd204b-explainer .j-lane-title{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px}
+    #jesd204b-explainer .j-lane-title > span{font-size:12px;color:var(--muted-foreground)}
+    #jesd204b-explainer .j-params{display:grid;gap:0;padding-inline:var(--j-control-inset)}
+    #jesd204b-explainer .j-field.j-lane-slider{
+      grid-template-columns:var(--j-control-label) minmax(0,1fr) var(--j-control-value);
+      align-items:center;
+      gap:var(--j-control-gap);
+      min-block-size:28px;
+      font-size:13px;
+    }
+    #jesd204b-explainer .j-lane-slider > span{font-weight:400}
+    #jesd204b-explainer .j-lane-slider output{white-space:nowrap;text-align:end;font-weight:600}
+    @media(forced-colors:none){
+      #jesd204b-explainer :is(.j-lane-slider,.j-lane-setting) .form-range{--j-range-track:linear-gradient(to right,var(--j-progress-fill) var(--j-progress,0%),color-mix(in srgb,var(--border) 72%,var(--background)) var(--j-progress,0%))}
+      #jesd204b-explainer :is(.j-lane-slider,.j-lane-setting) .form-range::-webkit-slider-runnable-track{height:2px}
+      #jesd204b-explainer :is(.j-lane-slider,.j-lane-setting) .form-range::-moz-range-track{height:2px}
+      #jesd204b-explainer :is(.j-lane-slider,.j-lane-setting) .form-range::-webkit-slider-thumb{margin-top:-4px}
+    }
+    @media(max-width:480px){
+      #jesd204b-explainer .j-lane-panel{--j-control-inset:0px;--j-control-label:4em;--j-control-gap:8px}
+    }
+    #jesd204b-explainer .j-field.j-lane-setting{
+      grid-template-columns:var(--j-control-label) minmax(0,1fr) var(--j-control-value);
+      align-items:center;
+      gap:4px var(--j-control-gap);
+      padding:12px var(--j-control-inset) 0;
+      border-block-start:1px solid var(--border);
+      font-size:13px;
+    }
+    #jesd204b-explainer .j-lane-setting > .j-lane-setting-header{grid-column:1/-1;margin-inline:calc(-1 * var(--j-control-inset));font-size:14px}
+    #jesd204b-explainer .j-lane-setting > input{grid-column:2}
+    #jesd204b-explainer .j-lane-setting > .text-small{grid-column:1/-1;line-height:1.6}
+    #jesd204b-explainer .j-lane-setting strong{font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-lane-setting-header{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap}
+    #jesd204b-explainer .j-lane-setting-header output{color:var(--foreground);font-weight:600}
+    #jesd204b-explainer .j-lane-metrics > summary{padding:14px 0 10px;font-size:14px;font-weight:600}
+    #jesd204b-explainer .j-lane-metrics[open] > summary{margin-block-end:0}
+    #jesd204b-explainer .j-lane-metrics .table{table-layout:fixed}
+    #jesd204b-explainer .j-lane-metrics .table :is(th,td){padding:8px 6px}
+    #jesd204b-explainer .j-lane-metrics .table th:first-child{width:18%}
+    #jesd204b-explainer .j-lane-metrics .table :is(th,td):first-child{padding-inline-start:0}
+    #jesd204b-explainer .j-lane-metrics .table :is(th,td):last-child{padding-inline-end:0}
+    #jesd204b-explainer .j-lane-metrics .table th:not(:first-child){text-align:end}
+    #jesd204b-explainer .j-lane-metrics .table td{white-space:nowrap;text-align:end}
+    #jesd204b-explainer .j-lane-metrics .table tbody tr:not(:last-child) > *{border-block-end-color:color-mix(in srgb,var(--border) 40%,transparent)}
+    #jesd204b-explainer .j-lane-metrics > p.text-muted{margin-block-start:8px;line-height:1.65}
+    #jesd204b-explainer .j-result-details{display:grid;gap:2px}
+    #jesd204b-explainer .j-result-details strong,
+    #jesd204b-explainer .j-comparison-result:not(.text-muted){font-weight:600}
+    #jesd204b-explainer .j-reboot-results[hidden]{display:none}
+    #jesd204b-explainer .j-record-link{padding:2px 4px;color:var(--j-blue);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+    #jesd204b-explainer .j-field{display:grid;gap:calc(var(--font-size-base)*.35);min-width:0}
+    #jesd204b-explainer .j-field input{width:100%;min-width:0}
+    #jesd204b-explainer .j-detail{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:5px 16px;
+      padding:4px 10px;
+      background:color-mix(in srgb,var(--j-note,var(--j-blue)) 9%,var(--background));
+      border-inline-start:2px solid var(--j-note,var(--j-blue));
+      border-radius:3px;
+      transition:background .25s,border-color .25s;
+    }
+    #jesd204b-explainer .j-detail > [data-output="stage"]{flex:1 1 16rem;padding-block:3px}
+    #jesd204b-explainer .j-ilas-actions:not([hidden]){display:flex;align-items:center;gap:4px;flex:none}
+    #jesd204b-explainer .j-ilas-actions .btn{
+      padding:1px 8px;
+      border-color:transparent;
+      border-radius:4px;
+      color:var(--muted-foreground);
+      font-size:calc(var(--font-size-base) * .93);
+      white-space:nowrap;
+    }
+    #jesd204b-explainer .j-ilas-actions .btn:hover{color:var(--foreground)}
+    #jesd204b-explainer .j-ilas-actions .btn[aria-pressed="true"]{
+      background:color-mix(in srgb,var(--j-blue) 13%,var(--background));
+      border-color:color-mix(in srgb,var(--j-blue) 26%,var(--border));
+      color:var(--foreground);
+    }
+    @media(max-width:480px){
+      #jesd204b-explainer .j-playback-settings{margin-inline-start:0;justify-content:flex-start}
+    }
+    #jesd204b-explainer .j-table-value{font-variant-numeric:tabular-nums;white-space:nowrap}
+    @media(min-width:700px) and (pointer:fine){
+      #jesd204b-explainer > .j-stack{row-gap:5px;--j-animation-gap:5px}
+      #jesd204b-explainer .j-animation.j-foldout[open] > summary{margin-block-end:15px}
+      #jesd204b-explainer .j-player{margin-block-start:5px}
+      #jesd204b-explainer .j-stage-controls .btn,
+      #jesd204b-explainer .j-player .btn,
+      #jesd204b-explainer .j-player .form-select{padding-block:3px}
+      #jesd204b-explainer .j-time .form-range{min-height:20px}
+    }
+    @media(min-width:700px) and (max-height:760px) and (pointer:fine){
+      #jesd204b-explainer > .j-stack{row-gap:4px;--j-animation-gap:4px}
+      #jesd204b-explainer .j-animation.j-foldout[open] > summary{margin-block-end:12px}
+      #jesd204b-explainer .j-player{margin-block-start:2px}
+      #jesd204b-explainer .j-diagrams{row-gap:4px}
+    }
+    @media(min-width:1050px) and (min-height:840px) and (pointer:fine){
+      #jesd204b-explainer > .j-stack{row-gap:8px;--j-animation-gap:8px;padding-block-start:4px}
+      #jesd204b-explainer .j-animation.j-foldout[open] > summary{margin-block-end:18px}
+      #jesd204b-explainer .j-diagrams{row-gap:9px}
+    }
+    @media(width > 1920px){
+      #jesd204b-explainer .j-animation[open]{
+        min-block-size:calc(100dvh / var(--j-page-scale, 1) - 8px);
+      }
+    }
+  </style>
+  <div class="j-stack">
+    <details class="j-animation j-foldout" data-section="animation" open>
+    <summary><h1>链路初始化演示</h1></summary>
+    <div class="j-animation-body">
+    <div class="j-row">
+      <div class="j-row j-stage-controls" role="group" aria-label="初始化阶段">
+        <button type="button" class="btn" data-jump="sysref">① 帧时钟对齐</button>
+        <button type="button" class="btn" data-jump="cgs">② CGS</button>
+        <button type="button" class="btn" data-jump="ilas">③ ILAS</button>
+        <button type="button" class="btn" data-jump="data">④ 用户数据</button>
+      </div>
+      <span class="j-subclass text-muted" lang="en">Subclass 1</span>
+    </div>
+    <div class="j-detail">
+      <div role="status" aria-live="polite" data-output="stage">准备器件时钟与 SYSREF。</div>
+      <div class="j-ilas-actions" role="group" aria-label="ILAS 子阶段" hidden>
+        <button type="button" class="btn" data-jump="ilas">到达</button>
+        <button type="button" class="btn" data-jump="release">统一放行</button>
+      </div>
+    </div>
+    <div class="j-player" role="group" aria-label="演示播放">
+      <div class="j-row" role="group" aria-label="播放控制">
+        <button type="button" class="btn btn-primary" data-action="play">播放</button>
+        <button type="button" class="btn" data-action="previous">上一步</button>
+        <button type="button" class="btn" data-action="next">下一步</button>
+        <button type="button" class="btn" data-action="restart">重播</button>
+      </div>
+      <div class="j-time">
+        <input class="form-range" data-control="time" aria-label="演示时间轴" type="range" min="0" max="10" step="0.005" value="0">
+        <output class="tabular-nums" data-output="time">0.00 T</output>
+      </div>
+      <div class="j-row j-playback-settings" role="group" aria-label="播放设置">
+        <label class="form-label">速度 <select class="form-select" data-control="speed" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+        <label class="form-check"><input class="form-check-input" data-control="stepPause" type="checkbox"><span class="form-check-label">关键时刻暂停</span></label>
+      </div>
+    </div>
+    <section class="j-stack j-diagrams" aria-label="链路与对齐动画">
+      <div class="j-link-diagram">
+        <div class="j-legend text-small">
+          <span data-link-legend="sysref" hidden><i class="j-dot" style="background:var(--j-orange)"></i>SYSREF / 等待</span>
+          <span data-link-legend="transfer" hidden><i class="j-dot"></i>链路传输</span>
+          <span data-link-legend="release" hidden><i class="j-dot" style="background:var(--j-green)"></i>统一放行 / 用户数据</span>
+        </div>
+        <svg class="j-visual" data-svg="link" role="img" aria-label="四条 Lane 从 ADC 进入 FPGA。接收缓冲条表示未读数据占用；右侧对齐输出条展示最近从缓冲读出的内容。"></svg>
+      </div>
+      <svg class="j-visual" data-svg="timeline" role="img" aria-label="时钟与同步、TX 发送序列、RX 缓冲写入和 RX 缓冲读出共用一条时间轴。图中显示 MF1 至 MF4 和用户数据 D0 的对齐关系。RX 弹性缓冲在解帧前读出数据。"></svg>
+    </section>
+    </div>
+    </details>
+    <details class="j-foldout" data-section="latency" open>
+      <summary><h2 id="jesd204b-latency-title">确定性延时演示</h2></summary>
+      <div class="j-latency-lab">
+      <p class="j-latency-intro"><strong>链路延时 + 缓冲等待 = D0 延时</strong>。保持配置不变，观察多次上电后，D0 延时是否相同。</p>
+      <div class="j-latency-settings">
+        <section class="j-stack j-latency-column j-lane-panel" aria-labelledby="jesd204b-lane-settings-title">
+          <div class="j-lane-title">
+            <h3 id="jesd204b-lane-settings-title">Lane 延时设置</h3>
+            <span id="jesd204b-lane-baseline-label">标称链路延时</span>
+          </div>
+          <div class="j-params" role="group" aria-labelledby="jesd204b-lane-baseline-label" data-output="laneControls"></div>
+          <label class="j-field j-lane-setting">
+            <span class="j-lane-setting-header">
+              <strong>跨上电延时波动</strong>
+              <output data-output="jitter" class="tabular-nums">±2 帧（±0.10 T）</output>
+            </span>
+            <input class="form-range" data-control="jitter" type="range" min="0" max="3" step="1" value="2">
+            <span class="text-small text-muted">每次模拟上电时，各 Lane 在标称值 ± 此范围内独立变化。</span>
+          </label>
+          <details class="j-foldout j-lane-metrics" open>
+            <summary>本次延时与缓冲明细</summary>
+            <p class="j-run-warning text-small text-destructive" data-output="run-warning" role="status" hidden></p>
+            <div class="table-responsive">
+              <table class="table table-sm text-small tabular-nums">
+                <thead><tr><th scope="col">通道</th><th scope="col">本次链路延时</th><th scope="col">缓冲等待</th><th scope="col">放行前需缓存</th></tr></thead>
+                <tbody data-output="laneMetrics"></tbody>
+              </table>
+            </div>
+            <p class="text-small text-muted">首个 /R/ 到达后开始等待；每路链路延时与等待时间之和相同。超出演示范围时不评估放行。</p>
+            <div class="j-run-timing text-small text-muted tabular-nums" role="status" aria-live="polite">
+              <span>D0（主时间轴）：</span>
+              <span data-output="run-path"></span>
+            </div>
+          </details>
+        </section>
+        <section class="j-stack j-latency-column" aria-labelledby="jesd204b-rbd-settings-title">
+          <h3 id="jesd204b-rbd-settings-title">缓冲放行设置（RBD）</h3>
+          <p id="jesd204b-rbd-rule" class="j-rbd-rule">放行机会 = RX 的 LMFC 边沿 + RBD 偏移</p>
+          <label class="j-field">
+            <span class="j-lane-setting-header"><span>相对 LMFC 边沿</span><output data-output="rbd" class="tabular-nums">20 帧 = 1.00 T</output></span>
+            <input class="form-range" data-control="rbd" aria-label="RBD，相对 RX LMFC 边沿的放行位置" aria-describedby="jesd204b-rbd-rule" type="range" min="1" max="20" step="1" value="20">
+          </label>
+          <div class="j-row j-presets" role="group" aria-label="放行状态与预设：高亮表示当前参数的结果，点击加载对应预设">
+            <button type="button" class="btn" data-preset="safe" aria-pressed="true" title="各次上电均赶上首个放行机会。点击加载预设：RBD 1.00 T。">稳定放行</button>
+            <button type="button" class="btn" data-preset="critical" aria-pressed="false" title="不同次上电可能落在不同放行机会。点击加载预设：RBD 0.75 T。">延时跳变</button>
+            <button type="button" class="btn" data-preset="later" aria-pressed="false" title="各次上电均在同一个后续放行机会读出。点击加载预设：RBD 0.65 T。">固定延后</button>
+          </div>
+          <div class="j-window-chart">
+            <div class="j-window-caption"><span>相对 TX 首个 /R/</span><span class="j-window-legend"><span class="j-window-opportunity"><i class="j-window-key" aria-hidden="true"></i>放行机会</span><span class="j-window-plan"><i class="j-window-key" aria-hidden="true"></i>本次计划</span></span></div>
+            <svg class="j-visual" data-svg="window" role="img" aria-label="色带表示不同上电的到齐时间与裕量满足范围，实心圆点标出本次时刻，下方显示预设放行机会"></svg>
+            <p class="j-guard-note" data-output="guard-note"></p>
+            <div class="j-release-calculation" aria-label="本次上电的放行判断，时间均相对 TX 首个 /R/">
+              <div class="j-release-step"><span>本次到齐</span><strong class="j-release-arrival" data-output="arrival-time"></strong></div>
+              <span class="j-release-arrow" aria-hidden="true">→</span>
+              <div class="j-release-step"><span>裕量满足</span><strong class="j-release-ready" data-output="ready-time"></strong></div>
+              <span class="j-release-arrow" aria-hidden="true">→</span>
+              <div class="j-release-step"><span>计划放行</span><strong class="j-release-planned" data-output="planned-time"></strong></div>
+            </div>
+            <p class="text-small text-muted" data-output="release-explanation"></p>
+          </div>
+          <div class="j-rbd-repeatability" role="status" aria-live="polite">
+            <h4>跨上电重复性</h4>
+            <p data-output="window"></p>
+            <p class="text-small text-destructive" data-output="window-capacity" hidden></p>
+            <p class="text-small text-muted" data-output="window-detail" hidden></p>
+          </div>
+        </section>
+      <section class="j-latency-column j-comparison-panel" aria-labelledby="jesd204b-comparison-title">
+        <div class="j-comparison-heading">
+          <h3 id="jesd204b-comparison-title">模拟多次上电</h3>
+          <div class="j-row">
+          <span class="text-small text-muted">保留最近 8 次</span>
+          <button type="button" class="btn" data-action="batch">新增 6 次上电</button>
+          <button type="button" class="btn" data-action="reboot">新增 1 次上电</button>
+          <button type="button" class="btn" data-action="clear">清空记录</button>
+          </div>
+        </div>
+        <div class="j-comparison-result text-muted" role="status" data-output="comparison">新增上电记录，观察链路延时变化后，D0 读出是否仍落在同一位置。</div>
+        <div class="text-small text-muted" data-output="comparison-scope" hidden></div>
+        <div class="j-stack j-reboot-results" data-output="comparison-results" hidden>
+          <div class="j-comparison-chart-heading">
+            <span class="text-small text-muted">以 TX 发出 D0 为 0 T</span>
+            <div class="j-legend text-small"><span><i class="j-dot"></i>链路延时（最慢 Lane）</span><span title="最慢 Lane 的缓冲等待时间"><i class="j-dot" style="background:var(--j-orange)"></i>缓冲等待</span><span><i class="j-dot" style="background:var(--j-green)"></i>D0 读出</span></div>
+          </div>
+          <svg class="j-visual" data-svg="reboots" role="img" aria-label="以 TX 发出 D0 为共同零点，比较最慢 Lane 的链路延时、缓冲等待和 D0 读出位置；绿色虚线标出当前有效记录的读出位置"></svg>
+          <details class="j-foldout j-reboot-metrics" open><summary>上电记录明细</summary>
+            <div class="table-responsive"><table class="table table-sm text-small tabular-nums"><thead><tr><th scope="col">上电</th><th scope="col">最慢 Lane 延时</th><th scope="col">缓冲等待</th><th scope="col">D0 延时</th></tr></thead><tbody data-output="records"></tbody></table></div>
+          </details>
+        </div>
+      </section>
+      </div>
+      </div>
+    </details>
+    <details class="j-foldout j-calculator" data-section="calculator" open>
+      <summary><h2 id="jesd204b-calculator-title">链路与时钟计算</h2></summary>
+      <div class="j-calc-body">
+        <p class="text-muted">设置同一组参数，查看 Lane 速率、链路并行时钟、帧时钟、LMFC 和 SYSREF 的关系。结果随输入实时更新。</p>
+        <section class="j-calc-panel" aria-labelledby="jesd204b-calc-input-title">
+          <div class="j-calc-heading">
+            <h3 id="jesd204b-calc-input-title">链路参数</h3>
+            <div class="j-calc-example-actions">
+              <select class="form-select" data-calc-example aria-label="选择教学示例" aria-describedby="jesd204b-calc-example-note"><option value="" disabled>自定义参数</option></select>
+              <button type="button" class="btn" data-calc-reset>恢复默认</button>
+            </div>
+          </div>
+          <p id="jesd204b-calc-example-note" class="j-calc-example-note" data-calc-out="example-note"></p>
+          <div class="j-calc-fields">
+            <label class="j-calc-field"><span>f<sub>s</sub> · 样本速率</span><span class="j-calc-input"><input type="number" data-calc="fs" value="250" min="0" step="any" aria-describedby="jesd204b-calc-rate-note jesd204b-calc-error"><span>MSPS</span></span></label>
+            <label class="j-calc-field"><span>M · 转换器数</span><span class="j-calc-input"><input type="number" data-calc="m" value="1" min="1" max="256" step="1" aria-describedby="jesd204b-calc-error"><span>个</span></span></label>
+            <label class="j-calc-field"><span>N′ · 传输位宽</span><span class="j-calc-input"><input type="number" data-calc="np" value="16" min="4" max="32" step="4" aria-describedby="jesd204b-calc-rate-note jesd204b-calc-error"><span>bit</span></span></label>
+            <label class="j-calc-field"><span>L · Lane 数</span><span class="j-calc-input"><input type="number" data-calc="l" value="4" min="1" max="32" step="1" aria-describedby="jesd204b-calc-error"><span>条</span></span></label>
+            <label class="j-calc-field"><span>S · 样本数 / 帧</span><span class="j-calc-input"><input type="number" data-calc="s" value="2" min="1" max="32" step="1" aria-label="S，每个转换器每帧的样本数" aria-describedby="jesd204b-calc-error"><span>个</span></span></label>
+            <label class="j-calc-field"><span>K · 帧数 / 多帧</span><span class="j-calc-input"><input type="number" data-calc="k" value="20" min="1" max="32" step="1" aria-describedby="jesd204b-calc-error jesd204b-calc-boundary-note"><span>帧</span></span></label>
+          </div>
+          <p id="jesd204b-calc-rate-note" class="j-calc-parameter-note">f<sub>s</sub> 为每个逻辑转换器送入链路的样本速率；有抽取时采用抽取后的值。N′ 含控制位与填充位，例如 14 bit ADC 可按 16 bit 传输。</p>
+          <div class="j-calc-mapping"><strong>每 Lane 每帧字节数</strong><span>F = M × S × N′ ÷ (8 × L)</span><output data-calc-out="mapping" class="tabular-nums"></output></div>
+          <p id="jesd204b-calc-error" class="j-calc-message" data-calc-out="error" role="status" aria-live="polite" hidden></p>
+        </section>
+        <section class="j-calc-panel j-calc-structure" aria-labelledby="jesd204b-calc-structure-title">
+          <div class="j-calc-heading"><h3 id="jesd204b-calc-structure-title">采样点、帧与多帧</h3><span>点选采样点，追踪字节去向</span></div>
+          <p class="j-calc-diagram-empty" data-calc-diagram-empty hidden>请先修正上方链路参数，再查看数据分组。</p>
+          <figure class="j-map-figure" data-calc-diagram></figure>
+          <div class="j-map-tooltip" id="jesd204b-map-tooltip" popover="manual" role="tooltip"><strong></strong><span></span></div>
+        </section>
+        <section class="j-calc-panel j-calc-chain" data-calc-chain aria-labelledby="jesd204b-calc-chain-title">
+          <div class="j-calc-heading"><h3 id="jesd204b-calc-chain-title">速率与时钟推导</h3><span>箭头表示数值换算关系</span></div>
+          <div class="j-calc-chain-flow" role="group" aria-label="Lane 速率、链路并行时钟、帧时钟、LMFC、SYSREF 的换算顺序">
+            <div class="j-calc-chain-node"><span class="j-calc-chain-label">Lane 速率</span><span class="j-calc-chain-value" data-calc-chain-value="lane">—</span></div>
+            <div class="j-calc-chain-arrow" data-calc-chain-step="link" data-state="inactive"><span>÷ (10 × P)</span><i class="j-calc-chain-line" aria-hidden="true"></i><span>—</span></div>
+            <div class="j-calc-chain-node"><span class="j-calc-chain-label">链路并行时钟</span><span class="j-calc-chain-value" data-calc-chain-value="link">—</span></div>
+            <div class="j-calc-chain-arrow" data-calc-chain-step="frame" data-state="inactive"><span>× P ÷ F</span><i class="j-calc-chain-line" aria-hidden="true"></i><span>—</span></div>
+            <div class="j-calc-chain-node"><span class="j-calc-chain-label">帧时钟</span><span class="j-calc-chain-value" data-calc-chain-value="frame">—</span></div>
+            <div class="j-calc-chain-arrow" data-calc-chain-step="lmfc" data-state="inactive"><span>÷ K</span><i class="j-calc-chain-line" aria-hidden="true"></i><span>—</span></div>
+            <div class="j-calc-chain-node"><span class="j-calc-chain-label">LMFC</span><span class="j-calc-chain-value" data-calc-chain-value="lmfc">—</span></div>
+            <div class="j-calc-chain-arrow" data-calc-chain-step="sysref" data-state="inactive"><span>÷ n</span><i class="j-calc-chain-line" aria-hidden="true"></i><span>—</span></div>
+            <div class="j-calc-chain-node"><span class="j-calc-chain-label">SYSREF</span><span class="j-calc-chain-value" data-calc-chain-value="sysref">—</span></div>
+          </div>
+        </section>
+        <div class="j-calc-cards">
+          <section class="j-calc-panel j-calc-card" aria-labelledby="jesd204b-calc-lane-title">
+            <h3 id="jesd204b-calc-lane-title">Lane 速率</h3>
+            <div class="j-calc-work">
+              <div class="j-calc-work-row"><span class="j-calc-work-label">公式</span><p class="j-calc-formula"><span>R<sub>Lane</sub> =</span><span>(M × N′ × f<sub>s</sub> ÷ L) × 10/8</span></p></div>
+              <div class="j-calc-work-row"><span class="j-calc-work-label">代入</span><p class="j-calc-substitution" data-calc-out="lane-substitution"></p></div>
+            </div>
+            <div class="j-calc-result"><output data-calc-out="lane" aria-label="每条 Lane 的串行速率"></output><span>每条 Lane</span></div>
+            <p class="j-calc-note" data-calc-out="lane-note"></p>
+          </section>
+          <section class="j-calc-panel j-calc-card" aria-labelledby="jesd204b-calc-link-title">
+            <div class="j-calc-card-heading">
+              <h3 id="jesd204b-calc-link-title">链路并行时钟</h3>
+              <div class="j-calc-link-controls">
+                <label class="j-calc-field"><span>P · 每 Lane / 周期</span><select class="form-select" data-calc="p" aria-label="每 Lane 每个链路时钟周期的字节数 P" aria-describedby="jesd204b-calc-link-note jesd204b-calc-link-error jesd204b-calc-boundary-note"><option value="4">4 字节</option><option value="8">8 字节</option></select></label>
+              </div>
+            </div>
+            <p id="jesd204b-calc-link-error" class="j-calc-control-error" data-calc-out="link-error" role="status" hidden></p>
+            <div class="j-calc-work">
+              <div class="j-calc-work-row"><span class="j-calc-work-label">公式</span><p class="j-calc-formula"><span>f<sub>Link</sub> = R<sub>Lane</sub> ÷ (10 × P)</span><span class="j-calc-equivalent">= f<sub>Frame</sub> × F ÷ P</span></p></div>
+              <div class="j-calc-work-row"><span class="j-calc-work-label">代入</span><p class="j-calc-substitution" data-calc-out="link-substitution"></p></div>
+            </div>
+            <div class="j-calc-result"><output data-calc-out="link" aria-label="链路并行时钟频率"></output><span data-calc-out="link-period"></span></div>
+            <p id="jesd204b-calc-link-note" class="j-calc-note"><span data-calc-out="link-data"></span><br>P 为编码前字节数，按 IP 位宽选择；直连用户逻辑通常共用此时钟。</p>
+          </section>
+          <section class="j-calc-panel j-calc-card" aria-labelledby="jesd204b-calc-frame-title">
+            <h3 id="jesd204b-calc-frame-title">帧时钟</h3>
+            <div class="j-calc-work">
+              <div class="j-calc-work-row"><span class="j-calc-work-label">公式</span><p class="j-calc-formula"><span>f<sub>Frame</sub> = f<sub>s</sub> ÷ S</span><span class="j-calc-equivalent">= R<sub>Lane</sub> ÷ (10 × F)</span></p></div>
+              <div class="j-calc-work-row"><span class="j-calc-work-label">代入</span><p class="j-calc-substitution" data-calc-out="frame-substitution"></p></div>
+            </div>
+            <div class="j-calc-result"><output data-calc-out="frame" aria-label="帧时钟频率"></output><span data-calc-out="frame-period"></span></div>
+            <p class="j-calc-note">每个转换器每帧映射 S 个样本；S 增大时，帧频率降低。周期等于频率的倒数。</p>
+          </section>
+          <section class="j-calc-panel j-calc-card" aria-labelledby="jesd204b-calc-lmfc-title">
+            <h3 id="jesd204b-calc-lmfc-title">本地多帧时钟 LMFC</h3>
+            <div class="j-calc-work">
+              <div class="j-calc-work-row"><span class="j-calc-work-label">公式</span><p class="j-calc-formula"><span>f<sub>LMFC</sub> = f<sub>Frame</sub> ÷ K</span><span class="j-calc-equivalent">= f<sub>s</sub> ÷ (S × K)</span></p></div>
+              <div class="j-calc-work-row"><span class="j-calc-work-label">代入</span><p class="j-calc-substitution" data-calc-out="lmfc-substitution"></p></div>
+            </div>
+            <div class="j-calc-result"><output data-calc-out="lmfc" aria-label="LMFC 频率"></output><span data-calc-out="lmfc-period"></span></div>
+            <p class="j-calc-note">一个多帧包含 K 帧。T<sub>LMFC</sub> = K × T<sub>Frame</sub>，也就是本页动画中 1 T 所代表的多帧周期。</p>
+            <p id="jesd204b-calc-boundary-note" class="j-calc-note j-calc-warning" data-calc-out="multiframe-advisory" role="status" hidden></p>
+          </section>
+          <section class="j-calc-panel j-calc-card j-calc-card-wide" aria-labelledby="jesd204b-calc-sysref-title">
+            <div class="j-calc-card-heading">
+              <h3 id="jesd204b-calc-sysref-title">SYSREF 频率选择</h3>
+              <div class="j-calc-sysref-controls">
+                <label class="j-calc-field"><span>模式</span><select class="form-select" data-calc="mode" aria-label="SYSREF 信号模式"><option value="periodic">周期信号</option><option value="single">单次脉冲</option></select></label>
+                <label class="j-calc-field"><span>n</span><span class="j-calc-input"><input type="number" data-calc="n" value="4" min="1" step="1" aria-label="SYSREF 间隔的 LMFC 周期数 n" aria-describedby="jesd204b-calc-sysref-note jesd204b-calc-sysref-error jesd204b-calc-capture-note"><span>个 LMFC 周期</span></span></label>
+              </div>
+            </div>
+            <p id="jesd204b-calc-sysref-error" class="j-calc-control-error" data-calc-out="sysref-error" role="status" hidden></p>
+            <div class="j-calc-work">
+              <div class="j-calc-work-row"><span class="j-calc-work-label">公式</span><p class="j-calc-formula" data-calc-out="sysref-formula"><span>f<sub>SYSREF</sub> = f<sub>LMFC</sub> ÷ n</span></p></div>
+              <div class="j-calc-work-row"><span class="j-calc-work-label">代入</span><p class="j-calc-substitution" data-calc-out="sysref-substitution"></p></div>
+            </div>
+            <div class="j-calc-result"><output data-calc-out="sysref" aria-label="SYSREF 频率或单次脉冲模式"></output><span data-calc-out="sysref-period"></span></div>
+            <p id="jesd204b-calc-sysref-note" class="j-calc-note" data-calc-out="sysref-note"></p>
+            <p id="jesd204b-calc-capture-note" class="j-calc-note j-calc-warning" data-calc-out="sysref-advisory" role="status" hidden></p>
+          </section>
+        </div>
+      </div>
+    </details>
+    <details class="j-foldout j-glossary" data-section="terms">
+      <summary><h2 id="jesd204b-terms-title">专业术语与释义</h2></summary>
+      <div class="j-glossary-body">
+        <div class="j-glossary-grid">
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-data">
+            <h3 id="jesd204b-terms-data">链路与数据组织</h3>
+            <dl class="j-glossary-list">
+              <div><dt>TX / RX<span>发送端 / 接收端</span></dt><dd>Transmitter / Receiver。本演示由 ADC 侧发送、FPGA 侧接收；名称按数据传输方向区分。</dd></div>
+              <div><dt>Lane / Link<span>串行通道 / 链路</span></dt><dd>一个 Lane 是一条单向串行数据通道；一个 Link 由一个或多个 Lane 组成。<strong>Lane 不等于 ADC 采样通道</strong>，样本如何分配由数据映射决定。</dd></div>
+              <div><dt>Lane Rate<span>Lane 速率</span></dt><dd>每条 Lane 在线路上传输的串行比特率，包含 8b/10b 编码开销，常用单位为 Mbps 或 Gbps。它不同于转换器的样本率，也不是整条 Link 的总速率。</dd></div>
+              <div><dt>Sample<span>样本</span></dt><dd>转换器输出或接收的一份采样数据。一个样本可占多个字节，也可根据配置跨 Lane 传输。</dd></div>
+              <div><dt>Octet<span>八位字节</span></dt><dd>8 bit 的数据单位。经过 8b/10b 编码后，以 10 bit 码组在线路上传输。</dd></div>
+              <div><dt>Frame<span>帧</span></dt><dd>传输层的数据组织单位。每个 Lane 每帧包含 F 个 Octet；一帧不一定等于一个样本。</dd></div>
+              <div><dt>Multiframe<span>多帧</span></dt><dd>由 K 个连续帧构成，用于组织对齐过程。其周期对应一个 LMFC 周期。</dd></div>
+            </dl>
+          </section>
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-clock">
+            <h3 id="jesd204b-terms-clock">时钟与同步</h3>
+            <dl class="j-glossary-list">
+              <div><dt>Device Clock<span>器件时钟</span></dt><dd>供给器件的时钟参考，器件内部据此产生相关时钟；具体与采样时钟、链路时钟的关系由器件实现决定。</dd></div>
+              <div><dt>Link Clock<span>链路时钟</span></dt><dd>本页指链路并行数据通路的工作时钟，常用单位为 MHz。每 Lane 每周期处理 P 个编码前字节时，f<sub>Link</sub> = R<sub>Lane</sub> ÷ (10 × P)。是否与用户逻辑共用时钟，取决于器件/IP 接口。</dd></div>
+              <div><dt>Frame Clock<span>帧时钟</span></dt><dd>标识帧边界的节拍。每经过 K 个帧周期，就经过一个多帧周期。</dd></div>
+              <div><dt>LMFC<span>本地多帧时钟</span></dt><dd><span class="j-term-english">Local Multiframe Clock</span>TX、RX 各自的多帧边界参考，可由内部计数器实现。固定两端的 LMFC 相位关系，是实现可重复延时的重要条件。</dd></div>
+              <div><dt>SYSREF<span>系统参考信号</span></dt><dd><span class="j-term-english">System Reference</span>Subclass 1 用于对齐本地时序参考的信号。被器件时钟可靠采样后，可建立 LMFC 的确定相位关系。</dd></div>
+              <div><dt>SYNC~<span>同步请求信号</span></dt><dd>由 RX 发向 TX，低有效。“~”表示低电平有效；初始化时拉低以请求码组同步，完成 CGS 后释放为高电平，随后仍需经过 ILAS。</dd></div>
+              <div><dt>Subclass<span>子类</span></dt><dd>0：不提供确定性延时机制；1：使用 SYSREF；2：使用具有规定时序关系的 SYNC~。本演示采用 Subclass 1。</dd></div>
+            </dl>
+          </section>
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-init">
+            <h3 id="jesd204b-terms-init">链路建立与编码</h3>
+            <dl class="j-glossary-list">
+              <div><dt>CGS<span>码组同步</span></dt><dd><span class="j-term-english">Code Group Synchronization</span>RX 识别连续的 /K/（K28.5），建立 10 bit 码组边界。本演示显示每条 Lane 的识别进度。</dd></div>
+              <div><dt>ILAS<span>初始通道对齐序列</span></dt><dd><span class="j-term-english">Initial Lane Alignment Sequence</span>位于 CGS 与用户数据之间，用于建立帧、多帧及 Lane 对齐并核对链路配置。本演示用 MF1～MF4 表示，MF2 携带配置参数；收发配置仍需事先匹配。</dd></div>
+              <div><dt>User Data<span>用户数据</span></dt><dd>初始化完成后传输的有效载荷。接收端还需按配置解帧、恢复样本；链路图中的“对齐输出”表示缓冲读出位置。</dd></div>
+              <div><dt>8b/10b<span>线路编码</span></dt><dd>把 8 bit 数据或控制符号编码为 10 bit 码组，以支持直流平衡与时钟恢复。数据编码效率为 80%。</dd></div>
+              <div><dt>SERDES / CDR<span>串并转换 / 时钟恢复</span></dt><dd>Serializer / Deserializer 负责并行与串行转换；Clock and Data Recovery 从接收串行信号中恢复时钟并判决数据。</dd></div>
+              <div><dt>Scrambling<span>扰码</span></dt><dd>对用户数据进行可逆变换，改善重复数据的频谱特性。收发两端需匹配配置；它不用于数据加密。</dd></div>
+            </dl>
+          </section>
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-latency">
+            <h3 id="jesd204b-terms-latency">缓冲与确定性延时</h3>
+            <dl class="j-glossary-list">
+              <div><dt>链路延时<span>Link Latency</span></dt><dd>数据通过所定义链路路径的时间。左侧 Lane 设置表示 TX 发出数据至 RX 缓冲写入的延时，尚未计入缓冲等待。</dd></div>
+              <div><dt>弹性缓冲<span>Elastic Buffer</span></dt><dd>接收端暂存数据、吸收各 Lane 到达差异的缓冲区，通常按 FIFO（先进先出）方式读写。这里采用“缓冲”对应 Buffer。</dd></div>
+              <div><dt>Lane 对齐<span>Lane Alignment</span></dt><dd>补偿 Lane 间到达时间差（Lane Skew），让对应数据一起输出。一次运行中已对齐，仍需检查跨上电延时是否可重复。本模型将含上电波动的到达跨度限制为 1 T，并非单路绝对延时上限；实际对齐能力以器件手册为准。</dd></div>
+              <div><dt>确定性延时<span>Deterministic Latency</span></dt><dd>在配置及同步参考条件保持一致时，同一数据在规定 TX、RX 端点之间的延时，在重新上电或同步后可重复。本演示跟踪 TX 发出 D0 首字节至 RX 缓冲读出该字节，不含 ADC 转换及后续解帧、应用处理延时。</dd></div>
+              <div><dt>RBD<span>接收缓冲延时设置</span></dt><dd><span class="j-term-english">Receive Buffer Delay</span>设置缓冲相对 RX LMFC 边沿的放行位置。它不是每条 Lane 到达后都等待同样长的时间；具体编码和步进以器件手册为准。</dd></div>
+              <div><dt>放行机会 / 裕量<span>本演示的判断方式</span></dt><dd>在“LMFC 边沿 + RBD 偏移”处判断是否可开始读出。本演示要求各 Lane 到齐并预留 1 帧裕量；未满足则等待下次机会。<strong>1 帧裕量是教学设定。</strong></dd></div>
+            </dl>
+          </section>
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-params">
+            <h3 id="jesd204b-terms-params">常用配置参数</h3>
+            <dl class="j-glossary-list">
+              <div><dt>L<span>Lane 数</span></dt><dd>一条链路使用的串行 Lane 数量。本演示为 4 条。</dd></div>
+              <div><dt>M<span>转换器数</span></dt><dd>链路中映射的逻辑转换器数量，不一定等于芯片数量或物理模拟输入通道数。</dd></div>
+              <div><dt>F<span>每 Lane 每帧字节数</span></dt><dd>每个 Lane 的每个帧包含的 Octet 数量。本演示设为 1。</dd></div>
+              <div><dt>K<span>每多帧的帧数</span></dt><dd>一个多帧包含的帧数。本演示设为 20；参数 K 与控制字符 /K/ 含义不同。</dd></div>
+              <div><dt>S<span>每转换器每帧样本数</span></dt><dd>一个转换器在每帧中映射的样本数量。</dd></div>
+              <div><dt>N<span>转换器分辨率</span></dt><dd>每个样本的有效数据位数；这里的分辨率参数不是衡量实际信噪表现的 ENOB（有效位数）。</dd></div>
+              <div><dt>N′<span>每样本传输位数</span></dt><dd>8b/10b 编码前，每个样本所占的位数，包含数据位以及配置的控制位、填充位。它不是线路上的 10 bit 码组宽度。</dd></div>
+              <div><dt>HD<span>高密度数据格式</span></dt><dd><span class="j-term-english">High Density</span>控制样本到 Lane 的映射方式。启用后允许一个样本跨 Lane 映射，不表示提高转换器分辨率。</dd></div>
+            </dl>
+          </section>
+          <section class="j-glossary-group" aria-labelledby="jesd204b-terms-markers">
+            <h3 id="jesd204b-terms-markers">控制字符与演示标记</h3>
+            <dl class="j-glossary-list">
+              <div><dt>/K/ · K28.5<span>码组同步字符</span></dt><dd>用于 CGS。RX 通过识别连续的该字符确认码组同步。</dd></div>
+              <div><dt>/R/ · K28.0<span>ILAS 多帧起始</span></dt><dd>标识 ILAS 中的多帧开始。图中以首个 /R/ 的到达时刻观察各 Lane 的差异。</dd></div>
+              <div><dt>/A/ · K28.3<span>Lane 对齐字符</span></dt><dd>标识多帧边界，供 Lane 对齐使用。ILAS 的各多帧以 /A/ 结束；用户数据阶段按字符替换规则出现。</dd></div>
+              <div><dt>/Q/ · K28.4<span>配置起始字符</span></dt><dd>位于 ILAS 第二个多帧的 /R/ 之后，后续携带链路配置参数。</dd></div>
+              <div><dt>/F/ · K28.7<span>帧对齐字符</span></dt><dd>用于帧对齐监测；用户数据阶段可按字符替换规则出现，并非每帧都会额外插入。</dd></div>
+              <div><dt>MF1～MF4<span>演示中的 ILAS 编号</span></dt><dd>分别表示四个连续的 ILAS 多帧，尚不属于用户采样数据。</dd></div>
+              <div><dt>D0、D1…<span>演示中的数据块编号</span></dt><dd>每块按一个多帧长度分组，用来观察传输、缓冲及读出。一个 Dn 数据块不等于一个物理采样点。</dd></div>
+              <div><dt>T<span>演示中的时间单位</span></dt><dd>1 T 等于一个 LMFC 周期。本模型每多帧 20 帧，因此 1 帧为 0.05 T。</dd></div>
+            </dl>
+          </section>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
+<script id="jesd204b-calculator-model">
+(function(global){
+  'use strict';
+  const defaults=Object.freeze({fs:250,m:1,np:16,l:4,s:2,k:20,mode:'periodic',n:4,p:4});
+  const examples=Object.freeze([
+    {id:'split-sample',label:'① 样本跨 Lane（默认）',note:'观察：S = 2、F = 1。图中一个 16 bit 样本拆成两个字节，分别放到两条 Lane。',changes:{}},
+    {id:'whole-sample',label:'② 样本位于同一 Lane',note:'对比默认示例：只将 S 改为 4，F 增至 2，帧周期翻倍；Lane 速率不变，图中样本的两个字节位于同一条 Lane。',changes:{s:4}},
+    {id:'two-converters',label:'③ 双转换器',note:'对比默认示例：只将 M 改为 2。观察两路样本如何分配到四条 Lane，Lane 速率增至 2.5 Gbps。',changes:{m:2}},
+    {id:'packed-12bit',label:'④ 12 bit 样本打包',note:'将 N′ 改为 12、L 改为 3。点选相邻采样点，观察两个 4 bit 片段如何拼成一个字节；Lane 速率仍为 1.25 Gbps。',changes:{np:12,l:3}},
+    {id:'long-multiframe',label:'⑤ 更长多帧（K = 32）',note:'对比默认示例：只将 K 改为 32。帧周期和 Lane 速率不变，多帧周期变长，LMFC 与周期 SYSREF 的频率降低。',changes:{k:32}},
+    {id:'ad9213-10gsps',label:'⑥ 更高样本速率',note:'AD9213 全带宽、无抽取：10 GSPS = 10000 MSPS。12 bit ADC 按 N′ = 16 bit 传输，16 条 Lane 分担数据，每 Lane 12.5 Gbps；SYSREF 示例取 n = 4，可在下方调整。',changes:{fs:10000,m:1,np:16,l:16,s:16,k:32,mode:'periodic',n:4}}
+  ].map(({id,label,note,changes})=>Object.freeze({id,label,note,values:Object.freeze({...defaults,...changes})})));
+  function calculate(p=defaults){
+    const errors=[],warnings=[],notices=[];
+    const issue=(fields,message)=>errors.push({fields,message});
+    if(!Number.isFinite(p.fs)||p.fs<=0)issue(['fs'],'fₛ 必须是大于 0 的有限数，单位为 MSPS。');
+    for(const [key,label,max] of [['m','M',256],['l','L',32],['s','S',32],['k','K',32]]){
+      if(!Number.isInteger(p[key])||p[key]<1||p[key]>max)issue([key],label+' 必须是 1～'+max+' 的整数。');
+    }
+    if(!Number.isInteger(p.np)||p.np<4||p.np>32||p.np%4!==0)issue(['np'],'N′ 请选择 4、8、12…32 bit 的传输位宽。');
+    if(errors.length)return {ok:false,errors,warnings,notices,values:null};
+    // Standard sample mapping with no separate control-word stream (CF = 0).
+    const f=p.m*p.s*p.np/(8*p.l);
+    if(!Number.isInteger(f)||f<1||f>256){
+      issue(['m','s','np','l'],'当前推导的 F = '+Number(f.toPrecision(6))+'；每 Lane 每帧字节数必须是 1～256 的整数，请调整 M、S、N′ 或 L。');
+    }else if(f*p.k<17||f*p.k>1024){
+      issue(['k'],'当前 F × K = '+f*p.k+' 字节；每 Lane 每多帧需为 17～1024 字节，请调整 K 或数据映射参数。');
+    }
+    if(errors.length)return {ok:false,errors,warnings,notices,values:null};
+    const sampleHz=p.fs*1e6,frameHz=sampleHz/p.s,lmfcHz=frameHz/p.k,laneBps=sampleHz*p.m*p.np/p.l*10/8;
+    const values={f,laneBps,frameHz,framePeriodSeconds:1/frameHz,lmfcHz,lmfcPeriodSeconds:1/lmfcHz,octetsPerMultiframe:f*p.k,linkHz:null,linkPeriodSeconds:null,framesPerLinkCycle:null,sysrefHz:null,sysrefPeriodSeconds:null};
+    if([laneBps,frameHz,lmfcHz,values.framePeriodSeconds,values.lmfcPeriodSeconds].some(v=>!Number.isFinite(v)||v<=0)){
+      issue(['fs'],'当前数值超出计算范围，请调整样本速率。');
+      return {ok:false,errors,warnings,notices,values:null};
+    }
+    if(laneBps<.3125e9||laneBps>12.5e9)warnings.push('计算结果超出 JESD204B 标准的 0.3125～12.5 Gbps 范围；请调整参数并核对器件支持的速率。');
+    // P is the implementation's per-lane octets per parallel clock cycle,
+    // not a JESD transport parameter. Each octet consumes 10 line bits.
+    const octetsPerCycle=p.p===undefined?defaults.p:p.p;
+    if(octetsPerCycle!==4&&octetsPerCycle!==8){
+      issue(['p'],'请选择每 Lane 每周期 4 或 8 字节，具体支持情况以 IP 配置为准。');
+    }else{
+      values.linkHz=laneBps/(10*octetsPerCycle);
+      values.linkPeriodSeconds=1/values.linkHz;
+      values.framesPerLinkCycle=octetsPerCycle/f;
+    }
+    if(p.mode==='periodic'){
+      if(!Number.isSafeInteger(p.n)||p.n<1){
+        issue(['n'],'周期 SYSREF 的 n 必须是大于或等于 1 的整数。');
+      }else{
+        const hz=lmfcHz/p.n,period=values.lmfcPeriodSeconds*p.n;
+        if(!Number.isFinite(hz)||hz<=0||!Number.isFinite(period)||period<=0)issue(['n'],'SYSREF 周期超出计算范围，请减小 n 或调整样本速率。');
+        else {values.sysrefHz=hz;values.sysrefPeriodSeconds=period;}
+      }
+    }else if(p.mode!=='single')issue(['mode'],'请选择周期信号或单次脉冲。');
+    // These are implementation-dependent advisories, not protocol errors.
+    // SYSREF alignment here is conditional on capture by the link clock.
+    if(values.linkHz!==null){
+      const octets=values.octetsPerMultiframe;
+      if(octets%octetsPerCycle!==0)notices.push({code:'multiframe-boundary',octets,parallelOctets:octetsPerCycle,cyclesPerMultiframe:octets/octetsPerCycle});
+      if(values.sysrefHz!==null){
+        let a=octetsPerCycle,b=octets;
+        while(b){const remainder=a%b;a=b;b=remainder;}
+        const nMultiple=octetsPerCycle/a;
+        // Reduce before checking n; n*F*K may exceed safe integer precision.
+        if(p.n%nMultiple!==0)notices.push({code:'sysref-capture',nMultiple});
+      }
+    }
+    return {ok:errors.length===0,errors,warnings,notices,values};
+  }
+  // Illustrative CF=0 packing, not a device-specific JESD transport mapping:
+  // concatenate each converter's samples MSB first, then assign F octets per lane.
+  function illustrativeByte(p,lane,frame,byte){
+    if(!p||[['m',256],['s',32],['l',32]].some(([key,max])=>!Number.isInteger(p[key])||p[key]<1||p[key]>max)
+      ||!Number.isInteger(p.np)||p.np<4||p.np>32||p.np%4)return [];
+    const f=p.m*p.s*p.np/(8*p.l);
+    if(!Number.isInteger(f)||f<1||f>256||!Number.isInteger(lane)||lane<0||lane>=p.l
+      ||!Number.isSafeInteger(frame)||frame<0||!Number.isSafeInteger((frame+1)*p.s)
+      ||!Number.isInteger(byte)||byte<0||byte>=f)return [];
+    let offset=8*(lane*f+byte);
+    const end=offset+8,parts=[];
+    while(offset<end){
+      const word=Math.floor(offset/p.np),within=offset%p.np;
+      const width=Math.min(end-offset,p.np-within),hi=p.np-1-within;
+      parts.push({converter:Math.floor(word/p.s),sample:frame*p.s+word%p.s,hi,lo:hi-width+1,width});
+      offset+=width;
+    }
+    return parts;
+  }
+  global.JESD204BCalculator={defaults,examples,calculate,illustrativeByte};
+})(globalThis);
+</script>
+<script>
+(function(){
+  'use strict';
+  const panel=document.querySelector('#jesd204b-explainer [data-section="calculator"]');
+  if(!panel)return;
+  const calculator=globalThis.JESD204BCalculator;
+  const inputs=Object.fromEntries([...panel.querySelectorAll('[data-calc]')].map(el=>[el.dataset.calc,el]));
+  const outputs=Object.fromEntries([...panel.querySelectorAll('[data-calc-out]')].map(el=>[el.dataset.calcOut,el]));
+  const chainValues=Object.fromEntries([...panel.querySelectorAll('[data-calc-chain-value]')].map(el=>[el.dataset.calcChainValue,el]));
+  const chainSteps=Object.fromEntries([...panel.querySelectorAll('[data-calc-chain-step]')].map(el=>[el.dataset.calcChainStep,el]));
+  const exampleSelect=panel.querySelector('[data-calc-example]');
+  for(const example of calculator.examples){
+    const option=document.createElement('option');
+    option.value=example.id;option.textContent=example.label;
+    exampleSelect.append(option);
+  }
+  const number=value=>Number(value.toPrecision(6)).toString();
+  function quantity(value,units){
+    const [scale,unit]=units.find(([scale])=>value>=scale)||units.at(-1);
+    return number(value/scale)+' '+unit;
+  }
+  const frequency=value=>quantity(value,[[1e9,'GHz'],[1e6,'MHz'],[1e3,'kHz'],[1,'Hz']]);
+  const rate=value=>quantity(value,[[1e9,'Gbps'],[1e6,'Mbps'],[1e3,'kbps'],[1,'bps']]);
+  const period=value=>quantity(value,[[1,'s'],[1e-3,'ms'],[1e-6,'μs'],[1e-9,'ns'],[1e-12,'ps']]);
+  function set(name,value){if(outputs[name].textContent!==value)outputs[name].textContent=value;}
+  const diagram=panel.querySelector('[data-calc-diagram]');
+  const diagramEmpty=panel.querySelector('[data-calc-diagram-empty]');
+  const mapTooltip=panel.querySelector('#jesd204b-map-tooltip');
+  let selection={converter:0,sample:0},lastDiagram=null,diagramWidth=0,mappingNotesOpen=false;
+  let hintButton=null,hintPinned=false,hintHideTimer;
+  function closeMapHint(){
+    clearTimeout(hintHideTimer);
+    if(mapTooltip.matches(':popover-open'))mapTooltip.hidePopover();
+    hintButton?.setAttribute('aria-expanded','false');
+    hintButton?.removeAttribute('aria-describedby');
+    hintButton=null;hintPinned=false;
+  }
+  function showMapHint(button,pinned=false){
+    if(!lastDiagram?.v)return;
+    clearTimeout(hintHideTimer);
+    if(hintButton!==button)closeMapHint();
+    hintButton=button;hintPinned=hintPinned||pinned;
+    const {p,v}=lastDiagram,total=p.m*p.s*p.np;
+    const content={
+      sample:['样本侧 · 每帧总位数',p.m+' 个转换器 × '+p.s+' 个样本/转换器 × '+p.np+' bit/样本\n= '+total+' bit'],
+      lane:['Lane 侧 · 每帧总位数',p.l+' 条 Lane × '+v.f+' 字节/Lane × 8 bit/字节\n= '+total+' bit'],
+      info:['数据量与映射说明','按本页常规映射（CF = 0），统计 8b/10b 编码前的数据量；N′ 包含控制位与填充位。\n图中按转换器、样本、高位到低位顺序分配，实际映射由器件模式决定。\n“…”省略中间项；各区展示逻辑分组，不表示电路延时。']
+    }[button.dataset.mapHint];
+    mapTooltip.querySelector('strong').textContent=content[0];
+    mapTooltip.querySelector('span').textContent=content[1];
+    button.setAttribute('aria-expanded','true');
+    button.setAttribute('aria-describedby',mapTooltip.id);
+    const edge=12,viewportWidth=document.documentElement.clientWidth,viewportHeight=document.documentElement.clientHeight;
+    mapTooltip.style.maxWidth=Math.min(360,viewportWidth-edge*2)+'px';
+    if(!mapTooltip.matches(':popover-open'))mapTooltip.showPopover();
+    const anchor=button.getBoundingClientRect(),tip=mapTooltip.getBoundingClientRect(),gap=7;
+    const left=Math.max(edge,Math.min(anchor.left+(anchor.width-tip.width)/2,viewportWidth-tip.width-edge));
+    const top=anchor.top-tip.height-gap>=edge?anchor.top-tip.height-gap:Math.min(anchor.bottom+gap,viewportHeight-tip.height-edge);
+    mapTooltip.style.left=left+'px';mapTooltip.style.top=Math.max(edge,top)+'px';
+  }
+  function scheduleMapHintClose(){
+    clearTimeout(hintHideTimer);
+    hintHideTimer=setTimeout(()=>{if(!hintPinned&&document.activeElement!==hintButton&&!mapTooltip.matches(':hover'))closeMapHint();},120);
+  }
+  diagram.addEventListener('pointerover',event=>{
+    const button=event.target.closest('[data-map-hint]');
+    if(button&&event.pointerType!=='touch'&&!button.contains(event.relatedTarget))showMapHint(button);
+  });
+  diagram.addEventListener('pointerout',event=>{
+    const button=event.target.closest('[data-map-hint]');
+    if(button&&!button.contains(event.relatedTarget))scheduleMapHintClose();
+  });
+  document.addEventListener('focusin',event=>{
+    const button=event.target.closest('[data-map-hint]');
+    if(button&&diagram.contains(button))showMapHint(button);
+    else if(!mapTooltip.contains(event.target))closeMapHint();
+  });
+  document.addEventListener('click',event=>{
+    if(!event.target.closest('[data-map-hint]')&&!mapTooltip.contains(event.target))closeMapHint();
+  });
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeMapHint();});
+  document.addEventListener('scroll',event=>{if(!mapTooltip.contains(event.target))closeMapHint();},true);
+  window.addEventListener('resize',closeMapHint);
+  mapTooltip.addEventListener('pointerenter',()=>clearTimeout(hintHideTimer));
+  mapTooltip.addEventListener('pointerleave',scheduleMapHintClose);
+  mapTooltip.addEventListener('toggle',()=>{if(!mapTooltip.matches(':popover-open'))closeMapHint();});
+  diagram.addEventListener('toggle',event=>{if(event.target.matches('.j-map-notes')&&!event.target.open)closeMapHint();},true);
+  panel.addEventListener('toggle',event=>{if(event.target===panel&&!panel.open)closeMapHint();});
+  // Preserve the selected sample's destination even when large counts are abbreviated.
+  function shownUnits(count,limit,include=[]){
+    if(count<=limit)return Array.from({length:count},(_,i)=>i);
+    const indices=[...new Set([...Array.from({length:Math.max(1,limit-2)},(_,i)=>i),count-1,...include])].filter(i=>i>=0&&i<count).sort((a,b)=>a-b);
+    return indices.flatMap((i,n)=>n&&i>indices[n-1]+1?[null,i]:[i]);
+  }
+  const ellipsis='<span class="j-map-ellipsis" aria-label="省略中间项">…</span>';
+  const sampleName=(converter,sample,multi)=>'<span class="j-map-source">'+(multi?'<span>C'+converter+'·</span>':'')+'<span>x<sub>'+sample+'</sub></span></span>';
+  const bitName=(part,np)=>part.width===np?part.width+' bit':part.hi===np-1?'高'+part.width:part.lo===0?'低'+part.width:part.hi+':'+part.lo;
+  function updateDiagram(p,v){
+    closeMapHint();
+    mappingNotesOpen=diagram.querySelector('.j-map-notes')?.open??mappingNotesOpen;
+    lastDiagram={p,v};
+    diagram.hidden=!v;
+    diagramEmpty.hidden=!!v;
+    if(!v){
+      diagram.replaceChildren();
+      diagram.removeAttribute('aria-label');
+      return;
+    }
+    const width=diagram.getBoundingClientRect().width||900;
+    diagramWidth=width;
+    const diagramStyle=getComputedStyle(diagram);
+    const contentWidth=width-(parseFloat(diagramStyle.getPropertyValue('--j-map-inset'))||34);
+    const labelWidth=parseFloat(diagramStyle.getPropertyValue('--j-map-label'))||76;
+    const columnGap=parseFloat(diagramStyle.getPropertyValue('--j-map-gap'))||14;
+    const frames=contentWidth>=650?2:1;
+    const columnWidth=(contentWidth-labelWidth-columnGap*frames)/frames;
+    const sampleLimit=Math.max(3,Math.min(8,Math.floor(columnWidth/42)));
+    const byteLimit=Math.max(3,Math.min(6,Math.floor(columnWidth/80)));
+    if(selection.converter>=p.m||selection.sample>=frames*p.s)selection={converter:0,sample:0};
+    const selectedFrame=Math.floor(selection.sample/p.s),selectedLocal=selection.sample%p.s;
+    const startBit=(selection.converter*p.s+selectedLocal)*p.np;
+    const firstByte=Math.floor(startBit/8),lastByte=Math.floor((startBit+p.np-1)/8);
+    const firstLane=Math.floor(firstByte/v.f),lastLane=Math.floor(lastByte/v.f);
+    const selectedLanes=Array.from({length:lastLane-firstLane+1},(_,i)=>firstLane+i);
+    const converters=shownUnits(p.m,4,[selection.converter]),lanes=shownUnits(p.l,6,selectedLanes);
+    const samples=shownUnits(p.s,sampleLimit,[selectedLocal]);
+    const notesOpen=mappingNotesOpen;
+    const frameClass=frame=>(frame?' j-map-next':'')+(frame===selectedFrame?' j-map-active':'');
+    const destinations=selectedLanes.map(lane=>'Lane '+lane).join('、');
+    const row=(label,content,extra='')=>'<div class="j-map-row" '+extra+'><span class="j-map-label">'+label+'</span>'+content+'</div>';
+    const columns=render=>Array.from({length:frames},(_,frame)=>render(frame)).join('');
+    const heading=(step,name,note)=>'<section class="j-map-section"><div class="j-map-heading"><strong><span class="j-map-step">'+step+'</span>'+name+'</strong><span>'+note+'</span></div><div class="j-map-content">';
+    const omittedRow=()=>row('…',columns(()=>'<span class="text-muted" aria-label="省略中间通道">…</span>'));
+    let html=heading(1,'采样点分组','每个转换器每帧 <b>S = '+p.s+' 个样本</b> · N′ = '+p.np+' bit');
+    for(const converter of converters){
+      if(converter===null){html+=omittedRow();continue;}
+      html+=row(p.m===1?'ADC':'C'+converter,columns(frame=>'<div class="j-map-packet'+frameClass(frame)+'">'+samples.map(i=>{
+        if(i===null)return ellipsis;
+        const sample=frame*p.s+i,selected=converter===selection.converter&&sample===selection.sample;
+        return '<button type="button" class="j-map-sample" data-map-converter="'+converter+'" data-map-sample="'+sample+'" aria-pressed="'+selected+'" aria-label="追踪转换器 '+converter+' 的采样点 '+sample+'">x<sub>'+sample+'</sub></button>';
+      }).join('')+'</div>'));
+    }
+    html+=row('',columns(frame=>'<div class="j-map-brace'+frameClass(frame)+'">帧 '+frame+' · '+p.s+' 个样本'+(p.k===1&&frame===1?'（下一多帧）':'')+'</div>'));
+    const fragments=[];
+    for(let offset=0;offset<p.np;){
+      // Match the actual octet boundaries: e.g. the second 12-bit word is 4 + 8 bits.
+      const bits=Math.min(8-(startBit+offset)%8,p.np-offset),part={hi:p.np-1-offset,lo:p.np-offset-bits,width:bits};
+      const destinationByte=Math.floor((startBit+offset)/8),destinationLane=Math.floor(destinationByte/v.f),byteInLane=destinationByte%v.f;
+      fragments.push('<span class="j-map-fragment" data-map-fragment-hi="'+part.hi+'" data-map-fragment-lo="'+part.lo+'" data-map-fragment-width="'+bits+'" data-map-destination-lane="'+destinationLane+'" data-map-destination-byte="'+byteInLane+'" style="flex:'+bits+'"><span>'+bitName(part,p.np)+(part.width===p.np?'':' bit')+'</span><small><span>→ Lane '+destinationLane+'</span>'+(v.f>1?'<span>字节 '+byteInLane+'</span>':'')+'</small></span>');
+      offset+=bits;
+    }
+    html+='<div class="j-map-expand"><span class="j-map-label">'+sampleName(selection.converter,selection.sample,p.m>1)+' 拆分</span><div class="j-map-expansion"><div class="j-map-fragments">'+fragments.join('')+'</div><span>'+(p.np%8===0?p.np/8+' 个字节':'共 '+p.np+' bit')+'，'+(selectedLanes.length===1?'均在 Lane '+firstLane:'分布于 '+selectedLanes.length+' 条 Lane')+'</span></div></div></div></section>';
+    html+=heading(2,'分配到 Lane','每 Lane 每帧 <b>F = '+v.f+' 字节</b> · 帧周期 '+period(v.framePeriodSeconds));
+    html+=row('',columns(frame=>'<span class="j-map-frame-title'+frameClass(frame)+'"><span>帧 '+frame+(p.k===1&&frame===1?'（下一多帧）':'')+'</span></span>'));
+    for(const lane of lanes){
+      if(lane===null){html+=omittedRow();continue;}
+      const include=[];
+      for(let b=firstByte;b<=lastByte;b++)if(Math.floor(b/v.f)===lane)include.push(b%v.f);
+      const bytes=shownUnits(v.f,byteLimit,include);
+      html+=row(selectedLanes.includes(lane)?'<span class="j-map-linked-label">Lane '+lane+'</span>':'Lane '+lane,columns(frame=>'<div class="j-map-packet j-map-bytes'+frameClass(frame)+'">'+bytes.map(byte=>{
+        if(byte===null)return ellipsis;
+        const parts=calculator.illustrativeByte(p,lane,frame,byte);
+        return '<div class="j-map-byte" data-map-lane="'+lane+'" data-map-frame="'+frame+'" data-map-byte="'+byte+'" title="Lane '+lane+'，帧 '+frame+'，字节 '+byte+'：8 bit">'+parts.map(part=>{
+          const matched=part.converter===selection.converter&&part.sample===selection.sample;
+          return '<span class="j-map-byte-part'+(matched?' j-map-match':'')+'" style="flex:'+part.width+'" data-map-width="'+part.width+'" data-map-source-converter="'+part.converter+'" data-map-source-sample="'+part.sample+'">'+sampleName(part.converter,part.sample,p.m>1)+'<small>'+bitName(part,p.np)+'</small></span>';
+        }).join('')+'</div>';
+      }).join('')+'</div>'),'data-map-lane-row="'+lane+'"');
+    }
+    html+=row('',columns(frame=>'<div class="j-map-brace'+frameClass(frame)+'" aria-label="帧 '+frame+'：每 Lane 共 '+v.f+' 字节">'+v.f+' 字节</div>'))+'</div></section>';
+    html+=heading(3,'组成多帧','每格 1 帧 · 多帧周期 '+period(v.lmfcPeriodSeconds));
+    const multiFrames=shownUnits(p.k,Math.max(4,Math.min(32,Math.floor((contentWidth-labelWidth-columnGap)/28))),selectedFrame<p.k?[selectedFrame]:[]);
+    const multiRow=(label,content)=>'<div class="j-map-multi-row"><span class="j-map-label">'+label+'</span><div class="j-map-multi-cells">'+content+'</div></div>';
+    html+=multiRow('帧编号',multiFrames.map(i=>i===null?ellipsis:'<span class="j-map-frame-number'+(i===selectedFrame?' j-map-current':'')+'">'+i+'</span>').join(''));
+    for(const lane of lanes){
+      const linked=selectedLanes.includes(lane);
+      html+=multiRow(lane===null?'…':linked?'<span class="j-map-linked-label">Lane '+lane+'</span>':'Lane '+lane,lane===null?'<span>…</span>':multiFrames.map(i=>i===null?ellipsis:'<span class="j-map-mini-frame'+(i===selectedFrame?' j-map-current'+(linked?' j-map-linked':''):'')+'" data-map-multi-frame="'+i+'" data-map-multi-lane="'+lane+'" aria-label="Lane '+lane+'，帧 '+i+'"></span>').join(''));
+    }
+    html+='<div class="j-map-multi-row"><span></span><div class="j-map-brace">一个多帧：<b>K = '+p.k+' 帧</b></div></div>';
+    html+='<p class="j-map-location"><span>'+sampleName(selection.converter,selection.sample,p.m>1)+' → <strong>'+(selectedFrame<p.k?'帧 '+selectedFrame:'下一多帧（上图帧 '+selectedFrame+'）')+' · '+destinations+'</strong></span>'+(selectedFrame<p.k?'<span>深色格标出样本所在位置</span>':'')+'</p></div></section>';
+    const hint=(key,content,label,extra='')=>'<button type="button" class="j-map-hint'+extra+'" data-map-hint="'+key+'" aria-label="'+label+'" aria-expanded="false" aria-controls="jesd204b-map-tooltip">'+content+'</button>';
+    html+='<details class="j-map-notes"'+(notesOpen?' open':'')+'><summary>数据量校验与映射说明</summary><div class="j-map-balance"><span class="text-muted">同一帧周期：</span>'+hint('sample','M × S × N′<small>（样本侧）</small>','样本侧：M × S × N′，查看当前代入值')+'<span class="j-map-equation-part"><span>=</span>'+hint('lane','L × F × 8<small>（Lane 侧）</small>','Lane 侧：L × F × 8，查看当前代入值')+'</span><span class="j-map-equation-part">= <strong>'+(p.m*p.s*p.np)+' bit</strong>'+hint('info','ⓘ','查看数据量与映射说明',' j-map-hint-info')+'</span></div></details>';
+    diagram.style.setProperty('--j-map-frames',frames);
+    diagram.innerHTML=html;
+    diagram.setAttribute('aria-label','每个转换器每帧有 '+p.s+' 个样本；每条 Lane 每帧有 '+v.f+' 字节；每多帧有 '+p.k+' 帧。点选采样点可追踪对应字节。');
+  }
+  diagram.addEventListener('click',event=>{
+    const hint=event.target.closest('[data-map-hint]');
+    if(hint){
+      if(hintButton===hint&&hintPinned)closeMapHint();else showMapHint(hint,true);
+      return;
+    }
+    const button=event.target.closest('[data-map-sample]');
+    if(!button||!lastDiagram?.v)return;
+    selection={converter:Number(button.dataset.mapConverter),sample:Number(button.dataset.mapSample)};
+    updateDiagram(lastDiagram.p,lastDiagram.v);
+    diagram.querySelector('[data-map-converter="'+selection.converter+'"][data-map-sample="'+selection.sample+'"]')?.focus({preventScroll:true});
+  });
+  new ResizeObserver(()=>{
+    const width=diagram.getBoundingClientRect().width;
+    if(width>0&&Math.abs(width-diagramWidth)>1&&lastDiagram?.v)updateDiagram(lastDiagram.p,lastDiagram.v);
+  }).observe(diagram);
+  function updateChain(p,v,single){
+    // Mirror independently calculated results so an invalid P does not hide
+    // valid frame/LMFC results. The arrows express conversion, not clock wiring.
+    for(const [key,el] of Object.entries(chainValues)){
+      el.textContent=outputs[key].textContent;
+      el.dataset.unavailable=String(el.textContent==='—');
+    }
+    const linkReady=Number.isFinite(v?.linkHz),sysrefReady=Number.isFinite(v?.sysrefHz);
+    const steps=[
+      ['link','÷ (10 × P)',linkReady?'÷ '+number(10*p.p):'—',linkReady],
+      ['frame','× P ÷ F',linkReady?'× '+number(p.p)+' ÷ '+number(v.f):'—',linkReady],
+      ['lmfc','÷ K',v?'÷ '+number(p.k):'—',!!v],
+      ['sysref',single?'单次模式':'÷ n',single?'无重复频率':sysrefReady?'÷ '+number(p.n):'—',!single&&sysrefReady]
+    ];
+    for(const [key,formula,factor,active] of steps){
+      const el=chainSteps[key];
+      el.firstElementChild.textContent=formula;
+      el.lastElementChild.textContent=factor;
+      el.dataset.state=active?'active':key==='sysref'&&single?'single':'inactive';
+    }
+  }
+  function update(){
+    const p=Object.fromEntries(Object.entries(inputs).map(([key,el])=>[key,key==='mode'?el.value:key==='p'?Number(el.value):el.valueAsNumber]));
+    const example=calculator.examples.find(item=>Object.entries(item.values).every(([key,value])=>p[key]===value));
+    exampleSelect.value=example?.id||'';
+    set('example-note',example?.note||'当前为自定义参数。可继续修改，或从示例列表载入一组教学参数。');
+    const single=p.mode==='single';
+    inputs.n.disabled=single;
+    const result=calculator.calculate(p),v=result.values;
+    updateDiagram(p,v);
+    for(const [key,el] of Object.entries(inputs))el.setAttribute('aria-invalid',String(result.errors.some(error=>error.fields.includes(key))));
+    set('error',result.errors.map(error=>error.message).join(' '));
+    outputs.error.hidden=result.errors.length===0;
+    set('mapping',v?'= ('+number(p.m)+' × '+number(p.s)+' × '+number(p.np)+') ÷ (8 × '+number(p.l)+') = '+v.f+' B':'—');
+    set('lane-substitution',v?'('+number(p.m)+' × '+number(p.np)+' bit × '+number(p.fs)+' MSPS ÷ '+number(p.l)+') × 10/8':'请先完成上方参数设置。');
+    set('lane',v?rate(v.laneBps):'—');
+    const linkError=result.errors.find(error=>error.fields.includes('p'));
+    const linkReady=v?.linkHz!==null&&v?.linkHz!==undefined;
+    set('link-error',linkError?.message||'');
+    outputs['link-error'].hidden=!linkError;
+    set('link-substitution',linkReady?rate(v.laneBps)+' ÷ (10 × '+number(p.p)+')':linkError?.message||'请先完成上方参数设置。');
+    set('link',linkReady?frequency(v.linkHz):'—');
+    set('link-period',linkReady?'周期 '+period(v.linkPeriodSeconds):'');
+    set('link-data',linkReady?'每 Lane 每周期 '+number(p.p)+' 字节，数据量相当于'+(Number.isInteger(v.framesPerLinkCycle)?' ':'约 ')+number(v.framesPerLinkCycle)+' 帧。':'按每 Lane 每周期的字节数换算并行时钟。');
+    set('frame-substitution',v?number(p.fs)+' MSPS ÷ '+number(p.s):'请先完成上方参数设置。');
+    set('frame',v?frequency(v.frameHz):'—');
+    set('frame-period',v?'周期 '+period(v.framePeriodSeconds):'');
+    set('lmfc-substitution',v?frequency(v.frameHz)+' ÷ '+number(p.k):'请先完成上方参数设置。');
+    set('lmfc',v?frequency(v.lmfcHz):'—');
+    set('lmfc-period',v?'周期 '+period(v.lmfcPeriodSeconds):'');
+    const boundaryNotice=result.notices.find(notice=>notice.code==='multiframe-boundary');
+    set('multiframe-advisory',boundaryNotice?'F × K ÷ P = '+number(boundaryNotice.cyclesPerMultiframe)+' 个周期；多帧边界不能逐次对齐并行时钟，请核对器件/IP 支持。':'');
+    outputs['multiframe-advisory'].hidden=!boundaryNotice;
+    set('lane-note',result.warnings[0]||'所有转换器的数据分配到 L 条 Lane；8b/10b 编码使线路数据量增加 25%。');
+    outputs['lane-note'].classList.toggle('j-calc-warning',result.warnings.length>0);
+    const sysrefError=result.errors.find(error=>error.fields.includes('n'));
+    set('sysref-error',sysrefError?.message||'');
+    outputs['sysref-error'].hidden=!sysrefError;
+    outputs['sysref-substitution'].closest('.j-calc-work-row').hidden=single||!!sysrefError;
+    outputs['sysref-substitution'].classList.toggle('j-calc-invalid',!!sysrefError);
+    if(single){
+      set('sysref-formula','单次触发，不定义重复频率。');
+      set('sysref-substitution','无需设置 n。');
+      set('sysref','单次脉冲');
+      set('sysref-period','无重复周期');
+      set('sysref-note','脉冲宽度、采样边沿以及建立/保持时间需满足各器件要求。');
+    }else{
+      const formula='<span>f<sub>SYSREF</sub> = f<sub>LMFC</sub> ÷ n</span>';
+      if(outputs['sysref-formula'].innerHTML!==formula)outputs['sysref-formula'].innerHTML=formula;
+      const ready=v?.sysrefHz!==null&&v?.sysrefHz!==undefined;
+      set('sysref-substitution',ready?frequency(v.lmfcHz)+' ÷ '+number(p.n):sysrefError?.message||'请输入有效的链路参数和正整数 n。');
+      set('sysref',ready?frequency(v.sysrefHz):'—');
+      set('sysref-period',ready?'周期 '+period(v.sysrefPeriodSeconds):'');
+      set('sysref-note','每 n 个 LMFC 周期重复一次；周期还需是实际 SYSREF 采样时钟周期的整数倍，并满足建立/保持时间。');
+    }
+    const captureNotice=result.notices.find(notice=>notice.code==='sysref-capture');
+    set('sysref-advisory',captureNotice?'若由链路并行时钟采样，n × F × K ÷ P 应为整数；当前 n = '+String(p.n)+' 不满足，需取 '+captureNotice.nMultiple+' 的正整数倍。':'');
+    outputs['sysref-advisory'].hidden=!captureNotice;
+    updateChain(p,v,single);
+  }
+  panel.addEventListener('input',event=>{if(event.target.matches('[data-calc]'))update();});
+  panel.addEventListener('change',event=>{if(event.target.matches('[data-calc]'))update();});
+  function applyExample(values){
+    for(const [key,el] of Object.entries(inputs))el.value=values[key];
+    selection={converter:0,sample:0};
+    update();
+  }
+  exampleSelect.addEventListener('change',()=>{
+    const example=calculator.examples.find(item=>item.id===exampleSelect.value);
+    if(example)applyExample(example.values);
+  });
+  panel.querySelector('[data-calc-reset]').addEventListener('click',()=>applyExample(calculator.defaults));
+  update();
+})();
+</script>
+<script id="jesd204b-model">
+(function(global){
+  'use strict';
+  const K=20,F=1,B=K*F,CAPACITY=40,GUARD=1/K,SKEW_LIMIT=1,CGS_THRESHOLD=4,EPS=1e-8;
+  const CGS_SYMBOL='K28.5';
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const base={delays:[6,9,12,15],rbd:20,jitter:2};
+  function config(value={}){
+    return {delays:[0,1,2,3].map(i=>clamp(Math.round(Number(value.delays?.[i]??base.delays[i])||base.delays[i]),1,30)),rbd:clamp(Math.round(Number(value.rbd)||20),1,K),jitter:clamp(Math.round(Number(value.jitter)||0),0,3)};
+  }
+  function releaseDelta(maxDelay,rbd){
+    const phase=rbd/K;
+    return phase+Math.max(0,Math.ceil(maxDelay+GUARD-phase-EPS));
+  }
+  function makeRun(input=base,actualFrames){
+    const cfg=config(input),frames=(actualFrames||cfg.delays).map(v=>clamp(Number(v),1,33));
+    const delays=frames.map(v=>v/K),maxDelay=Math.max(...delays),minDelay=Math.min(...delays);
+    const sysref = 1;
+    const syncLow = sysref + 0.50;
+    const syncFlight = 0.20;
+    const cgsTx = syncLow + syncFlight;
+    const cgsReady=delays.map(d=>cgsTx+d+(CGS_THRESHOLD-1)/B);
+    // RX ends its synchronization request on an LMFC boundary. TX detects
+    // the returned level and starts ILAS on its own next boundary.
+    const nextLmfc=t=>sysref+Math.floor(t-sysref+EPS)+1;
+    const minimumSyncRequestEnd=syncLow+5/K+9/B;
+    const syncRx=nextLmfc(Math.max(minimumSyncRequestEnd,...cgsReady));
+    const syncTx=syncRx+syncFlight;
+    const ilas=nextLmfc(syncTx);
+    const delta=releaseDelta(maxDelay,cfg.rbd),release=ilas+delta;
+    const firstRelease=cfg.rbd/K;
+    const releaseOffsets=Array.from({length:Math.round(delta-firstRelease)+1},(_,index)=>firstRelease+index);
+    const required=delays.map(d=>Math.max(0,Math.ceil((delta-d-EPS)*B)));
+    const overflow=required.some(n=>n>CAPACITY);
+    // A teaching scope, not a universal hardware failure threshold. Keep the
+    // queue arithmetic available but do not present out-of-scope outputs as valid.
+    const skewOK=maxDelay-minDelay<=SKEW_LIMIT+EPS,blocked=overflow||!skewOK;
+    return {cfg,frames,delays,minDelay,maxDelay,sysref,syncLow,syncFlight,cgsTx,cgsReady,syncRx,syncTx,ilas,release,releaseOffsets,delta,required,overflow,skewOK,blocked,arrivals:delays.map(d=>ilas+d),dataTx:ilas+4,dataRx:release+4,end:Math.ceil(release+6)};
+  }
+  function cgsCount(run,lane,time){
+    const firstK=run.cgsTx+run.delays[lane];
+    return clamp(Math.floor((time-firstK+EPS)*B)+1,0,CGS_THRESHOLD);
+  }
+  function bounds(input){
+    const cfg=config(input);
+    const low=Math.max(...cfg.delays.map(d=>Math.max(1,d-cfg.jitter)))/K;
+    const high=Math.max(...cfg.delays.map(d=>d+cfg.jitter))/K;
+    const first=releaseDelta(low,cfg.rbd),last=releaseDelta(high,cfg.rbd);
+    const minRbdFrames=Math.ceil((high+GUARD-EPS)*K);
+    const earliest=Math.min(...cfg.delays.map(d=>Math.max(1,d-cfg.jitter)))/K;
+    const need=Math.ceil((last-earliest-EPS)*B);
+    const skewSpan=high-earliest,scopeOK=skewSpan<=SKEW_LIMIT+EPS,capacityOK=need<=CAPACITY;
+    return {low,high,first,last,minRbdFrames,stable:Math.abs(first-last)<EPS,capacityOK,need,skewSpan,scopeOK,applicable:scopeOK&&capacityOK};
+  }
+  function laneState(run,lane,time){
+    const arrival=run.arrivals[lane];
+    const received=time+EPS<arrival?0:Math.floor((time-arrival+EPS)*B)+1;
+    const released=!run.blocked&&time+EPS>=run.release;
+    const sent=released?Math.floor((time-run.release+EPS)*B)+1:0;
+    const occupied=Math.max(0,received-sent);
+    return {arrival,received,sent,occupied,released,ready:received>0,overflow:occupied>CAPACITY,outputIndex:sent-1,wait:run.delta-run.delays[lane]};
+  }
+  const hex=n=>n.toString(16).toUpperCase().padStart(2,'0');
+  function configuration(lane){
+    const fields=[0,0,lane,1,3,0,19,1,0,15,1,15,1,0,0,0,0,0,0,0,0];
+    const checksum=fields.reduce((sum,n)=>sum+n,0)&255;
+    return [0,0,lane,0x83,0,0x13,1,0x0f,0x2f,0x20,0,0,0,checksum];
+  }
+  function symbol(index,lane=0){
+    if(index<0)return {text:'—',kind:'none',mf:-1};
+    if(index>=4*B)return {text:'D'+Math.floor((index-4*B)/F),kind:'data',mf:4,index:index-4*B};
+    const mf=Math.floor(index/B),pos=index%B;
+    if(pos===0)return {text:'/R/',kind:'r',mf,pos};
+    if(pos===B-1)return {text:'/A/',kind:'a',mf,pos};
+    if(mf===1&&pos===1)return {text:'/Q/',kind:'q',mf,pos};
+    if(mf===1&&pos>=2&&pos<=15)return {text:hex(configuration(lane)[pos-2]),kind:'config',mf,pos,configIndex:pos-2};
+    return {text:'D',kind:'ilas',mf,pos};
+  }
+  function stage(run,t){
+    if(t<run.syncLow)return 'sysref';
+    if(t<run.ilas)return 'cgs';
+    if(t<run.release||run.blocked)return 'ilas';
+    if(t<run.dataRx)return 'release';
+    return 'data';
+  }
+  function stops(run){return [...new Set([0,run.sysref,run.syncLow,run.cgsTx,run.syncRx,run.syncTx,run.ilas,...run.arrivals,run.release,run.ilas+2,run.dataRx,run.end])].sort((a,b)=>a-b);}
+  global.JESD204BModel={K,F,B,CAPACITY,GUARD,SKEW_LIMIT,CGS_THRESHOLD,CGS_SYMBOL,EPS,base,config,releaseDelta,makeRun,cgsCount,bounds,laneState,configuration,symbol,stage,stops,hex,clamp};
+})(globalThis);
+</script>
+<script>
+(function(){
+  'use strict';
+  const root=document.getElementById('jesd204b-explainer');
+  if(!root)return;
+  const M=globalThis.JESD204BModel,$=s=>root.querySelector(s),$$=s=>[...root.querySelectorAll(s)];
+  const out=name=>$('[data-output="'+name+'"]'),control=name=>$('[data-control="'+name+'"]');
+  const stageButtons = $$('.j-stage-controls [data-jump]');
+  const ilasActions = $('.j-ilas-actions');
+  const ilasButtons = $$('.j-ilas-actions [data-jump]');
+  const linkLegend = {
+    sysref: $('[data-link-legend="sysref"]'),
+    transfer: $('[data-link-legend="transfer"]'),
+    release: $('[data-link-legend="release"]')
+  };
+  const C={blue:'var(--j-blue)',orange:'var(--j-orange)',green:'var(--j-green)',purple:'var(--j-purple)',red:'var(--j-red)',line:'var(--j-grid)',ink:'var(--foreground)',muted:'var(--muted-foreground)',surface:'var(--background)'};
+  const LANE_SLOT_HEIGHT = 16;
+  const TIMELINE_BAR_HEIGHT = 14;
+  const fmt=n=>Number(n).toFixed(2),mix=(color,p=13)=>'color-mix(in srgb,'+color+' '+p+'%,transparent)';
+  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let cfg=M.config(M.base),run=M.makeRun(cfg),time=0,playing=false,speed=1,stepPause=false,records=[],seed=204,serial=0,lastFrame=0,lastDraw=0,lastStage='';
+  let width=Math.max(300,root.clientWidth||736),frameHandle=0;
+  function restore(saved){
+    const p=saved?.privateContent;if(!p||p.version!==1)return;
+    cfg=M.config(p.cfg);run=M.makeRun(cfg,Array.isArray(p.actual)&&p.actual.length===4&&p.actual.every(Number.isFinite)?p.actual:undefined);
+    time=M.clamp(Number(p.time)||0,0,run.end);
+    speed=[.5,1,2].includes(p.speed)?p.speed:1;stepPause=p.stepPause===true;
+    records=Array.isArray(p.records)?p.records.slice(-8).filter(r=>Array.isArray(r.frames)&&r.frames.length===4&&r.frames.every(Number.isFinite)).map((r,i)=>({...M.makeRun(cfg,r.frames),number:i+1})):[];serial=records.length;
+  }
+  try{restore(window.openai?.widgetState);}catch{}
+  function remember(){
+    if(!window.openai?.setWidgetState)return;
+    window.openai.setWidgetState({modelContent:{subclass:1,rbdFrames:cfg.rbd,nominalLaneFrames:cfg.delays,jitterFrames:cfg.jitter,currentLatencyLMFC:run.delta,stableInModel:M.bounds(cfg).stable&&M.bounds(cfg).applicable},privateContent:{version:1,cfg,actual:run.frames,time,speed,stepPause,records:records.map(r=>({frames:r.frames}))}}).catch(()=>{});
+  }
+  window.addEventListener('openai:set_globals',event=>{if(event.detail?.globals?.widgetState){playing=false;restore(event.detail.globals.widgetState);syncControls();render();}});
+  const text=(x,y,label,cls='',anchor='start',extra='')=>`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}" ${extra}>${safe(label)}</text>`;
+  const line=(x1,y1,x2,y2,color=C.line,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.3" ${extra}/>`;
+  const rect=(x,y,w,h,color,extra='')=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${h}" fill="${color}" ${extra}/>`;
+  const circle=(x,y,r,color,extra='')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" ${extra}/>`;
+  const path=(d,color,extra='')=>`<path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" ${extra}/>`;
+  const described=(content,description,cls='')=>`<g class="${cls}" aria-label="${safe(description)}"><title>${safe(description)}</title>${content}</g>`;
+  const bufferDescription=`接收缓冲：色块长度表示当前未读数据的占用；每条 Lane 的整条轨道对应 ${M.CAPACITY} B 容量。`;
+  const outputDescription=`对齐输出：展示最近 ${M.B} B（一个多帧长度）内已读出的内容；填满后继续更新，不表示缓冲占用或输出停止。`;
+  function shell(id,svg,w,h,content,description){svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.style.height=h+'px';svg.innerHTML=`<title>${safe(description)}</title><defs><marker id="${id}-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L7 4L1 7" fill="none" stroke="${C.muted}" stroke-width="1.4"/></marker></defs>${content}`;}
+  function colorFor(token){return token.kind==='data'?C.green:token.mf===1?C.purple:C.blue;}
+  const initialLmfcPhase = { tx: .30, rx: .65 };
+  function clockPhase(tx) {
+    if (time < run.sysref) return (time + (tx ? initialLmfcPhase.tx : initialLmfcPhase.rx)) % 1;
+    return (time - run.sysref) % 1;
+  }
+  function lmfcIndicator(centerX, trackY, isTx, capture) {
+    const phase = clockPhase(isTx);
+    const trackWidth = 100;
+    const trackLeft = centerX - trackWidth / 2;
+    const cursorX = trackLeft + trackWidth * phase;
+    const labelClass = capture ? 'j-sysref-text j-emphasis' : isTx ? 'j-tx-text' : 'j-rx-text';
+    return text(centerX, trackY - 9, `LMFC ${Math.floor(phase * M.K)} / ${M.K}`, 'j-small j-mono ' + labelClass, 'middle')
+      + rect(trackLeft, trackY, trackWidth, 7, C.surface, `class="j-lmfc-track" rx="2" stroke="${C.line}"`)
+      + rect(cursorX - 2, trackY - 4.5, 4, 16, C.orange, 'class="j-lmfc-cursor" rx="1"');
+  }
+  function clockFanout(sourceX, sourceY, branchY, txX, rxX, deviceY, capture) {
+    const dash = 'stroke-dasharray="5 5"';
+    let drawing = path(`M${sourceX} ${sourceY} V${branchY}`, C.line, dash);
+    for (const deviceX of [txX, rxX]) {
+      drawing += path(`M${sourceX} ${branchY} H${deviceX} V${deviceY}`, C.line, `${dash} marker-end="url(#j-link-arrow)"`);
+    }
+    if ((time === 0 && !playing) || (time >= run.sysref && !capture)) return drawing;
+
+    const progress = capture ? 1 : time / run.sysref;
+    const pulse = (x, y) => circle(x, y, 5, C.orange, 'class="j-sysref-pulse"');
+
+    const stemFraction = .2;
+    if (progress <= stemFraction) {
+      const pulseY = sourceY + (branchY - sourceY) * progress / stemFraction;
+      return drawing + pulse(sourceX, pulseY);
+    }
+
+    // Each branch uses the same remaining time so the two inputs sample together.
+    const branchProgress = (progress - stemFraction) / (1 - stemFraction);
+    for (const deviceX of [txX, rxX]) {
+      const horizontal = Math.abs(deviceX - sourceX);
+      const distance = (horizontal + deviceY - branchY) * branchProgress;
+      const pulseX = sourceX + Math.sign(deviceX - sourceX) * Math.min(distance, horizontal);
+      const pulseY = branchY + Math.max(0, distance - horizontal);
+      drawing += pulse(pulseX, pulseY);
+    }
+    return drawing;
+  }
+  function tokenAt(t,lane=0){if(t<run.cgsTx)return null;if(t<run.ilas)return {text:M.CGS_SYMBOL,kind:'k',mf:-1};return M.symbol(Math.floor((t-run.ilas+M.EPS)*M.B),lane);}
+  function multiframeName(token) {
+    return token?.mf >= 0 && token.mf < 4 ? `MF${token.mf + 1}` : '';
+  }
+  function dataGroupName(token) {
+    return `D${Math.floor(token.index / M.B)}`;
+  }
+  function symbolText(token, lmfcAligned) {
+    if (!token) return lmfcAligned ? '等待请求' : '等待同步';
+    if (token.kind === 'data') return dataGroupName(token);
+    return multiframeName(token) || token.text;
+  }
+  function drawnBytesSince(startTime) {
+    // Draw the current byte growing after its event; the model still counts whole bytes.
+    const bytes = Math.max(0, (time - startTime) * M.B);
+    const whole = Math.round(bytes);
+    return Math.abs(bytes - whole) < M.EPS ? whole : bytes;
+  }
+  function bufferBlocks(lane, firstByte, nextByte, {x, top, height, byteWidth}, clipId, isOutput = false) {
+    if (nextByte <= firstByte) return '';
+
+    const filledWidth = (nextByte - firstByte) * byteWidth;
+    let drawing = `<clipPath id="${clipId}">${rect(x,top,filledWidth,height,C.surface,'rx="3"')}</clipPath><g clip-path="url(#${clipId})">`;
+    let boundaries = '';
+    let labels = '';
+    let newerColor = '';
+    let newerWidth = 0;
+    const labelClass = (isOutput ? 'j-output-symbol ' : '') + 'j-small j-mono j-emphasis';
+    // Draw the newest bytes on the left so each new multiframe enters there.
+    for (let end = nextByte; end > firstByte;) {
+      const groupStart = (Math.ceil(end / M.B) - 1) * M.B;
+      const token = M.symbol(groupStart, lane);
+      const isData = token.kind === 'data';
+      const start = Math.max(firstByte, groupStart);
+      const blockX = x + (nextByte - end) * byteWidth;
+      const blockWidth = (end - start) * byteWidth;
+      const color = colorFor(token);
+      // Receive DATA uses the occupancy fill already drawn below these segments.
+      if (isOutput || !isData) {
+        drawing += rect(blockX,top,blockWidth,height,`color-mix(in srgb,${color} 36%,${C.surface})`,'class="j-buffer-frame"');
+      }
+      const label = symbolText(token);
+      if (blockWidth >= label.length * 7.5 + 3) {
+        labels += text(blockX + blockWidth / 2, top + height / 2 + 4, label, labelClass, 'middle');
+      }
+      if (newerColor) {
+        const dividerWidth = Math.min(2, blockWidth, newerWidth);
+        boundaries += rect(blockX - dividerWidth / 2, top + 1, dividerWidth, height - 2, newerColor, 'class="j-buffer-frame-boundary" rx="1"');
+      }
+      newerColor = color;
+      newerWidth = blockWidth;
+      end = start;
+    }
+    return drawing + boundaries + '</g>' + labels;
+  }
+
+  function receiveBufferDrawing(lane, state, readEdge, x, y, width) {
+    const height = LANE_SLOT_HEIGHT;
+    const top = y - height / 2;
+    const byteWidth = width / M.CAPACITY;
+    const writeEdge = drawnBytesSince(state.arrival);
+    const firstByte = Math.max(readEdge, writeEdge - M.CAPACITY);
+    const occupiedBytes = state.overflow ? M.CAPACITY : Math.max(0, writeEdge - firstByte);
+    const occupiedWidth = occupiedBytes * byteWidth;
+    const occupancyColor = state.overflow ? C.red : state.released ? C.green : C.orange;
+    let drawing = rect(x,top,width,height,C.surface,'class="j-buffer-track" rx="3"');
+    drawing += rect(x,top,occupiedWidth,height,`color-mix(in srgb,${occupancyColor} 44%,${C.surface})`,'class="j-buffer-occupied" rx="3"');
+    if (state.overflow) return described(drawing,bufferDescription,'j-receive-buffer');
+
+    drawing += bufferBlocks(lane, firstByte, writeEdge, {x, top, height, byteWidth}, `j-buffer-clip-${lane}`);
+    return described(drawing,bufferDescription,'j-receive-buffer');
+  }
+
+  function outputDrawing(lane, readEdge, y, {x, w: width}) {
+    const height = LANE_SLOT_HEIGHT;
+    const top = y - height / 2;
+    let drawing = rect(x,top,width,height,C.surface,'class="j-output-track" rx="3"');
+    // Show the latest multiframe's worth of bytes already read from the buffer.
+    const firstByte = Math.max(0, readEdge - M.B);
+    const byteWidth = width / M.B;
+    drawing += bufferBlocks(lane, firstByte, readEdge, {x, top, height, byteWidth}, `j-output-clip-${lane}`, true);
+    return described(drawing,outputDescription,'j-output-window');
+  }
+  function laneDrawing(i,y,startX,bufferX,bufferW,outputSlot,receiverLeft=bufferX){
+    const st=M.laneState(run,i,time),d=run.delays[i];
+    const readEdge = st.released ? drawnBytesSince(run.release) : 0;
+    let status = `${fmt(d)} T`;
+    if (time < run.syncLow) {
+      status += time < run.sysref ? ' · 等待同步' : ' · 等待 CGS';
+    } else if (time < run.ilas) {
+      status = `已识别 ${M.cgsCount(run,i,time)} / ${M.CGS_THRESHOLD} ${M.CGS_SYMBOL}`;
+    } else if (!st.released) {
+      const bufferStatus = !run.skewOK ? '超出演示范围' : st.overflow ? '溢出' : st.ready ? '等待放行' : '等待 /R/';
+      status += ` · ${bufferStatus}`;
+    }
+    const slotTop = y - LANE_SLOT_HEIGHT / 2;
+    let s=text(bufferX+bufferW,y-11,status,'j-small j-rx-text','end');
+    const wireEnd = bufferX - 8;
+    s += line(startX,y,wireEnd,y,C.line,'marker-end="url(#j-link-arrow)"');
+    const showFirstR = time >= run.ilas && time < st.arrival;
+    const firstRX = startX + (wireEnd - 2 - startX) * (time - run.ilas) / d;
+    if (time >= run.cgsTx && time < st.arrival) {
+      // Show one representative K28.5 per lane traversal while TX streams continuously.
+      const sampleTime = Math.min(time + M.EPS, run.ilas - M.EPS);
+      const sent = run.cgsTx + Math.floor((sampleTime - run.cgsTx) / d) * d;
+      const elapsed = time - sent;
+      const labelWidth = 50;
+      const labelRight = Math.min(receiverLeft - 6, wireEnd - 8);
+      const travel = labelRight - startX - labelWidth;
+      const left = startX + travel * M.clamp(elapsed / d, 0, 1);
+      if (elapsed < d && (!showFirstR || left >= firstRX + 17)) {
+        s += rect(left, slotTop, labelWidth, LANE_SLOT_HEIGHT, C.surface, 'rx="4"');
+        s += text(left + labelWidth / 2, y+4, M.CGS_SYMBOL, 'j-cgs-symbol j-small j-mono', 'middle');
+      }
+    }
+    const firstDotTime = Math.max(run.ilas, time - d);
+    for (let sent = Math.ceil((firstDotTime - M.EPS) / .15) * .15; sent <= time + M.EPS; sent += .15) {
+      const progress = (time - sent) / d;
+      if (progress < 0 || progress > 1) continue;
+      const token = tokenAt(sent, i);
+      const x = startX + (wireEnd - 6 - startX) * progress;
+      s += circle(x, y, token.kind === 'data' ? 4 : 3.6, colorFor(token));
+    }
+    if (showFirstR) {
+      s += rect(firstRX-14,slotTop,28,LANE_SLOT_HEIGHT,mix(C.blue,22),'rx="3"');
+      s += text(firstRX,y+4,'/R/','j-small j-mono','middle');
+    }
+    s += receiveBufferDrawing(i, st, readEdge, bufferX, y, bufferW);
+    const gateX=bufferX+bufferW+6;
+    s+=line(gateX,y-9,gateX+(st.released?8:0),y+(st.released?-14:9),C.orange,'class="j-buffer-gate"');
+    s+=line(gateX+4,y,outputSlot.x,y,C.line,'marker-end="url(#j-link-arrow)"');
+    if(st.released){const f=((time-run.release)*2)%1;s+=circle(gateX+10+(outputSlot.x-gateX-16)*f,y,4.8,C.green);}
+    s += outputDrawing(i, readEdge, y, outputSlot);
+    return s;
+  }
+  function renderLink(){
+    const svg=$('[data-svg="link"]'),w=Math.max(300,svg.clientWidth||width),compact=w<650;let s='';
+    const clockW = Math.min(188, w - 120), clockY = 3, clockHeight = 28;
+    const branchY = clockY + clockHeight + 7;
+    const deviceY = branchY + (compact ? 20 : 23);
+    const outputY = compact ? deviceY + 112 : deviceY;
+    const firstLaneY = outputY + (compact ? 31 : 46);
+    const laneStep = compact ? 46 : 33;
+    const lastLaneY = firstLaneY + 3 * laneStep;
+    const lmfcTrackY = lastLaneY + 49;
+    const sideInset = compact ? 10 : 14;
+    const deviceHeight = compact ? 66 : lmfcTrackY + 14 - deviceY;
+    const panelGap = compact ? 28 : Math.round(82 + 46 * (w - 650) / (1072 - 650));
+    const outputInset = compact ? 8 : 14;
+    const bufferInset = 16;
+    const gateSpace = compact ? 0 : 28;
+    const compactBufferX = Math.round(w * .36);
+    const bufferToOutputRatio = M.CAPACITY / M.B;
+    const trackSpace = compact
+      ? w - sideInset - panelGap - compactBufferX - 2 * outputInset
+      : w - 2 * sideInset - 2 * panelGap - 4 * outputInset - bufferInset - gateSpace;
+    // On desktop, reserve an output-width track for each outer panel and use one byte scale.
+    const outputTrackWidth = compact
+      ? Math.max(68 - 2 * outputInset, Math.round(trackSpace / (1 + bufferToOutputRatio)))
+      : trackSpace / (2 + bufferToOutputRatio);
+    const outputWidth = outputTrackWidth + 2 * outputInset;
+    const tx = {x:sideInset,y:deviceY,w:compact ? 118 : outputWidth,h:deviceHeight};
+    const outputHeight = compact ? lastLaneY + 16 - outputY : deviceHeight;
+    const outputBox = {x:w-sideInset-outputWidth,y:outputY,w:outputWidth,h:outputHeight};
+    const outputSlot = {x:outputBox.x+outputInset,w:outputBox.w-2*outputInset};
+    const rxLeft = compact ? w-sideInset-tx.w : tx.x+tx.w+panelGap;
+    const rxRight = compact ? w-sideInset : outputBox.x-panelGap;
+    const bufferX = compact ? compactBufferX : rxLeft+bufferInset;
+    const bufferRight = outputBox.x - panelGap - gateSpace;
+    const rx = {x:rxLeft,y:deviceY,w:rxRight-rxLeft,h:deviceHeight};
+    const txClockX = tx.x + tx.w/2;
+    const rxClockX = rx.x + rx.w/2;
+    const clockX = (txClockX + rxClockX) / 2;
+    const syncReturnY = compact ? deviceY + deviceHeight + 21 : lmfcTrackY - 2;
+    const sampled = time >= run.sysref;
+    const capture = sampled && time <= run.sysref + .1;
+    const rxSyncHigh = time < run.syncLow || time >= run.syncRx;
+    const txSyncHigh = time < run.cgsTx || time >= run.syncTx;
+    const syncInFlight = rxSyncHigh !== txSyncHigh;
+    const released = !run.blocked && time + M.EPS >= run.release;
+    const bufferNote = '接收缓冲';
+    const alignment = sampled ? 'SYSREF 已采样 · LMFC 对齐' : 'LMFC 尚未对齐';
+    const alignmentClass = capture ? 'j-small j-sysref-text j-emphasis' : 'j-small';
+    s+=rect(clockX-clockW/2,clockY,clockW,clockHeight,mix(C.ink,5),'rx="7" stroke="'+C.line+'"');
+    s += text(clockX, clockY + clockHeight / 2 + 4, 'SYSREF', 'j-small j-emphasis', 'middle');
+    s+=text(clockX,branchY+14,alignment,alignmentClass,'middle');
+    s += rect(outputBox.x, outputBox.y, outputBox.w, outputBox.h, `color-mix(in srgb,${C.ink} 4%,${C.surface})`, 'class="j-output-box" rx="9" stroke="'+mix(C.ink,28)+'"');
+    s += described(text(outputBox.x + outputBox.w / 2, outputBox.y + 16, '对齐输出', (compact ? 'j-small ' : '') + 'j-output-title j-emphasis', 'middle'),outputDescription);
+    if(!compact){
+      for(const [box,label,isTx] of [[tx,'ADC · TX',true],[rx,'FPGA · RX',false]]){
+        const panelColor=C.ink;
+        s+=rect(box.x,box.y,box.w,box.h,`color-mix(in srgb,${panelColor} 5%,${C.surface})`,'rx="9" stroke="'+mix(panelColor,30)+'"');
+        s += text(box.x + box.w / 2, box.y + 16, label, 'j-emphasis', 'middle');
+        s+=lmfcIndicator(box.x+box.w/2,lmfcTrackY,isTx,capture);
+      }
+      const narrowRx = rx.w < 264;
+      const bufferNoteInset = narrowRx ? 7 : 14;
+      s += described(text(rx.x + rx.w - bufferNoteInset, rx.y + 16, bufferNote, 'j-small j-rx-text', 'end'),bufferDescription);
+      const laneLabelWidth = 44;
+      const symbolWidth = Math.min(84, tx.w - 16 - laneLabelWidth);
+      const rowLeft = tx.x + (tx.w - laneLabelWidth - symbolWidth) / 2;
+      const symbolLeft = rowLeft + laneLabelWidth;
+      for(let i=0;i<4;i++){
+        const y=firstLaneY+i*laneStep;
+        s += text(rowLeft,y+4,'Lane '+i,'j-small j-tx-text');
+        s += rect(symbolLeft,y-LANE_SLOT_HEIGHT/2,symbolWidth,LANE_SLOT_HEIGHT,C.surface,'rx="4"');
+        s += text(symbolLeft+symbolWidth/2,y+4,symbolText(tokenAt(time,i),sampled),'j-small j-mono j-tx-text j-emphasis','middle');
+        s+=laneDrawing(i,y,tx.x+tx.w+10,bufferX,bufferRight-bufferX,outputSlot,rx.x);
+      }
+    }else{
+      const txFrame = multiframeName(tokenAt(time));
+      for (const [box, label, isTx] of [[tx, 'ADC · TX', true], [rx, 'FPGA · RX', false]]) {
+        const panelColor = C.ink;
+        const title = isTx && txFrame ? `${label} · ${txFrame}` : label;
+        s += rect(box.x, box.y, box.w, box.h, `color-mix(in srgb,${panelColor} 5%,${C.surface})`, 'rx="7" stroke="'+mix(panelColor,30)+'"');
+        s += text(box.x+box.w/2, box.y+22, title, 'j-emphasis', 'middle');
+        s += lmfcIndicator(box.x+box.w/2, box.y+49, isTx, capture);
+      }
+      s+=text(10,outputY-8,'链路输入','j-small j-muted')+described(text(bufferRight,outputY-8,bufferNote,released?'j-small j-rx-text':'j-small j-muted','end'),bufferDescription);
+      for(let i=0;i<4;i++){
+        const y=firstLaneY+i*laneStep;
+        s += text(12,y-11,'Lane '+i,'j-small j-tx-text');
+        s += laneDrawing(i,y,12,bufferX,bufferRight-bufferX,outputSlot);
+      }
+    }
+    const syncFromX = compact ? rxClockX : rx.x;
+    const syncToX = compact ? txClockX : tx.x + tx.w;
+    const syncHighY = syncReturnY - 7;
+    const syncLowY = syncReturnY + 7;
+    const rxSyncY = rxSyncHigh ? syncHighY : syncLowY;
+    const txSyncY = txSyncHigh ? syncHighY : syncLowY;
+    const edgeTime = rxSyncHigh ? run.syncRx : run.syncLow;
+    const progress = syncInFlight ? (time - edgeTime) / run.syncFlight : 0;
+    const edgeX = syncFromX + (syncToX - syncFromX) * progress;
+    let syncDrawing = '';
+    for (const levelY of [syncHighY, syncLowY]) {
+      syncDrawing += line(syncToX + 4, levelY, syncFromX - 4, levelY, C.line, 'stroke-dasharray="3 4"');
+    }
+    syncDrawing += line(edgeX, txSyncY, syncToX, txSyncY, txSyncHigh ? C.muted : C.orange, 'marker-end="url(#j-link-arrow)"');
+    if (syncInFlight) {
+      syncDrawing += line(syncFromX, rxSyncY, edgeX, rxSyncY, rxSyncHigh ? C.muted : C.orange);
+      syncDrawing += line(edgeX, rxSyncY, edgeX, txSyncY, C.orange);
+    }
+    syncDrawing += text((syncFromX + syncToX) / 2, syncHighY - 5, 'SYNC~', 'j-small j-mono', 'middle');
+    const syncLevelLabelX = syncFromX + 10;
+    const highLabelClass = rxSyncHigh ? 'j-small j-mono j-timeline-heading' : 'j-small j-mono j-muted';
+    const lowLabelClass = rxSyncHigh ? 'j-small j-mono j-muted' : 'j-small j-mono j-timeline-heading j-sysref-text';
+    syncDrawing += text(syncLevelLabelX, syncHighY + 4, '1', highLabelClass, 'middle');
+    syncDrawing += text(syncLevelLabelX, syncLowY + 4, '0', lowLabelClass, 'middle');
+    const syncState = syncInFlight ? (rxSyncHigh ? '上升沿传播中' : '下降沿传播中') : (rxSyncHigh ? '高电平' : '低电平');
+    s += described(syncDrawing, `SYNC~ 从 FPGA 向 ADC 回传，${syncState}`, 'j-sync-return');
+    s += clockFanout(clockX, clockY + clockHeight, branchY, txClockX, rxClockX, deviceY, capture);
+    const height = compact ? lastLaneY + 21 : deviceY + deviceHeight + 8;
+    const description = compact ? '四条Lane的数据输入、独立缓冲及输出，公共时钟和SYSREF对齐收发端LMFC。' : '四条Lane先缓存，再在同一个放行点连续输出。';
+    shell('j-link',svg,w,height,s,description);
+  }
+  function segment(sx,ex,y,height,label,color,now,xmap,hasStartMarker){
+    if(now<=sx)return '';
+    const left=xmap(sx),right=xmap(Math.min(ex,now));if(right<=left)return '';
+    let s=rect(left,y,right-left,height,mix(color,28),'rx="2"');
+    const labelWidth = label.length * 7;
+    const labelLeft = left + (hasStartMarker ? 6 : 1);
+    if (right - 1 - labelLeft >= labelWidth) {
+      const labelX = Math.max((left + right) / 2, labelLeft + labelWidth / 2);
+      s += text(labelX, y + height / 2 + 4, label, 'j-small j-mono', 'middle');
+    }
+    return s;
+  }
+  function stream(start,y,now,xmap,leftTime,rightTime,isInput){
+    let s = '';
+    for (let index = 0; start + index < rightTime && start + index <= now; index++) {
+      const from = start + index, to = from + 1;
+      if (to <= leftTime) continue;
+      const isData = index >= 4;
+      const label = isData ? `D${index - 4}` : `MF${index + 1}`;
+      const color = isData ? C.green : index === 1 ? C.purple : C.blue;
+      const hasStartMarker = from >= leftTime && (isInput ? index === 0 : index === 4);
+      s += segment(Math.max(from, leftTime), Math.min(to, rightTime), y, TIMELINE_BAR_HEIGHT, label, color, now, xmap, hasStartMarker);
+      if (from >= leftTime) {
+        s += line(xmap(from), y, xmap(from), y + TIMELINE_BAR_HEIGHT, color);
+      }
+    }
+    return s;
+  }
+  function pulseEdges(first, period, highDuration, highY, lowY) {
+    const edges = [];
+    for (let index = 0; first + index * period <= time; index++) {
+      const rise = first + index * period;
+      edges.push([rise, highY], [rise + highDuration, lowY]);
+    }
+    return edges;
+  }
+  function waveform(x, start, initialY, edges, color, className) {
+    if (time === 0 || time < start) return '';
+    let trace = `M${x(start)} ${initialY}`;
+    for (const [edgeTime, levelY] of edges) {
+      if (edgeTime > time) break;
+      trace += ` H${x(edgeTime)} V${levelY}`;
+    }
+    return path(`${trace} H${x(time)}`, color, `class="${className}"`);
+  }
+  function lmfcWaveform(x, y, initialPhase, className) {
+    const highY = y - 9;
+    const pulseWidth = .04;
+    const localEdges = pulseEdges(1 - initialPhase, 1, pulseWidth, highY, y)
+      .filter(([edgeTime]) => edgeTime < run.sysref);
+    const alignedEdges = pulseEdges(run.sysref, 1, pulseWidth, highY, y);
+    return waveform(x, 0, y, [...localEdges, ...alignedEdges], C.blue, className);
+  }
+  function renderTimeline(svg){
+    const w=Math.max(300,svg.clientWidth||width),narrow=w<550,left=narrow?90:104,right=w-12;
+    const compact = w < 650;
+    const lo=0,hi=run.end;
+    const x=t=>left+(t-lo)/(hi-lo)*(right-left);let s='';
+    const tickY = 13, cursorY = 20;
+    const groupGap = compact ? 5 : 8;
+    const clockTop = 25;
+    const deviceY = clockTop + 32;
+    const signalStep = compact ? 17 : 18;
+    const sysrefY = deviceY + signalStep;
+    const txLmfcY = sysrefY + signalStep;
+    const rxLmfcY = txLmfcY + signalStep;
+    const syncY = rxLmfcY + signalStep;
+    const clockBottom = syncY + 16;
+    const txTop = clockBottom + groupGap;
+    const txY = txTop + 12;
+    const txBottom = txY + TIMELINE_BAR_HEIGHT + 4;
+    const step = compact ? 17 : 21;
+    const barCenter = TIMELINE_BAR_HEIGHT / 2;
+    const laneGroupHeight = 21 + 3 * step + TIMELINE_BAR_HEIGHT + 5;
+    const inputTop = txBottom + groupGap;
+    const inputStart = inputTop + 21;
+    const inputBottom = inputTop + laneGroupHeight;
+    const outputTop = inputBottom + groupGap;
+    const outStart = outputTop + 21;
+    const outputBottom = outputTop + laneGroupHeight;
+    const plotBottom = outputBottom + 4;
+    let h = plotBottom + 34;
+    const bandInset = 2;
+    const labelDividerX = left - 5;
+    const labelCenterX = (bandInset + labelDividerX) / 2;
+    const headingClass = 'j-small j-timeline-heading';
+    const groups = [
+      {label:'时钟与同步', top:clockTop, bottom:clockBottom, fill:mix(C.ink, 4)},
+      {label:'TX 发送序列', top:txTop, bottom:txBottom, fill:mix(C.ink, 4), labelY:txY + barCenter + 4},
+      {label:'RX 缓冲写入', top:inputTop, bottom:inputBottom, fill:mix(C.blue, 7)},
+      {label:'RX 缓冲读出', top:outputTop, bottom:outputBottom, fill:mix(C.green, 7), labelClass:'j-rx-text'}
+    ];
+    for (const group of groups) {
+      s += rect(bandInset, group.top, w - 2 * bandInset, group.bottom - group.top, group.fill, 'class="j-timeline-band" rx="4"');
+      s += line(labelDividerX, group.top + 4, labelDividerX, group.bottom - 4, mix(C.ink, 10));
+      s += text(labelCenterX, group.labelY ?? group.top + 15, group.label, `${headingClass} ${group.labelClass ?? ''}`, 'middle');
+    }
+    for (let t = lo; t <= hi; t++) {
+      const xx = x(t);
+      s += line(xx, cursorY + 2, xx, plotBottom, mix(C.ink, 10), 'stroke-dasharray="2 5"');
+      if (!narrow || t % 2 === 0) s += text(xx, tickY, t + 'T', 'j-small j-mono', t === hi ? 'end' : 'middle');
+    }
+    const deviceHighY = deviceY - 7, sysrefHighY = sysrefY - 7;
+    const syncHighY = syncY - 6, syncLowY = syncY + 4;
+    const sample = run.sysref;
+    // Show a readable device clock with its sampling edge at the model's SYSREF event.
+    const devicePeriod = .25;
+    const sysrefMargin = devicePeriod / 4;
+    const deviceEdges = pulseEdges(sample % devicePeriod, devicePeriod, devicePeriod / 2, deviceHighY, deviceY);
+    const sysrefEdges = [[sample - sysrefMargin, sysrefHighY], [sample + sysrefMargin, sysrefY]];
+    const syncEdges = [[run.syncLow, syncLowY], [run.syncRx, syncHighY]];
+    s += text(labelCenterX, deviceY + 4, 'Device CLK', 'j-small j-mono', 'middle');
+    s += text(labelCenterX, sysrefY + 4, 'SYSREF', 'j-small j-mono', 'middle');
+    s += text(labelCenterX, txLmfcY + 4, 'LMFC · TX', 'j-small j-mono', 'middle');
+    s += text(labelCenterX, rxLmfcY + 4, 'LMFC · RX', 'j-small j-mono', 'middle');
+    s += text(labelCenterX, syncY + 4, 'SYNC~', 'j-small j-mono', 'middle');
+    s += waveform(x, lo, deviceY, deviceEdges, C.blue, 'j-device-clk-waveform');
+    s += waveform(x, lo, sysrefY, sysrefEdges, C.orange, 'j-sysref-waveform');
+    s += lmfcWaveform(x, txLmfcY, initialLmfcPhase.tx, 'j-lmfc-tx-waveform');
+    s += lmfcWaveform(x, rxLmfcY, initialLmfcPhase.rx, 'j-lmfc-waveform');
+    s += waveform(x, lo, syncHighY, syncEdges, C.orange, 'j-sync-waveform');
+    let sampleLabel = '';
+    if (time >= sample) {
+      const sampleX = x(sample);
+      const sampleLabelY = deviceHighY - 10;
+      const labelToLeft = sampleX - left >= 34;
+      const sampleLabelX = sampleX + (labelToLeft ? -5 : 5);
+      s += line(sampleX, sampleLabelY + 4, sampleX, rxLmfcY, C.orange, 'class="j-sysref-sample-guide" stroke-dasharray="3 3" opacity=".55"');
+      s += circle(sampleX, sysrefHighY, 3, C.orange, 'class="j-sysref-sample"');
+      // On narrow layouts, a matching backdrop keeps the playhead off the label.
+      if (!labelToLeft) sampleLabel += rect(sampleLabelX - 2, sampleLabelY - 13, 29, 17, `color-mix(in srgb,${C.ink} 4%,${C.surface})`, 'class="j-sysref-label-backdrop"');
+      sampleLabel += text(sampleLabelX, sampleLabelY, '采样', 'j-small j-muted j-sysref-sample-label', labelToLeft ? 'end' : 'start');
+    }
+    if (time >= run.syncRx) s += text(x(run.syncRx) + 5, syncY + 11, 'SYNC~ 拉高', 'j-small j-muted');
+    const rows = [{start:run.ilas, y:txY}];
+    for (let lane = 0; lane < 4; lane++) {
+      rows.push({label:`Lane ${lane}`, start:run.arrivals[lane], y:inputStart + lane * step, input:true});
+    }
+    for (let lane = 0; lane < 4; lane++) {
+      rows.push({label:`Lane ${lane}`, start:run.release, y:outStart + lane * step, output:true});
+    }
+    for (const row of rows) {
+      const center = row.y + barCenter;
+      if (row.label) s += text(labelCenterX, center + 4, row.label, 'j-small j-mono', 'middle');
+      s += line(left, center, right, center, mix(C.ink, 7));
+      if (!(row.output && run.blocked)) s += stream(row.start, row.y, time, x, lo, hi, row.input);
+      if (row.input && time >= row.start && row.start >= lo && row.start <= hi) {
+        s += circle(x(row.start), center, 4, C.blue);
+        const end = Math.min(run.release, time, hi);
+        if (end > row.start) s += rect(x(row.start), row.y + TIMELINE_BAR_HEIGHT + 1, x(end) - x(row.start), 2, C.orange);
+      }
+    }
+    const missedOpportunities = [];
+    for (const offset of run.blocked ? [] : run.releaseOffsets.slice(0,-1)) {
+      const opportunity = run.ilas + offset;
+      const opportunityX = x(opportunity);
+      const missed = time + M.EPS >= opportunity;
+      const color = missed ? C.orange : C.line;
+      const reason = opportunity + M.EPS < Math.max(...run.arrivals)
+        ? '各 Lane 尚未全部到齐。'
+        : '已到齐，但未满足本演示预留的 1 帧裕量。';
+      const description = missed
+        ? `${fmt(opportunity)} T：已错过放行机会。${reason}等待下一轮放行。`
+        : `预设放行机会：${fmt(opportunity)} T。`;
+      if (opportunityX >= left && opportunityX <= right) {
+        s += described(line(opportunityX,cursorY+3,opportunityX,plotBottom,color,'stroke-dasharray="3 4"'),description,'j-release-opportunity-line');
+        if (missed) missedOpportunities.push({x:opportunityX,time:opportunity,description});
+      }
+    }
+    if (time >= run.dataTx) {
+      s += circle(x(run.dataTx),txY+barCenter,4,C.green) + text(x(run.dataTx),txY-2,'D0','j-small','middle');
+    }
+    let dataDelayLabel = null;
+    if (!run.blocked && time >= run.dataRx) {
+      for (let lane = 0; lane < 4; lane++) s += circle(x(run.dataRx),outStart+lane*step+barCenter,4,C.green);
+      const txDataX = x(run.dataTx);
+      const rxDataX = x(run.dataRx);
+      s += path(`M${txDataX} ${plotBottom-4} V${plotBottom} H${rxDataX} V${plotBottom-4}`,C.green,'class="j-d0-bracket"');
+      const delayLabelX = M.clamp((txDataX + rxDataX) / 2, left + 52, right - 52);
+      dataDelayLabel = {x:delayLabelX,anchor:'middle',label:`D0 延时 ${fmt(run.delta)} T`,color:C.green,className:'j-d0-delay-caption'};
+    }
+    if (time >= lo && time <= hi) {
+      s += line(x(time),cursorY,x(time),plotBottom,C.ink,'stroke-width="1"');
+      s += circle(x(time),cursorY,3,C.ink,'class="j-timeline-cursor"');
+    }
+    s += sampleLabel;
+    const releaseX = x(run.release);
+    const reached = time + M.EPS >= run.release;
+    const releaseColor = reached ? (run.blocked ? C.red : C.green) : C.muted;
+    const caption = run.blocked ? '未评估有效输出' : `缓冲放行 ${fmt(run.release)} T`;
+    const anchorRight = releaseX + 142 > right;
+    const releaseStyle = reached && !run.blocked ? '' : 'stroke-dasharray="4 4"';
+    s += line(releaseX, outputTop + 4, releaseX, outputBottom - 2, releaseColor, `class="j-buffer-release-marker" ${releaseStyle} style="stroke-width:2" opacity="${reached ? 1 : .55}"`);
+    const footerLabels = [{
+      x:releaseX + (anchorRight ? -5 : 5),anchor:anchorRight ? 'end' : 'start',
+      label:reached ? caption : `预计${caption}`,color:releaseColor,className:'j-release-caption'
+    }, ...missedOpportunities.map(opportunity=>({
+      x:opportunity.x,anchor:'middle',label:`错过放行 ${fmt(opportunity.time)} T`,
+      color:C.orange,className:'j-missed-release-caption',description:opportunity.description,originX:opportunity.x
+    }))];
+    if (dataDelayLabel) footerLabels.push(dataDelayLabel);
+    const footerRows = [];
+    for (const item of footerLabels) {
+      // Reserve a conservative text width and only add annotation rows when
+      // needed. Signal rows and the D0 bracket keep their existing positions.
+      const labelWidth = [...item.label].reduce((sum,char)=>sum+(char.charCodeAt(0)>255?12.5:7.5),0);
+      const anchorFraction = item.anchor==='end' ? 1 : item.anchor==='middle' ? .5 : 0;
+      const minX = bandInset+labelWidth*anchorFraction;
+      const maxX = right-labelWidth*(1-anchorFraction);
+      const labelX = M.clamp(item.x,minX,maxX);
+      const labelLeft = labelX-labelWidth*anchorFraction;
+      const labelRight = labelLeft+labelWidth;
+      let row=0;
+      while (footerRows[row]?.some(other=>labelLeft<other.right+10&&labelRight>other.left-10)) row++;
+      (footerRows[row]??=[]).push({left:labelLeft,right:labelRight});
+      const labelY = plotBottom+30+row*18;
+      const drawing = text(labelX,labelY,item.label,'j-small',item.anchor,`style="fill:${item.color}"`);
+      s += described(drawing,item.description||item.label,item.className);
+      if (item.originX!==undefined && Math.abs(labelX-item.x)>M.EPS) {
+        s += path(`M${item.originX} ${plotBottom} V${plotBottom+5} H${labelX}`,C.orange,'stroke-dasharray="3 4"');
+      }
+      h = Math.max(h,labelY+4);
+    }
+    shell('j-timeline',svg,w,h,s,'TX 和 RX 的 LMFC 在 SYSREF 采样前按各自的本地相位运行，采样时对齐。各 Lane 的数据先后写入 RX 弹性缓冲（Elastic Buffer），在共同放行点开始读出。');
+  }
+  function renderWindow(){
+    const svg=$('[data-svg="window"]'),win=M.bounds(cfg);
+    const w=svg.clientWidth||Math.max(270,(width-42)/2),h=148,left=94,right=w-22;
+    const maximum=Math.max(1.2,Math.ceil(Math.max(win.last,win.high+M.GUARD))+.12);
+    const x=t=>left+t/maximum*(right-left);
+    let s='';
+    for(let t=0;t<=maximum;t++){
+      s+=text(x(t),16,t+' T','j-small j-mono j-muted','middle');
+      s+=line(x(t),23,x(t),119,C.line,'stroke-dasharray="2 4"');
+    }
+    const currentMarkers=[];
+    const ranges=[
+      {y:38,lo:win.low,hi:win.high,current:run.maxDelay,color:C.blue,label:'到齐时间范围',description:'四路到齐',key:'arrival'},
+      {y:78,lo:win.low+M.GUARD,hi:win.high+M.GUARD,current:run.maxDelay+M.GUARD,color:C.orange,label:'裕量满足范围',description:'裕量满足',key:'ready'}
+    ];
+    for(const {y,lo,hi,current,color,label,description,key} of ranges){
+      const rangeText=Math.abs(hi-lo)<M.EPS?fmt(lo)+' T':fmt(lo)+'–'+fmt(hi)+' T';
+      s+=text(0,y+1,label,'j-small j-muted');
+      s+=text(0,y+16,rangeText,'j-small j-mono j-muted');
+      const band=rect(x(lo),y,x(hi)-x(lo),10,mix(color,32),'rx="2"')
+        +line(x(lo),y-2,x(lo),y+12,color)+line(x(hi),y-2,x(hi),y+12,color);
+      s+=described(band,'不同上电的'+description+'时间范围：'+rangeText,'j-window-range j-window-range-'+key);
+      currentMarkers.push(described(circle(x(current),y+5,4.5,color,'stroke="'+C.surface+'" stroke-width="1.5" data-time="'+current+'"'),'本次'+description+'：'+fmt(current)+' T','j-current-'+key));
+    }
+    s+=line(left,116,right,116,C.line);
+    s+=text(0,120,'放行机会','j-small j-muted');
+    for(let point=cfg.rbd/M.K;point<=maximum+M.EPS;point+=1){
+      const chosen=!run.blocked&&Math.abs(point-run.delta)<M.EPS;
+      const opportunityColor=chosen?C.green:C.orange;
+      s+=line(x(point),26,x(point),120,opportunityColor,'stroke-dasharray="3 4" opacity="'+(chosen?'.85':'.6')+'"');
+      s+=circle(x(point),116,chosen?4.5:3.5,chosen?C.green:C.surface,'stroke="'+opportunityColor+'" stroke-width="1.5" class="j-release-opportunity" data-selected="'+chosen+'"');
+      s+=text(x(point),138,fmt(point)+' T','j-small j-mono','middle','style="fill:'+opportunityColor+'"');
+    }
+    s+=currentMarkers.join('');
+    shell('j-window',svg,w,h,s,'相对 TX 首个 /R/，色带表示不同上电的四路到齐范围 '+fmt(win.low)+' 至 '+fmt(win.high)+' T。实心圆点标出本次到齐 '+fmt(run.maxDelay)+' T、裕量满足 '+fmt(run.maxDelay+M.GUARD)+' T；所有示例均预留 '+fmt(M.GUARD)+' T 教学裕量。留足裕量后，等待最近的预设放行机会。'+(run.blocked?'本次不评估有效输出。':'本次计划放行 '+fmt(run.delta)+' T。'));
+    out('guard-note').textContent='色带：不同上电的可能范围；实心圆点：本次时刻。各示例均预留 1 帧（'+fmt(M.GUARD)+' T）裕量。';
+    const readyTime=run.maxDelay+M.GUARD;
+    out('arrival-time').textContent=fmt(run.maxDelay)+' T';
+    out('ready-time').textContent=fmt(readyTime)+' T';
+    out('planned-time').textContent=run.blocked?'未评估':fmt(run.delta)+' T';
+    out('planned-time').classList.toggle('text-destructive',run.blocked);
+    const skipped=Math.round(run.delta-cfg.rbd/M.K);
+    out('release-explanation').textContent=run.blocked?'当前设置超出演示评估范围，未评估有效放行。':skipped?'前一机会 '+fmt(run.delta-1)+' T 早于本次裕量满足时刻，等到 '+fmt(run.delta)+' T 放行。':'本次留足裕量后，等待预设的 '+fmt(run.delta)+' T 机会放行。';
+  }
+  function renderReboots(){
+    const svg=$('[data-svg="reboots"]'),result=out('comparison'),table=out('records');
+    const scope=out('comparison-scope'),win=M.bounds(cfg);
+    const hasRecords=records.length>0;
+    out('comparison-results').hidden=!hasRecords;
+    scope.hidden=!hasRecords;
+    $('[data-action="clear"]').disabled=!hasRecords;
+    result.classList.toggle('text-muted',!hasRecords);
+    const valid=records.filter(r=>!r.blocked);
+    const failed=records.length-valid.length;
+    result.classList.toggle('text-destructive',failed>0);
+    if (!hasRecords) {
+      result.textContent='新增上电记录，观察链路延时变化后，D0 读出是否仍落在同一位置。';
+      scope.textContent='';
+      svg.replaceChildren();table.replaceChildren();return;
+    }
+    const values=[...new Set(valid.map(r=>fmt(r.delta)))].sort((a,b)=>Number(a)-Number(b));
+    const summary=[];
+    if(values.length>1) summary.push('本次抽样出现 '+values.join(' / ')+' T 两种 D0 延时，相差 '+Math.round(Number(values.at(-1))-Number(values[0]))+' T。');
+    else if(values.length===1) summary.push(valid.length===1?'当前仅 1 次有效记录，D0 延时 '+values[0]+' T。':'本次 '+valid.length+' 次有效记录的 D0 延时均为 '+values[0]+' T。');
+    if(failed)summary.push(failed+' 次超出模型范围或容量限制，未计入有效输出。');
+    result.textContent=summary.join('');
+    result.classList.toggle('text-destructive',failed>0||values.length>1);
+    if(!win.applicable){
+      scope.textContent='当前参数范围超出演示的到达跨度或缓冲容量限制，不能据此判断确定性延时。';
+    }else if(!win.stable){
+      const missing=[fmt(win.first),fmt(win.last)].filter(value=>!values.includes(value));
+      scope.textContent=missing.length?'所设波动范围还可能出现 '+missing.join('、')+' T；抽样一致仍不足以说明延时固定。':'每次四路仍可对齐，但跨上电的 D0 延时发生跳变。';
+    }else{
+      scope.textContent='所设波动范围内，D0 延时固定为 '+fmt(win.first)+' T；到达变化由缓冲等待补偿。';
+    }
+    const w=svg.clientWidth||Math.max(246,width-26),left=w<500?54:80,right=w-(w<500?66:120),max=Math.max(1.25,...records.map(r=>r.delta+.25));
+    const x=t=>left+t/max*(right-left),h=records.length*30+42;
+    const tickStep=(right-left)/max<86?1:.5;
+    const readoutTimes=values.map(Number);
+    let s='';
+    for(let t=0;t<=max;t+=tickStep){
+      if(!readoutTimes.some(value=>Math.abs(value-t)<M.EPS))s+=line(x(t),25,x(t),h-8,C.line,'stroke-dasharray="3 4"');
+      s+=text(x(t),16,fmt(t)+' T','j-small j-mono','middle');
+    }
+    for(const value of readoutTimes){
+      s+=described(line(x(value),25,x(value),h-8,C.green,'style="stroke-width:1" stroke-dasharray="4 4" opacity=".65" data-delay="'+value+'"'),'当前有效记录的 D0 读出位置：相对 TX 发出 '+fmt(value)+' T。','j-reboot-output-guide');
+    }
+    records.forEach((r,i)=>{
+      const y=33+i*30,arrival=x(r.maxDelay),release=x(r.delta);
+      s+=text(2,y+12,'第 '+r.number+' 次','j-small');
+      s+=rect(left,y,arrival-left,16,mix(C.blue,25),'rx="2"');
+      if(!r.blocked){
+        s+=rect(arrival,y,release-arrival,16,mix(C.orange,28),'rx="2"');
+        s+=circle(release,y+8,5,C.green,'class="j-reboot-output" data-delay="'+r.delta+'"');
+        s+=text(release+9,y+12,fmt(r.delta)+' T','j-small j-mono');
+      }else{
+        s+=text(right+4,y+12,'未评估','j-small','start','style="fill:'+C.red+'"');
+      }
+    });
+    shell('j-reboots',svg,w,h,s,'以 TX 发出 D0 为 0 T。蓝色表示最慢 Lane 的链路延时，橙色表示该 Lane 的缓冲等待，绿色圆点表示 D0 从 RX 缓冲读出；绿色虚线仅标出当前有效记录中出现的读出位置。跨上电是否固定还需结合所设波动范围判断。');
+    table.innerHTML=records.map(r=>'<tr><td><button type="button" class="btn btn-ghost j-record-link" data-record="'+r.number+'" aria-label="查看第 '+r.number+' 次上电动画">第 '+r.number+' 次</button></td><td class="j-table-value">'+fmt(r.maxDelay)+' T</td><td class="j-table-value">'+(r.blocked?'—':fmt(r.delta-r.maxDelay)+' T')+'</td><td class="j-table-value">'+(r.blocked?'未评估有效输出':fmt(r.delta)+' T')+'</td></tr>').join('');
+  }
+  function syncControls(){
+    control('rbd').value=cfg.rbd;control('jitter').value=cfg.jitter;control('speed').value=speed;control('stepPause').checked=stepPause;
+    out('laneControls').innerHTML = cfg.delays.map((delay, lane) => `
+      <label class="j-lane-slider j-field">
+        <span>Lane ${lane}</span>
+        <input class="form-range" type="range" min="1" max="30" step="1" value="${delay}" data-delay="${lane}" aria-label="Lane ${lane} 标称链路延时">
+        <output class="tabular-nums">${fmt(delay / M.K)} T</output>
+      </label>`).join('');
+    out('laneMetrics').innerHTML = run.delays.map((delay, lane) => `
+      <tr><th scope="row">Lane ${lane}</th><td>${fmt(delay)} T</td><td>${run.blocked?'—':fmt(run.delta - delay)+' T'}</td><td>${run.blocked?'—':run.required[lane]+' B'}</td></tr>`).join('');
+    out('rbd').textContent=`${cfg.rbd} 帧 = ${fmt(cfg.rbd/M.K)} T`;
+    out('jitter').textContent=`±${cfg.jitter} 帧（±${fmt(cfg.jitter/M.K)} T）`;
+    const win=M.bounds(cfg);
+    out('window').textContent=!win.applicable?'所设波动范围超出演示适用范围':win.stable?'所设波动范围内，D0 延时固定为 '+fmt(win.first)+' T。':'所设波动范围内，D0 延时可能为 '+fmt(win.first)+' T 或 '+fmt(win.last)+' T。';
+    out('window-detail').hidden=win.applicable;
+    out('window-detail').textContent=win.applicable?'':'请缩小 Lane 到达跨度或调整放行设置。';
+    out('window').classList.toggle('text-destructive',!win.applicable||!win.stable);
+    out('window').classList.toggle('j-positive',win.applicable&&win.stable);
+    const limits=[];
+    if(!win.scopeOK)limits.push('波动范围内到达跨度 '+fmt(win.skewSpan)+' T，超过本演示的 1 T 范围。');
+    if(!win.capacityOK)limits.push('预计最多需 '+win.need+' B，超过每 Lane '+M.CAPACITY+' B 容量。');
+    out('window-capacity').hidden=limits.length===0;
+    out('window-capacity').textContent=limits.join('');
+    // Classify the full power-cycle range; a single run may catch an earlier
+    // opportunity even when the configuration can jump between cycles.
+    const releaseMode=!win.applicable?null:!win.stable?'critical':win.first>cfg.rbd/M.K+M.EPS?'later':'safe';
+    for(const button of root.querySelectorAll('[data-preset]')){
+      const name=button.dataset.preset;
+      const selected=name===releaseMode;
+      button.setAttribute('aria-pressed',String(selected));
+    }
+    syncLatency();renderWindow();renderReboots();
+  }
+  function stageText(){
+    if(!run.skewOK&&time>=run.ilas)return '本次 Lane 到达跨度超出演示适用范围；未评估有效输出。';
+    if(run.overflow&&time>=Math.min(...run.arrivals)+M.CAPACITY/M.B)return '缓冲已超出教学容量；输出被阻止，不能宣称对齐或确定性延迟。';
+    const st=M.stage(run,time);
+    if (st === 'sysref') {
+      return time < run.sysref
+        ? '等待 SYSREF 到达。ADC 和 FPGA 的 LMFC 各自计数。'
+        : 'ADC 和 FPGA 已采样 SYSREF，两端 LMFC 同时从 0 开始计数。';
+    }
+    if (st === 'cgs') {
+      if (time < run.cgsTx) return 'RX 拉低 SYNC~，请求 TX 开始 CGS。';
+      if (time < Math.max(...run.cgsReady)) return `TX 连发 ${M.CGS_SYMBOL}。RX 每条 Lane 连续收到 ${M.CGS_THRESHOLD} 个有效字符后确认字符边界。`;
+      if (time < run.syncRx) return '四路字符边界已识别。RX 等下一个 LMFC 边界拉高 SYNC~。';
+      if (time < run.syncTx) return 'RX 已在 LMFC 边界拉高 SYNC~，电平变化正在返回 TX。';
+      return 'TX 检测到 SYNC~ 拉高。下一个 LMFC 边界开始发送 ILAS。';
+    }
+    const message={ilas:'四条 Lane 的首个 /R/ 先后入缓冲；到齐后仍须等待预定放行机会。',release:'放行门同时开启；MF1 → MF4 连续输出，MF2 核对事先配置的参数。',data:'本次 D0 的四路片段已对齐；跨上电延时在下方“模拟多次上电”中比较。'};
+    if(time<run.release&&!run.blocked){
+      const missed=run.releaseOffsets.slice(0,-1).filter(offset=>time+M.EPS>=run.ilas+offset).length;
+      if(missed)return `已错过 ${missed} 次放行机会。预计在 ${fmt(run.release)} T 一起读出。`;
+    }
+    return message[st];
+  }
+  function syncLatency(){
+    const arrived=time+M.EPS>=run.dataRx;
+    const route=out('run-path'),warning=out('run-warning');
+    const reasons=[];
+    if(!run.skewOK)reasons.push('Lane 到达跨度超过本演示的 1 T 范围');
+    if(run.overflow)reasons.push('所需缓存超过每 Lane '+M.CAPACITY+' B 容量');
+    const issue=run.blocked?'本次未评估有效输出：'+reasons.join('；')+'。':'';
+    const detail=run.blocked?'':(arrived?'':'预计 ')+'TX 发出 '+fmt(run.dataTx)+' T → RX 缓冲读出 '+fmt(run.dataRx)+' T';
+    // These labels change only at phase boundaries, not at every animation frame.
+    if(route.textContent!==detail)route.textContent=detail;
+    if(warning.textContent!==issue)warning.textContent=issue;
+    warning.hidden=!run.blocked;
+    route.parentElement.hidden=run.blocked;
+  }
+  function render(){
+    const timeSlider = control('time');
+    timeSlider.max = run.end;
+    timeSlider.value = time;
+    timeSlider.style.setProperty('--j-progress', `${100 * timeSlider.valueAsNumber / run.end}%`);
+    out('time').textContent = fmt(time) + ' T';
+    $('[data-action="play"]').textContent=playing?'暂停':'播放';
+    linkLegend.sysref.hidden = time === 0 && !playing;
+    linkLegend.transfer.hidden = time < run.cgsTx;
+    linkLegend.release.hidden = run.blocked || time + M.EPS < run.release;
+    const stage = M.stage(run, time);
+    const mainStage = stage === 'release' ? 'ilas' : stage;
+    root.style.setProperty('--j-note', ({sysref:'var(--j-orange)',cgs:'var(--j-blue)',ilas:'var(--j-purple)',data:'var(--j-green)'})[mainStage]);
+    for (const button of stageButtons) button.setAttribute('aria-pressed', String(button.dataset.jump === mainStage));
+    for (const button of ilasButtons) button.setAttribute('aria-pressed', String(button.dataset.jump === stage));
+    if (mainStage !== 'ilas' && ilasActions.contains(document.activeElement)) {
+      stageButtons.find(button => button.dataset.jump === mainStage)?.focus({preventScroll:true});
+    }
+    ilasActions.hidden = mainStage !== 'ilas';
+    const note=stageText();if(note!==lastStage){out('stage').textContent=note;lastStage=note;}
+    syncLatency();
+    renderLink();
+    renderTimeline($('[data-svg="timeline"]'));
+  }
+  function seek(t){playing=false;time=M.clamp(t,0,run.end);render();remember();}
+  function random(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}
+  function reboot(renderNow=true){
+    const actual=cfg.delays.map(d=>M.clamp(d+Math.floor(random()*(2*cfg.jitter+1))-cfg.jitter,1,33));
+    run=M.makeRun(cfg,actual);records.push({...run,number:++serial});records=records.slice(-8);time=0;playing=false;
+    if(renderNow){syncControls();render();remember();}
+  }
+  function changed(){cfg=M.config(cfg);run=M.makeRun(cfg);records=[];serial=0;playing=false;time=Math.min(run.ilas+.15,run.end);syncControls();render();remember();}
+  root.addEventListener('click',event=>{
+    const b=event.target.closest('button');if(!b||!root.contains(b))return;
+    if (b.dataset.jump) {
+      const jumpTimes = {
+        sysref: 0,
+        cgs: run.cgsTx,
+        ilas: run.ilas + run.minDelay,
+        release: run.release,
+        data: run.dataRx
+      };
+      seek(jumpTimes[b.dataset.jump]);
+      return;
+    }
+    if (b.dataset.record) {
+      const selected = records.find(r => r.number === Number(b.dataset.record));
+      if (!selected) return;
+      $('[data-section="animation"]').open = true;
+      run = M.makeRun(cfg, selected.frames);
+      syncControls();
+      seek(run.dataRx + .01);
+      root.scrollIntoView({block:'start'});
+      $('.j-stage-controls [aria-pressed="true"]')?.focus({preventScroll:true});
+      return;
+    }
+    if(b.dataset.preset){cfg=M.config(M.base);if(b.dataset.preset==='critical')cfg.rbd=15;if(b.dataset.preset==='later')cfg.rbd=13;changed();return;}
+    switch(b.dataset.action){
+      case 'play':if(time>=run.end)time=0;playing=!playing;lastFrame=0;render();remember();break;
+      case 'restart':seek(0);break;
+      case 'next':seek(M.stops(run).find(t=>t>time+M.EPS)??run.end);break;
+      case 'previous':seek(M.stops(run).filter(t=>t<time-M.EPS).at(-1)??0);break;
+      case 'reboot':reboot(false);time=run.dataRx+.01;syncControls();render();remember();break;
+      case 'batch':for(let i=0;i<6;i++)reboot(false);time=run.dataRx+.01;syncControls();render();remember();break;
+      case 'clear':records=[];serial=0;renderReboots();remember();break;
+    }
+  });
+  root.addEventListener('input',event=>{
+    const el=event.target;
+    if(el.dataset.control==='time')seek(Number(el.value));
+    if(el.dataset.control==='rbd'){cfg.rbd=Number(el.value);changed();}
+    if(el.dataset.control==='jitter'){cfg.jitter=Number(el.value);changed();}
+  });
+  root.addEventListener('change',event=>{const el=event.target;if(el.dataset.delay!==undefined){cfg.delays[Number(el.dataset.delay)]=Number(el.value);const active=el.dataset.delay;changed();$('[data-delay="'+active+'"]')?.focus();}if(el.dataset.control==='speed')speed=Number(el.value);if(el.dataset.control==='stepPause')stepPause=el.checked;remember();});
+  function animate(ts){
+    if(!root.isConnected)return;
+    if(!lastFrame)lastFrame=ts;
+    if(playing){let next=Math.min(run.end,time+Math.min(ts-lastFrame,100)*speed/4000);if(stepPause){const stop=M.stops(run).find(t=>t>time+M.EPS&&t<=next+M.EPS);if(stop!==undefined){next=stop;playing=false;remember();}}time=next;if(time>=run.end)playing=false;}
+    if(playing){if(ts-lastDraw>32){render();lastDraw=ts;}}else if($('[data-action="play"]').textContent!=='播放')render();
+    lastFrame=ts;frameHandle=requestAnimationFrame(animate);
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){playing=false;render();}});
+  root.addEventListener('toggle',event=>{
+    if(!event.target.open)return;
+    if(event.target.matches('[data-section=animation]'))render();
+    if(event.target.matches('[data-section=latency]')){renderWindow();renderReboots();}
+  },true);
+  const observer=new ResizeObserver(()=>{const next=Math.max(300,root.clientWidth);if(next!==width){width=next;renderWindow();renderReboots();render();}});observer.observe(root);
+  syncControls();render();
+  frameHandle=requestAnimationFrame(animate);
+  root.dataset.ready='true';
+  globalThis.JESD204BDemo = {
+    getState: () => ({time, playing, cfg, run, records}),
+    seek,
+    destroy: () => {
+      cancelAnimationFrame(frameHandle);
+      observer.disconnect();
+    }
+  };
+})();
+</script>
+
+</main></body></html>
