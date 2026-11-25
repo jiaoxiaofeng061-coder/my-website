@@ -492,6 +492,10 @@
       id:'chip-csmsc', name:'成都华微', description:'成都华微电子科技股份有限公司',
       url:'https://www.csmsc.com/', mark:'华', color:'#008cce'
     };
+    const acelaMicro={
+      id:'chip-acelamicro', name:'迅芯微', description:'迅芯微电子（苏州）股份有限公司',
+      url:'https://www.acelamicro.com/', mark:'迅', color:'#005bac'
+    };
     const wechatFileHelper={
       id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
       url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
@@ -538,7 +542,8 @@
         {id:'chip-arm',name:'ARM',description:'Arm',url:'https://www.arm.com/',mark:'A',color:'#0091bd'},
         {id:'chip-panasonic',name:'松下',description:'Panasonic Industry',url:'https://www.panasonic.com/global/industry.html',mark:'松',color:'#00529b'},
         miniCircuits,
-        chengduSinoMicroelectronics
+        chengduSinoMicroelectronics,
+        acelaMicro
       ]},
       {id:'chip-purchase',name:'芯片采购',links:[
         {id:'buy-lcsc',name:'立创商城',description:'立创商城',url:'https://www.szlcsc.com/',mark:'立',color:'#2468c9'},
@@ -801,6 +806,15 @@
         save();
       }
       localStorage.setItem('homebase-csmsc-v1', 'done');
+    }
+    if (!localStorage.getItem('homebase-acelamicro-v1')) {
+      const vendors = data.find(category => category.id === 'chip-vendors' || category.name === '芯片厂商');
+      if (vendors && !vendors.links.some(link => link.id === acelaMicro.id ||
+          link.name === acelaMicro.name || /^https?:\/\/(?:www\.)?acelamicro\.com(?:\.cn)?(?:[/?#]|$)/i.test(link.url))) {
+        vendors.links.push({...acelaMicro});
+        save();
+      }
+      localStorage.setItem('homebase-acelamicro-v1', 'done');
     }
     if (!localStorage.getItem('homebase-wechat-filehelper-v1')) {
       const work = data.find(category => category.id === 'work' || category.name === '工作');
@@ -1406,6 +1420,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
+        if (/^(?:www\.)?acelamicro\.com(?:\.cn)?$/i.test(host)) return 'logos/www.acelamicro.com.ico';
         if (/^(?:www\.)?csmsc\.com$/i.test(host)) return 'logos/www.csmsc.com.png';
         if (symbolLogoHosts.has(host)) return 'logos/'+host+'-icon.svg';
         return 'logos/'+host+(vectorLogoHosts.has(host)?'.svg':'.png');
