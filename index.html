@@ -1434,7 +1434,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
-        if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com.ico';
+        if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com.png';
         if (/^(?:www\.)?acelamicro\.com(?:\.cn)?$/i.test(host)) return 'logos/www.acelamicro.com.ico';
         if (/^(?:www\.)?csmsc\.com$/i.test(host)) return 'logos/www.csmsc.com.png';
         if (symbolLogoHosts.has(host)) return 'logos/'+host+'-icon.svg';
