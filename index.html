@@ -21,6 +21,9 @@
     .mark img{position:absolute;left:50%;top:50%;width:32px;height:32px;padding:0;display:block;object-fit:contain;object-position:center;border:0;border-radius:0;background:transparent;transform:translate(-50%,-50%)}
     .mark:has(img){background:transparent!important}
     .mark:has(> img[src="logos/google-maps.png"]) > span{visibility:hidden}
+    .mark:has(> img[src="logos/www.rock-chips.com-wordmark.png"]){width:64px;flex-basis:64px}
+    .mark > img[src="logos/www.rock-chips.com-wordmark.png"]{width:64px;height:32px}
+    .mark:has(> img[src="logos/www.rock-chips.com-wordmark.png"]) > span{visibility:hidden}
     .copy strong,.copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .copy small{display:none}
     .card{justify-content:center}
@@ -1434,7 +1437,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
-        if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com.png';
+        if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com-wordmark.png';
         if (/^(?:www\.)?acelamicro\.com(?:\.cn)?$/i.test(host)) return 'logos/www.acelamicro.com.ico';
         if (/^(?:www\.)?csmsc\.com$/i.test(host)) return 'logos/www.csmsc.com.png';
         if (symbolLogoHosts.has(host)) return 'logos/'+host+'-icon.svg';
