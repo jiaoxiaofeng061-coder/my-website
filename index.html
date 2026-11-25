@@ -507,6 +507,10 @@
       id:'chip-corebai', name:'芯佰微', description:'芯佰微电子（北京）有限公司',
       url:'https://corebai.com/', mark:'芯', color:'#e61a14'
     };
+    const belling={
+      id:'chip-belling', name:'上海贝岭', description:'上海贝岭股份有限公司',
+      url:'https://www.belling.com.cn/', mark:'贝', color:'#005bac'
+    };
     const wechatFileHelper={
       id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
       url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
@@ -561,7 +565,8 @@
         chengduSinoMicroelectronics,
         acelaMicro,
         rockchip,
-        corebai
+        corebai,
+        belling
       ]},
       {id:'chip-purchase',name:'芯片采购',links:[
         {id:'buy-lcsc',name:'立创商城',description:'立创商城',url:'https://www.szlcsc.com/',mark:'立',color:'#2468c9'},
@@ -851,6 +856,15 @@
         save();
       }
       localStorage.setItem('homebase-corebai-v1', 'done');
+    }
+    if (!localStorage.getItem('homebase-belling-v1')) {
+      const vendors = data.find(category => category.id === 'chip-vendors' || category.name === '芯片厂商');
+      if (vendors && !vendors.links.some(link => link.id === belling.id ||
+          link.name === belling.name || /^https?:\/\/(?:www\.)?belling\.com\.cn(?:[/?#]|$)/i.test(link.url))) {
+        vendors.links.push({...belling});
+        save();
+      }
+      localStorage.setItem('homebase-belling-v1', 'done');
     }
     if (!localStorage.getItem('homebase-wechat-filehelper-v1')) {
       const work = data.find(category => category.id === 'work' || category.name === '工作');
@@ -1465,6 +1479,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
+        if (/^(?:www\.)?belling\.com\.cn$/i.test(host)) return 'logos/www.belling.com.cn.ico';
         if (/^(?:www\.)?corebai\.com$/i.test(host)) return 'logos/corebai.com-icon.svg';
         if (/^(?:www\.)?iconfont\.cn$/i.test(host)) return 'logos/www.iconfont.cn.png';
         if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com-wordmark.png';
