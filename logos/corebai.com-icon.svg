@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Original brand paths from https://corebai.com/Data/corebai/template/cn/images/logo.svg -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="-14 -14 704 572" style="enable-background:new 0 0 1190.55 543.47;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_1_);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000082341725770191079040000000217456294582058665_);}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000042014633385532522430000000249265427651531454_);}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="204.254" y1="258.5426" x2="-278.4949" y2="596.4669">
+	<stop  offset="0" style="stop-color:#E61A14"/>
+	<stop  offset="1" style="stop-color:#4D1E22"/>
+</linearGradient>
+<path class="st0" d="M560.01,183.67c-89.73,99.93-187.07,140.56-289.6,54.64C200.91,180.21,118.61,133.88,0,145.46l0,0
+	c0,0,427.23,115.84,136.07,398.01C327.29,457.02,467.86,308.85,560.01,183.67L560.01,183.67z"/>
+<g>
+
+		<linearGradient id="SVGID_00000116216135632945626840000003075080935507327622_" gradientUnits="userSpaceOnUse" x1="-10.7014" y1="-93.934" x2="-4.602" y2="-93.934" gradientTransform="matrix(-85.9081 105.0321 105.0321 85.9081 9272.376 9302.4561)">
+		<stop  offset="0" style="stop-color:#E61A14"/>
+		<stop  offset="1" style="stop-color:#4D1E22"/>
+	</linearGradient>
+	<path style="fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000116216135632945626840000003075080935507327622_);" d="
+		M0,145.46c118.61-11.59,200.9,34.76,270.41,92.85c102.53,85.93,199.87,45.3,289.6-54.64c12.45-16.95,24.03-33.37,34.58-49.28
+		c-63.45,46.86-132.61,36.48-208.34,15.74C272.48,119.01,144.54,64.55,0,145.46z"/>
+</g>
+<linearGradient id="SVGID_00000126313035104674408420000005897204338714136498_" gradientUnits="userSpaceOnUse" x1="535.434" y1="65.1179" x2="204.6585" y2="726.6702">
+	<stop  offset="0" style="stop-color:#E61A14"/>
+	<stop  offset="0.1602" style="stop-color:#D4211A"/>
+	<stop  offset="0.4848" style="stop-color:#A32622"/>
+	<stop  offset="0.9407" style="stop-color:#572023"/>
+	<stop  offset="1" style="stop-color:#4D1E22"/>
+</linearGradient>
+<path style="fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000126313035104674408420000005897204338714136498_);" d="
+	M608.6,0.4C464.05-7.55,466.47,104.49,386.25,150.13c75.73,20.75,144.89,31.12,208.34-15.73C631.76,79.42,658.22,31.87,674.47,0.4
+	H608.6z"/>
+</svg>
