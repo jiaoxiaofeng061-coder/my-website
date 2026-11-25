@@ -24,6 +24,10 @@
     .mark:has(> img[src="logos/www.rock-chips.com-wordmark.png"]){width:64px;flex-basis:64px}
     .mark > img[src="logos/www.rock-chips.com-wordmark.png"]{width:64px;height:32px}
     .mark:has(> img[src="logos/www.rock-chips.com-wordmark.png"]) > span{visibility:hidden}
+    .mark:has(> img[src="logos/www.corpro.cn.png"]){width:64px;flex-basis:64px;background:#174b7d!important}
+    .mark > img[src="logos/www.corpro.cn.png"]{width:56px;height:32px}
+    .mark:has(> img[src="logos/www.corpro.cn.png"]) > span{visibility:hidden}
+    .card:has(img[src="logos/www.corpro.cn.png"]){flex-wrap:wrap}
     .copy strong,.copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .copy small{display:none}
     .card{justify-content:center}
@@ -515,6 +519,10 @@
       id:'chip-shenxin', name:'深信微芯', description:'深圳市深信科技有限公司',
       url:'https://www.shenxinic.com/zh/', mark:'深', color:'#2563eb'
     };
+    const corpro={
+      id:'chip-corpro', name:'成都振芯', description:'成都振芯科技股份有限公司',
+      url:'http://www.corpro.cn/', mark:'振', color:'#174b7d'
+    };
     const wechatFileHelper={
       id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
       url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
@@ -571,7 +579,8 @@
         rockchip,
         corebai,
         belling,
-        shenxinTech
+        shenxinTech,
+        corpro
       ]},
       {id:'chip-purchase',name:'芯片采购',links:[
         {id:'buy-lcsc',name:'立创商城',description:'立创商城',url:'https://www.szlcsc.com/',mark:'立',color:'#2468c9'},
@@ -879,6 +888,15 @@
         save();
       }
       localStorage.setItem('homebase-shenxin-v1', 'done');
+    }
+    if (!localStorage.getItem('homebase-corpro-v1')) {
+      const vendors = data.find(category => category.id === 'chip-vendors' || category.name === '芯片厂商');
+      if (vendors && !vendors.links.some(link => link.id === corpro.id ||
+          link.name === corpro.name || /^https?:\/\/(?:www\.)?corpro\.cn(?:[/?#]|$)/i.test(link.url))) {
+        vendors.links.push({...corpro});
+        save();
+      }
+      localStorage.setItem('homebase-corpro-v1', 'done');
     }
     if (!localStorage.getItem('homebase-wechat-filehelper-v1')) {
       const work = data.find(category => category.id === 'work' || category.name === '工作');
@@ -1493,6 +1511,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
+        if (/^(?:www\.)?corpro\.cn$/i.test(host)) return 'logos/www.corpro.cn.png';
         if (/^(?:www\.)?shenxinic\.com$/i.test(host)) return 'logos/www.shenxinic.com.svg';
         if (/^(?:www\.)?belling\.com\.cn$/i.test(host)) return 'logos/www.belling.com.cn.ico';
         if (/^(?:www\.)?corebai\.com$/i.test(host)) return 'logos/corebai.com-icon.svg';
