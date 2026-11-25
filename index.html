@@ -507,6 +507,10 @@
       id:'work-wechat-filehelper', name:'微信传文件', description:'微信文件传输助手网页版',
       url:'https://filehelper.weixin.qq.com/', mark:'微', color:'#07c160'
     };
+    const iconfont={
+      id:'work-iconfont', name:'Iconfont', description:'阿里巴巴矢量图标库',
+      url:'https://www.iconfont.cn/', mark:'图', color:'#00c4c8'
+    };
     const railway12306={
       id:'common-12306', name:'12306', description:'中国铁路官方购票与车次查询',
       url:'https://www.12306.cn/index/', mark:'铁', color:'#2878c8'
@@ -536,7 +540,8 @@
         {id:'work-baidu-translate',name:'百度翻译',description:'文本与网页翻译',url:'https://fanyi.baidu.com/',mark:'译',color:'#3975f6'},
         {id:'work-baidu-pan',name:'百度网盘',description:'云端文件与分享',url:'https://pan.baidu.com/',mark:'盘',color:'#2563eb'},
         {id:'work-github',name:'GitHub',description:'代码托管与协作',url:'https://github.com/',mark:'G',color:'#24292f'},
-        wechatFileHelper
+        wechatFileHelper,
+        iconfont
       ]},
       {id:'chip-vendors',name:'芯片厂商',links:[
         {id:'chip-ti',name:'TI',description:'Texas Instruments',url:'https://www.ti.com/',mark:'TI',color:'#cc0000'},
@@ -841,6 +846,15 @@
         save();
       }
       localStorage.setItem('homebase-wechat-filehelper-v1', 'done');
+    }
+    if (!localStorage.getItem('homebase-iconfont-v1')) {
+      const work = data.find(category => category.id === 'work' || category.name === '工作');
+      if (work && !work.links.some(link => link.id === iconfont.id ||
+          link.name === iconfont.name || /^https?:\/\/(?:www\.)?iconfont\.cn(?:[/?#]|$)/i.test(link.url))) {
+        work.links.push({...iconfont});
+        save();
+      }
+      localStorage.setItem('homebase-iconfont-v1', 'done');
     }
     if(!localStorage.getItem('homebase-gmail-name-v1')){
       const work=data.find(category=>category.id==='work'||category.name==='工作');
@@ -1437,6 +1451,7 @@
       if (googleMapsUrlPattern.test(url)) return 'logos/google-maps.png';
       try {
         const host = new URL(url).hostname;
+        if (/^(?:www\.)?iconfont\.cn$/i.test(host)) return 'logos/www.iconfont.cn.png';
         if (/^(?:www\.)?rock-chips\.com$/i.test(host)) return 'logos/www.rock-chips.com-wordmark.png';
         if (/^(?:www\.)?acelamicro\.com(?:\.cn)?$/i.test(host)) return 'logos/www.acelamicro.com.ico';
         if (/^(?:www\.)?csmsc\.com$/i.test(host)) return 'logos/www.csmsc.com.png';
